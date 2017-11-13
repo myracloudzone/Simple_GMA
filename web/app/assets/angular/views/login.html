@@ -1,0 +1,12 @@
+<div class="vid-container">
+  <div class="inner-container">
+    <div class="box">
+      <h1>Login</h1>
+      <input type="text" placeholder="Username" ng-model="user.username"/>
+      <input type="password" placeholder="Password" ng-model="user.password"/>
+      <md-button class="md-raised md-primary" ng-click="login()">Login</md-button>
+      <p>Not a member? <span>Sign Up</span></p>
+      <p ng-if="invalidCredential">Invalid Username/Password</p>
+    </div>
+  </div>
+</div>

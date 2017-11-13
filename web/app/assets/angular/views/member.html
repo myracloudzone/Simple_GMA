@@ -1,0 +1,521 @@
+<!-- Navigation-->
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper mb40">
+    <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                    <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Member List</md-truncate>
+                    <span flex></span>
+                    <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="fetchData()">
+                     <md-tooltip md-direction="top">Refresh List</md-tooltip>
+                     <i class="fa fa-fw fa-refresh"></i>
+                    </md-button>
+                    <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="addMember($event, null)">
+                        <md-tooltip md-direction="top">Add New</md-tooltip>
+                        <i class="fa fa-fw fa-plus"></i>
+                    </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+         <div class="col-sm-12 p0">
+            <section class="optionSection text-center" layout-wrap ng-if="selectedmember.id != null">
+                <md-button md-no-ink class="md-primary" ng-click="addMember($event, selectedmember.id)">
+                    <md-icon md-font-icon="fa-edit" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Edit
+                </md-button>
+                <md-button md-no-ink class="md-primary" ng-click="viewDocuments($event)">
+                    <md-icon md-font-icon="fa-file-text" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Documents
+                </md-button>
+                <md-button md-no-ink class="md-primary">
+                    <md-icon md-font-icon="fa-heart" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Membership
+                </md-button>
+                <md-menu>
+                    <md-button class="md-primary" ng-click="$mdOpenMenu($event)">
+                        <md-icon md-font-icon="fa-money" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                        Payments
+                    </md-button>
+                    <md-menu-content width="4">
+                      <md-menu-item>
+                        <md-button ng-click="addPayment($event)">
+                            Make Payment
+                        </md-button>
+                      </md-menu-item>
+                      <md-menu-divider></md-menu-divider>
+                      <md-menu-item>
+                        <md-button ng-click="viewPaymentHistory($event)">
+                          Payment History
+                        </md-button>
+                      </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                <md-button md-no-ink class="md-primary" ng-click="messageMember($event)">
+                    <md-icon md-font-icon="fa-envelope" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Message
+                </md-button>
+                <md-button md-no-ink class="md-primary" ng-click="deleteMember($event, selectedmember.id)">
+                    <md-icon md-font-icon="fa-remove" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Delete
+                </md-button>
+            </section>
+         </div>
+         <div class="col-sm-12 p0">
+            <div class="col-sm-12 mt5 p0 memberSearchBox">
+               <div class="input-group col-sm-12">
+                  <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="fetchData()"/>
+                  <span class="input-group-btn">
+                  <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="fetchData()"><i class="fa fa-search"></i>
+                  </button>
+                  </span>
+               </div>
+            </div>
+            <div class="col-sm-12 mt5">
+                <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                    <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                </div>        
+                <div class="table-responsive memberTableDiv" id="listTable" ng-if="!listLoading">
+                  <table class="table table-hover">
+                     <thead class="thead-inverse">
+                        <tr>
+                           <th>#</th>
+                           <th>Reg. Id</th>
+                           <th>Name<i class="fa fa-fw fa-sort-asc"></i><i class="fa fa-fw fa-sort-desc"></i></th>
+                           <th>Mobile</th>
+                           <th>Type</th>
+                           <th>Group</th>
+                           <th>Plan</th>
+                           <th>Membership End Date</th>
+                           <th>Action</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr class="cursor-pointer" ng-repeat="member in members" ng-class="member.id == selectedmember.id ? 'bg-darkgray' : ''" ng-dblclick="addMember($event, member.id)"  ng-click="toggleEditOption(member)">
+                           <th scope="row">
+                              <div class="avatar">
+                                    <img ng-src="{{member.profile_pic}}" ng-if="member.profile_pic != null" alt=""></img>
+                                    <img src="/app/assets/angular/images/avatars/avatar4.png" ng-if="member.gender == 'Male' && member.profile_pic == null" alt=""></img>
+                                    <img src="/app/assets/angular/images/avatars/avatar3.png" ng-if="member.gender == 'Female' && member.profile_pic == null" alt=""></img>
+                              </div>
+                           </th>
+                           <td>{{member.id}}</td>
+                           <td>
+                              {{member.firstName}}  {{member.lastName}}
+                              <md-tooltip md-direction="bottom">{{member.firstName}}  {{member.lastName}}</md-tooltip>
+                           </td>
+                           <td>{{member.mobile}}</td>
+                           <td>{{getMemberTypeName(member.memberTypeId)}}</td>
+                           <td>{{getGroupNameById(member.groupId)}}</td>
+                           <td>{{getMembershipPlanName(member.planId)}}</td>
+                           <td>{{getDateString(member.membershipEndDate)}}</td>
+                            <td>
+                                <md-button class="md-icon-button md-primary" aria-label="Options" ng-click="toggleEditOption(member.id)">
+                                    <md-icon md-font-icon="fa-th-list" class="fa fa-lg md-primary md-hue-2">
+                                        <md-tooltip md-direction="top">Options</md-tooltip>
+                                    </md-icon>
+                                </md-button>
+                            </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+               <div class="col-sm-12 p0" ng-if="!listLoading">
+                    <div class="col-sm-6 pull-left paginator">
+                        <ul class="pull-left" uib-pagination total-items="pagination.rowCount" max-size="pageSize" class="pagination-sm" boundary-links="true" rotate="true" ng-model="pagination.page" ng-change="fetchData()"></ul>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+<script type="text/ng-template" id="addMember.html">
+    <md-dialog aria-label="" id="memberAddBox">
+        <div class="col-sm-12 text-center p20" ng-if="loading">
+            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+        </div>
+        <form ng-cloak ng-if="!loading">
+                    <md-toolbar>
+                            <div class="md-toolbar-tools">
+                                <h2 ng-if="member.id == null"> Add New Member</h2>
+                                <h2 ng-if="member.id != null"> Update Member</h2>
+                                <span flex></span>
+                                <md-button class="md-icon-button" ng-click="close()">
+                                    <i class="fa fa-fw fa-remove color-black"></i>
+                                </md-button>
+                            </div>
+                        </md-toolbar>
+          
+              <md-dialog-content>
+                <div class="md-dialog-content">
+                        <div class="">
+                                <form name="userForm">
+                                    <div flex="100">
+                                        <h6><i ng-class="!showPersonalDetail ? 'fa fa-arrow-circle-down' : 'fa fa-arrow-circle-up'" ng-click="showPersonalDetail = !showPersonalDetail"></i>  Personal Details*</h6>
+                                    </div>
+                                    <div layout-gt-xs="row">
+                                        <div class="col-sm-6 text-center bg-gray" ng-if="!showUpload">
+                                            <div class="addMemberAvatar">
+                                                <img ng-src="{{member.profile_pic}}" ng-if="member.profile_pic != null" alt=""></img>
+                                                <img src="/app/assets/angular/images/avatars/avatar4.png" ng-if="member.gender == 'Male' && member.profile_pic == null" alt=""></img>
+                                                <img src="/app/assets/angular/images/avatars/avatar3.png" ng-if="member.gender == 'Female' && member.profile_pic == null" alt=""></img>
+                                            </div>
+                                            <md-button class="md-raised md-primary imageButton" ng-click="showUploadBox()">Upload Image</md-button>
+                                        </div>
+                                        
+                                        <div class="col-sm-6 text-center" ng-if="showUpload">
+                                            <upload callback="updateUploadedFile(response)" showclosebutton="true" closebtnaction="showUploadBox()" url="/service/upload" file-types="{{fileTypes}}"></upload>
+                                        </div>
+                                        <div class="col-sm-6 text-center barCodeBox">
+                                            <!-- <p>Member Code : {{member.memberCode}}</p> -->
+                                            <angular-barcode ng-model="member.memberCode" bc-options="bc" bc-class="barcode" bc-type="img"></angular-barcode>
+                                            <!-- <qr type-number="8" correction-level="'M'" size="100" input-mode="'ALPHA'" text="'https://google.com'" image="true"></qr> -->
+                                            
+                                        </div>    
+                                    </div>        
+                                    <div flex="100" ng-if="showPersonalDetail">
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>First Name</label>
+                                                <input ng-model="member.firstName" required maxlength="50">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Last Name</label>
+                                                <input ng-model="member.lastName" type="text" required  maxlength="50">
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Email</label>
+                                                <input ng-model="member.email" type="text" required  maxlength="50">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Gender</label>
+                                                <md-select ng-model="member.gender" required>
+                                                    <md-option value="Male">Male</md-option>
+                                                    <md-option value="Female">Female</md-option>
+                                                    <md-option value="Other">Other</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Birthday</label>
+                                                <md-datepicker ng-model="member.birthday" required md-min-date="calendar.minDate" md-max-date="calendar.maxDate"></md-datepicker>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Blood Group</label>
+                                                <md-select ng-model="member.bloodgroup">
+                                                    <md-option value="A+">A+</md-option>
+                                                    <md-option value="A-">A-</md-option>
+                                                    <md-option value="B+">B+</md-option>
+                                                    <md-option value="B-">B-</md-option>
+                                                    <md-option value="AB+">AB+</md-option>
+                                                    <md-option value="AB-">AB-</md-option>
+                                                    <md-option value="O+">O+</md-option>
+                                                    <md-option value="O-">O-</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Occupation</label>
+                                                <input ng-model="member.occupation" type="text"  maxlength="30">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Status</label>
+                                                <md-select ng-model="member.status" required>
+                                                    <md-option value="Single">Single</md-option>
+                                                    <md-option value="Married">Married</md-option>
+                                                    <md-option value="Other">Other</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                    </div>
+                                    <!-- Communication Information -->
+                                    <div flex="100">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-divider class="dividerLine"></md-divider>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="100">
+                                        <h6><i ng-class="!showCommunicationDetail ? 'fa fa-arrow-circle-down' : 'fa fa-arrow-circle-up'" ng-click="showCommunicationDetail = !showCommunicationDetail"></i>  Communication Details*</h6>
+                                    </div>
+                                    <div flex="100" ng-if="showCommunicationDetail" id="communicationDetail">
+                                        <div layout-gt-xs="row" uib-popover-template="mapPopover.templateUrl" popover-is-open="showVariables.showMapPopover">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Address</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon" id="basic-addon1" ng-click="toggleMapPopover()"><i class="fa fa-map-marker fa-lg"></i></span>
+                                                    <input vs-google-autocomplete
+                                                    ng-model="member.address"
+                                                    vs-city="member.city"
+                                                    vs-state="member.state"
+                                                    vs-country="member.country"
+                                                    vs-post-code="member.pincode"
+                                                    placeholder=""
+                                                    vs-latitude="mapsAttitude.lat"
+                                                    vs-longitude="mapsAttitude.long" ng-click="stopEvent($event)"/>
+                                                </div>    
+                                            </md-input-container>
+                                        </div>
+                                         
+                                        
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>City</label>
+                                                <input name="City" ng-model="member.city"  maxlength="100"/>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>State</label>
+                                                <input name="State" ng-model="member.state"  maxlength="50"  disabled/>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Country</label>
+                                                <input name="Country" ng-model="member.country"  maxlength="50" disabled/>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Postal Code</label>
+                                                <input name="postalCode" positive-number ng-model="member.pincode" placeholder="1234567890"  maxlength="10" />
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Phone</label>
+                                                <input ng-model="member.phone" positive-number maxlength="15">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Mobile</label>
+                                                <input ng-model="member.mobile" required positive-number maxlength="10">
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Emergency Contact Name</label>
+                                                <input ng-model="member.emergencyContactName" required maxlength="50">
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Emergency Contact Relation</label>
+                                                <input ng-model="member.emergencyContactRelation" maxlength="50">
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Emergency Contact Number</label>
+                                                <input ng-model="member.emergencyContactNumber" required maxlength="10" />
+                                            </md-input-container>
+                                            <md-input-container class="md-block mobileHide" flex-gt-sm>
+                                            </md-input-container>
+                                        </div>
+                                    </div>
+                                    <div flex="100">
+                                        <md-input-container class="md-block" flex-gt-sm>
+                                            <md-divider class="dividerLine"></md-divider>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="100">
+                                        <h6 required><i ng-class="!showMembershipDetail ? 'fa fa-arrow-circle-down' : 'fa fa-arrow-circle-up'"  ng-click="showMembershipDetail = !showMembershipDetail"></i>  Membership Details*</h6>
+                                    </div>
+                                    <div flex="100" ng-if="showMembershipDetail">
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Member Type</label>
+                                                <md-select ng-model="member.memberTypeId" required>
+                                                    <md-option value="1">Normal</md-option>
+                                                    <md-option value="2">Executive</md-option>
+                                                    <md-option value="3">VIP</md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Group</label>
+                                                <md-select ng-model="member.groupId">
+                                                    <md-option ng-repeat="group in groups" value="{{group.id}}">
+                                                        {{group.name}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div layout-gt-xs="row">
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Membership Plan</label>
+                                                <md-select ng-model="member.planId" required ng-disabled="member.id != null">
+                                                    <md-option ng-repeat="plan in plans" value="{{plan.id}}"  ng-click="changeRatePlan(plan)">
+                                                        {{plan.name}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                            <md-input-container class="md-block" flex-gt-xs>
+                                                <label>Date of Joining</label>
+                                                <md-datepicker ng-model="member.joiningDate" required md-min-date="calendar.minDate" md-max-date="calendar.maxDate"></md-datepicker>
+                                            </md-input-container>
+                                        </div>
+                                        <div class="signuptoggle">
+                                            <md-switch ng-model="member.isSignUpFee" ng-disabled="member.id != null" aria-label="SignUp Fee Applied">
+                                                    Apply Signup Fee
+                                            </md-switch>
+                                        </div>    
+                                    </div>
+                                </form>
+                            </div>
+                </div>
+              </md-dialog-content>
+          
+              <md-dialog-actions layout="row">
+                    <span flex></span>
+                    <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Cancel</md-button>
+                    <md-button class="md-raised md-primary" ng-click="save()" ng-disabled="loading">Save</md-button>
+              </md-dialog-actions>
+            </form>
+          </md-dialog>
+</script>
+
+<script type="text/ng-template" id="addPayment.html">
+    <md-dialog aria-label="" id="payemntAddBox">
+        <div class="col-sm-12 text-center p20" ng-if="loading">
+            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+        </div>
+        <form ng-cloak ng-if="!loading">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Make Payment Entry</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div flex="100">
+                        <div layout-gt-xs="row">
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Name</label>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <b>{{member.firstName}}  {{member.lastName}}</b>
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-xs="row">
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Member Id</label>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <b>{{member.id}}</b>
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-xs="row">
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <label>Memberership Plan</label>
+                                </md-input-container>
+                                <md-input-container class="md-block" flex-gt-xs>
+                                    <b>{{getMembershipPlanName(member.planId)}}</b>
+                                </md-input-container>
+                            </div>
+                        <div layout-gt-xs="row">
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Total Amount</label>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <input ng-model="payment.amount" type="text" required  maxlength="50" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-xs="row">
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Amount Due</label>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <input ng-model="payment.dueAmount" type="text" required  maxlength="50" disabled>
+                            </md-input-container>
+                        </div>
+                        <div layout-gt-xs="row">
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <label>Amount Paid</label>
+                            </md-input-container>
+                            <md-input-container class="md-block" flex-gt-xs>
+                                <input ng-model="payment.amountPaid" type="text" required positive-number maxlength="10">
+                            </md-input-container>
+                        </div>
+                    </div>    
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Cancel</md-button>
+                    <md-button class="md-raised md-primary" ng-click="savePayment()" ng-disabled="loading">Make Payment</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="paymentHistory.html">
+    <md-dialog aria-label="" id="payemntAddBox">
+        <div class="col-sm-12 text-center p20" ng-if="loading">
+            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+        </div>
+        <form ng-cloak ng-if="!loading">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Payment History</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div flex="100">
+                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                        </div>
+                        <div class="col-sm-12" ng-if="!loading && transactionHistory.length == 0">
+                            <label><b>No Data Available</b></label>
+                        </div> 
+                        <div class="table-responsive" id="listTable" ng-if="!loading && transactionHistory.length > 0">
+                            <table class="table table-hover">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Date</th>
+                                        <th>Membership Plan</th>
+                                        <th>Amount Paid</th>
+                                        <th>Amount Due</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="transaction in transactionHistory">
+                                        <th scope="row">
+                                            {{$index + 1}}
+                                        </th>
+                                        <td>{{getDateString(transaction.dateCreated)}}</td>
+                                        <td>{{getMembershipPlanName(transaction.membershipPlanId)}}</td>
+                                        <td>{{transaction.amountPaid}}</td>
+                                        <td>{{transaction.amountDue}}</td>
+                                        <td>{{transaction.description}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>    
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+
+
+<script type="text/ng-template" id="mapTemplate.html">
+    <div class="row" style="min-width=290px;">
+            <map id="map_canvas" lat="{{mapsAttitude.lat}}" long="{{mapsAttitude.long}}"></map>
+    </div>    
+</script>

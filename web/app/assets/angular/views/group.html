@@ -1,0 +1,117 @@
+<!-- Navigation-->
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper mb40">
+    <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Group</md-truncate>
+                        <span flex></span>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
+                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                            <i class="fa fa-fw fa-refresh"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="editItem($event)">
+                            <md-tooltip md-direction="top">Add New</md-tooltip>
+                            <i class="fa fa-fw fa-plus"></i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+            <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+            </div>
+            <div class="col-sm-12 groupTableDiv mt10" ng-if="!listLoading" id="listTable">
+                <table class="table table-hover table-responsive ">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>#</th>
+                            <th>Icon</th>
+                            <th>Group Name</th>
+                            <th>Description</th>
+                            <th>Total Group Members</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="" ng-repeat="group in groups">
+                            <th scope="row">{{$index + 1}}</th>
+                            <td>
+                              <div class="avatar">
+                                  <img ng-src="{{group.icon_url}}" alt=""></img>
+                              </div>
+                            </td>
+                            <td>{{group.name}}</td>
+                            <td>{{group.description}}</td>
+                            <td>{{group.accountId * $index}}</td>
+                            <td>
+                                <a href="" ng-click="editItem($event, group.id)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Edit</md-tooltip></a>
+                                <a href="" ng-click="viewMembers($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View Members</md-tooltip></a>
+                                <a href="" ng-click="delete(group.id)"><i class="fa fa-fw fa-trash  color-red"></i><md-tooltip md-direction="top">Delete</md-tooltip></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+
+<script type="text/ng-template" id="addGroup.html">
+    <md-dialog aria-label="" id="addGroupBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2 ng-if="group.id == null">Add New Group</h2>
+                    <h2 ng-if="group.id != null">Edit Group</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div class="col-sm-12 text-center" ng-if="loading">
+                        <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                    </div>    
+                    <div layout="row" layout-wrap ng-if="!loading">
+                        <div flex="100">
+                            <md-input-container class="md-block">
+                                <label>Group Name</label>
+                                <input class="form-control" ng-model="group.name" maxlength="45"/>
+                            </md-input-container>
+                        </div>
+                        <div flex="100">
+                            <md-input-container class="md-block">
+                                <label>Group Description</label>
+                                <input class="form-control" ng-model="group.description" maxlength="255"/>
+                            </md-input-container>
+                        </div>
+                        <div flex="100">
+                            <md-input-container class="md-block">
+                                <label>Group Icon</label>
+                                <md-select ng-model="group.icon_url">
+                                    <md-option ng-repeat="icon in icons" value="{{icon}}">
+                                      <div class="avatar">
+                                        <a href="" ng-click="setIcon(icon)"><img ng-class="group.icon_url == icon ? 'borderBlack' : ''"ng-src="{{icon}}" alt=""></img></a>
+                                      </div>
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+
+            <md-dialog-actions layout="row" ng-if="!loading">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()">Cancel</md-button>
+                <md-button class="md-raised md-primary" ng-click="addGroup()">Save</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>

@@ -1,0 +1,195 @@
+<!-- Navigation-->
+  <div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+  <div class="content-wrapper  mb40">
+      <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Advanced Setting</md-truncate>
+                        <span flex></span>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
+                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                            <i class="fa fa-fw fa-refresh"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="addItem($event)">
+                            <md-tooltip md-direction="top">Add New</md-tooltip>
+                            <i class="fa fa-fw fa-plus"></i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+            <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+            </div>
+            <div class="col-sm-12 groupTableDiv mt10" ng-if="!listLoading" id="listTable">
+                
+            </div>
+        </div>
+      </div>  
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+
+<script type="text/ng-template" id="addCustomField.html">
+<md-dialog aria-label="" id="addCustomFieldBox">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 ng-if="plan.id == null">Add Custom Field</h2>
+		<h2 ng-if="plan.id != null">Edit Custom Field</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="close()">
+          <i class="fa fa-fw fa-remove color-black"></i>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <div class="row">
+                <div class="col-sm-6 p20 bg-white">
+                    <div  class="col-sm-12">
+                        <md-input-container class="md-block">
+                            <label>Field Type</label>
+                            <md-select ng-model="field.typeId" ng-change="resetResponse()">
+                                <md-option ng-repeat="type in types" value="{{type.id}}">
+                                    {{type.name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+                    <div class="col-sm-12">
+                        <md-input-container class="md-block mt40">
+                            <label>Field Name</label>
+                            <input ng-model="field.name" type="text">
+                        </md-input-container>
+                    </div>
+                    <div  class="col-sm-12">
+                        <md-input-container class="md-block">
+                            <label>Field Description</label>
+                            <input ng-model="field.description" type="text">
+                        </md-input-container>
+                    </div>
+                    <div  class="col-sm-12">
+                        <md-input-container class="md-block">
+                            <label>Field Code</label>
+                            <input ng-model="field.code" type="text">
+                        </md-input-container>
+                    </div>
+                    <div  class="col-sm-12">
+                        <md-input-container class="md-block">
+                            <label>Required</label>
+                            <md-select ng-model="field.required">
+                                <md-option value="1">Yes</md-option>
+                                <md-option value="0">No</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+                </div>
+                <div class="col-sm-6 p20" id="customTypeContent">
+                    <div class="row" ng-if="field.typeId == null">
+                        <div flex="100">
+                            <h5>Field Type Option</h5>
+                        </div>
+                        <div class="col-sm-6 mt15">
+                            <span class="fa fa-file-text-o fa-lg fs40" ng-click="field.typeId = 1"></span><br/>
+                            <span class="strong">Text Field</span><br/>
+                            <span>A basic text field that can be used to enter text and number.</span><br/>
+                        </div>
+                        <div class="col-sm-6 mt15">
+                            <span class="fa fa-check-circle fa-lg fs40" ng-click="field.typeId = 4"></span><br/>
+                            <span class="strong">Radio List</span><br/>
+                            <span>Radio set list, good for single select data.</span><br/>
+                        </div>
+                        <div class="col-sm-6 mt15">
+                            <span class="fa fa-check-square-o fa-lg fs40" ng-click="field.typeId = 5"></span><br/>
+                            <span class="strong">Checkbox List</span><br/>
+                            <span>A multiple select option.</span><br/>
+                        </div>
+                        <div class="col-sm-6 mt15">
+                            <span class="fa fa-chevron-circle-down fa-lg fs40" ng-click="field.typeId = 6"></span><br/>
+                            <span class="strong">Select List</span><br/>
+                            <span>A single select option.</span><br/>
+                        </div>
+                        <div class="col-sm-6 mt15">
+                            <span class="fa fa-align-justify fa-lg fs40"  ng-click="field.typeId = 7"></span><br/>
+                            <span class="strong">Multiple Select List</span><br/>
+                            <span>This is a multi select option that's good for long lists.</span><br/>
+                        </div>
+                        <div class="col-sm-6 mt15">
+                            <span class="fa fa-cloud-upload fa-lg fs40"  ng-click="field.typeId = 2"></span><br/>
+                            <span class="strong">File Upload</span><br/>
+                            <span>A basic single file upload.</span><br/>
+                        </div>
+                    </div>
+                    <div  ng-if="field.typeId == 1 || field.typeId == 3">
+                        <div flex="100" class="col-sm-12">
+                            <h5>Field Size</h5>
+                        </div>
+                        <div flex="50" class="col-sm-12 mt15">
+                            <div class="input-group">
+                                <div class="col-sm-6">
+                                    <input type="radio" id="textType1" ng-model="field.class" value="col-sm-6">   Small</input>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="radio" id="textType2" ng-model="field.class" value="col-sm-12">   Large</input>
+                                </div>
+                            </div>
+                        </div>
+                        <div flex="100" class="col-sm-12 mt15">
+                            <textarea class="{{field.class}}" rows="2" disabled></textarea>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="field.typeId == 2">
+                        <div class="col-sm-12">
+                            <div class="col-sm-12">
+                                <i class="fa fa-file-image-o fs50"></i>
+                            </div>
+                            <div class="col-sm-12 mt15">
+                                <div class="input-group">
+                                    <input type="file" class="form-control" disabled="disabled"/><button class="btn btn-primary">Upload</button>
+                                </div>
+                                <p class="green-font col-sm-12 p0 mt5 text-justify ng-binding">
+                                    <strong class="ng-binding">NOTE:</strong> This Custom Field Type will display the file path to the document as well as a thumbnail, file name and file size. It has no additional options.
+                                </p>
+                            </div>    
+                        </div>    
+                    </div>
+                    <div class="row" ng-if="field.typeId == 4 || field.typeId == 5 || field.typeId == 6 || field.typeId == 7">
+                        <div flex="50">
+                            <h4>List Options</h4>
+                        </div>
+                        <div layout-gt-sm="row" ng-repeat="response in field.response" ng-class="$index == 0 ? 'mt15' : ''">
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Name</label>
+                                <input ng-model="response.name"/>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Value</label>
+                                <input ng-model="response.value"/>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex-gt-sm>
+                                <label>Code</label>
+                                <input ng-model="response.code"/>
+                            </md-input-container>
+                            <md-input-container>
+                                <i class="fa fa-remove" ng-click="removeOption($index)"></i>
+                            </md-input-container>
+                        </div>
+                        <div flex="50">
+                            <a href="" class="addOtherOption fa  fa-plus-circle" ng-click="addOption()"> ADD ANOTHER OPTION</a>
+                        </div>
+                    </div>    
+                </div>
+            </div>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+    	<span flex></span>
+        	<md-button class="md-raised" ng-disabled="loading" ng-click="close()">Cancel</md-button>
+        	<md-button class="md-raised md-primary" ng-disabled="loading" ng-click="save()">Save</md-button>
+    	</md-dialog-actions>
+  	</form>
+</md-dialog>
+</script>

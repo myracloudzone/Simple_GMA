@@ -1,0 +1,129 @@
+<!-- Navigation-->
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper mb40">
+    <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Membership Plan</md-truncate>
+                        <span flex></span>
+						<md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
+                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                            <i class="fa fa-fw fa-refresh"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="editItem($event)">
+                            <md-tooltip md-direction="top">Add New</md-tooltip>
+                            <i class="fa fa-fw fa-plus"></i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+			      <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+            </div>
+            <div class="col-sm-12 subscriptionTableDiv mt10" ng-if="!listLoading" id="listTable">
+              	<table class="table table-hover table-responsive ">
+                  	<thead class="thead-inverse">
+                      	<tr>
+							<th>#</th>
+							<th>Name</th>
+							<th>Type</th>
+							<th>SignUp Fee</th>
+							<th>Fee</th>
+							<th>Created</th>
+							<th>Action</th>
+                    	</tr>
+                  	</thead>
+                  	<tbody>
+						<tr class="" ng-repeat="plan in plans">
+							<th scope="row">{{$index+1}}</th>
+							<td>{{plan.name}}<md-tooltip md-direction="bottom">{{plan.name}}</md-tooltip></td>
+							<td>{{getPlanTypeName(plan.typeId)}}</td>
+							<td>{{plan.signup_fee}}</td>
+							<td>{{plan.amount}}</td>
+							<td>{{getDateString(plan.dateCreated)}}</td>
+							<td>
+								<a href="" ng-click="editItem($event, plan.id)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Edit</md-tooltip></a>
+								<!-- <a href="" ng-click="copyItem($event)"><i class="fa fa-fw fa-copy color-black"></i><md-tooltip md-direction="top">Copy</md-tooltip></a> -->
+								<a href="" ng-click="deleteItem($event, plan.id)"><i class="fa fa-fw fa-remove  color-red"></i><md-tooltip md-direction="top">Delete</md-tooltip></a>
+							</td>
+						</tr>
+                  	</tbody>
+              	</table>
+            </div>
+			<div class="col-sm-12 p0" ng-if="!listLoading">
+                <div class="col-sm-6 pull-left paginator">
+                	<ul class="pull-left" uib-pagination total-items="rowCount" max-size="pageSize" class="pagination-sm" boundary-links="true" rotate="false" ng-model="pagination.page" ng-change="fetchData()"></ul>
+                </div>
+				<div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+
+
+
+
+<script type="text/ng-template" id="editSubscription.html">
+<md-dialog aria-label="">
+  <form ng-cloak>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 ng-if="plan.id == null">Add Membership Plan</h2>
+		<h2 ng-if="plan.id != null">Edit Membership Plan</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="close()">
+          <i class="fa fa-fw fa-remove color-black"></i>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <div layout="row" layout-wrap>
+          <div flex="100">
+              <md-input-container class="md-block">
+                <label>Name</label>
+                <input ng-model="plan.name">
+              </md-input-container>
+          </div>
+          <div flex="100">
+            <md-input-container class="md-block">
+              <label>Fee</label>
+              <input ng-model="plan.amount" type="number">
+            </md-input-container>
+          </div>
+		  <div flex="100">
+            <md-input-container class="md-block">
+              <label>SignUp Fee</label>
+              <input ng-model="plan.signup_fee" type="number">
+            </md-input-container>
+          </div>
+          <div flex="100">
+            <md-input-container class="md-block">
+              <label>Description</label>
+              <textarea ng-model="plan.description" type="textarea"/>
+            </md-input-container>
+          </div>
+          <div flex="100">
+            <md-input-container class="md-block" flex-gt-sm>
+              <label>Type</label>
+              <md-select ng-model="plan.typeId" ng-disabled="plan.id != null">
+                <md-option ng-repeat="planType in planTypes" value="{{planType.id}}">
+                  {{planType.name}}
+                </md-option>
+              </md-select>
+            </md-input-container>
+          </div>
+        </div>
+      </div>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+    	<span flex></span>
+        	<md-button class="md-raised" ng-disabled="loading" ng-click="close()">Cancel</md-button>
+        	<md-button class="md-raised md-primary" ng-disabled="loading" ng-click="save()">Save</md-button>
+    	</md-dialog-actions>
+  	</form>
+</md-dialog>
+</script>

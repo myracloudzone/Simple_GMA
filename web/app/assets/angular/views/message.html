@@ -1,0 +1,163 @@
+<!-- Navigation-->
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper mt50 mb40">
+    <div class="container-fluid">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Message</md-truncate>
+                        <span flex></span>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
+                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                            <i class="fa fa-fw fa-refresh"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="add($event, '')">
+                            <md-tooltip md-direction="top">Add</md-tooltip>
+                            <i class="fa fa-fw fa-plus"></i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+            <div class="col-sm-12 subscriptionTableDiv mt10">
+              <uib-tabset active="active">
+                <uib-tab index="0" heading="Inbox">
+                  <table class="table table-hover table-responsive ">
+                      <thead class="thead-inverse">
+                          <tr>
+                              <th>#</th>
+                              <th class="wp20">Date</th>
+                              <th>From</th>
+                              <th class="wp40">Message</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr class="">
+                              <th scope="row">1</th>
+                              <td>28/Sep/2017 12:34:22</td>
+                              <td>Rahul</td>
+                              <td>Hi Rahul</td>
+                              <td class="">
+                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                                <a href="" ng-click="reply($event)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Reply</md-tooltip></a>
+                              </td>
+                          </tr>
+                          <tr class="">
+                              <th scope="row">2</th>
+                              <td>28/Sep/2017 12:34:22</td>
+                              <td>Rahul</td>
+                              <td>Hi Rahul</td>
+                              <td class="">
+                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                                <a href="" ng-click="reply($event)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Reply</md-tooltip></a>
+                              </td>
+                          </tr>
+                          <tr class="">
+                              <th scope="row">3</th>
+                              <td>28/Sep/2017 12:34:22</td>
+                              <td>Rahul</td>
+                              <td>Hi Rahul</td>
+                              <td class="">
+                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                                <a href="" ng-click="reply($event)"><i class="fa fa-fw  fa-mail-reply color-black"></i><md-tooltip md-direction="top">Reply</md-tooltip></a>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </uib-tab>
+                <uib-tab index="1" select="alertMe()">
+                  <uib-tab-heading>
+                    <i class="glyphicon glyphicon-bell"></i>Sent
+                  </uib-tab-heading>
+                  <table class="table table-hover table-responsive ">
+                      <thead class="thead-inverse">
+                          <tr>
+                              <th>#</th>
+                              <th class="wp15">To</th>
+                              <th class="wp40">Message</th>
+                              <th>Sender</th>
+                              <th>Sent Date</th>
+                              <th>Action</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr class="">
+                              <th scope="row">1</th>
+                              <td>Rahul</td>
+                              <td>Hi Rahul</td>
+                              <td>Akshay</td>
+                              <td>28/Sep/2017 12:34:22</td>
+                              <td class="">
+                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                              </td>
+                          </tr>
+                          <tr class="">
+                              <th scope="row">2</th>
+                              <td>Vineet</td>
+                              <td>Hi Vineet</td>
+                              <td>Akshay</td>
+                              <td>28/Sep/2017 12:34:22</td>
+                              <td class="">
+                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                              </td>
+                          </tr>
+                          <tr class="">
+                              <th scope="row">3</th>
+                              <td>Vineet</td>
+                              <td>Hi Vineet</td>
+                              <td>Akshay</td>
+                              <td>28/Sep/2017 12:34:22</td>
+                              <td class="">
+                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </uib-tab>
+              </uib-tabset>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+
+<script type="text/ng-template" id="messageAdd.html">
+    <md-dialog aria-label="" id="addMsgBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>	New Message</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div layout="row" layout-wrap>
+                        <div flex="100">
+                            <md-input-container class="md-block">
+                                <label>To:</label>
+                                <input ng-model="member.name">
+                            </md-input-container>
+                        </div>
+                        <div flex="100">
+                            <md-input-container class="md-block">
+                                <label>Message: </label>
+                                <textarea ng-model="plan.description" type="textarea" rows="5"/>
+                            </md-input-container>
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+        </form>
+        <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()">Cancel</md-button>
+                <md-button class="md-raised md-primary">Save</md-button>
+            </md-dialog-actions>
+    </md-dialog>
+</script>

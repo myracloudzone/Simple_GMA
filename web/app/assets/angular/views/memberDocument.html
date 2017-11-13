@@ -1,0 +1,58 @@
+<md-dialog aria-label="" id="documentBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Documents</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content dialogContentBox">
+                    <div flex="100">
+                        <md-tabs md-dynamic-height md-border-bottom>
+                            <md-tab label="New Document" md-on-select="listView = false;">
+                                <div class="text-center mt10 pr10" flex="100">
+                                    <upload callback="updateUploadedDocument(response)" closebtnaction="showUploadBox()" url="{{fileUploadUrl}}" file-types="{{fileTypesForUpload}}" params = "{'memberId' : {{member.id}} }"></upload>
+                                </div>
+                            </md-tab>
+                            <md-tab label="Document List" md-on-select="getMemberDocuments()">
+                                <md-content class="md-padding row m10 plr15 mt15">
+                                    <div class="col-sm-12" ng-if="!loading && documents.length == 0">
+                                        <label><b>No File Available.</b></label>
+                                    </div>
+                                    <div flex="100" ng-if="loading">
+                                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                    </div>  
+                                    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 p0" ng-repeat="doc in documents" ng-if="!loading && documents.length > 0">
+                                        <div class="card">
+                                            <p class="text-center">
+                                                <img class="card-img-top documentImage" ng-if="getFileType(doc.fileName) == 1" src="/app/assets/angular/images/doc-icon.png" alt=""/>
+                                                <img class="card-img-top documentImage" ng-if="getFileType(doc.fileName) == 2" ng-src="{{doc.filePath}}" alt="{{doc.filePath}}">
+                                            </p>
+                                            <div class="card-block">
+                                                <h6 class="card-title mb0 text-ellipses text-center">{{doc.fileName}}<md-tooltip md-direction="top">{{doc.fileName}}</md-tooltip></h6>
+                                                <p class="documentCloseButton mb0 text-center">
+                                                    <a target="_self" class="color-black" href="{{doc.filePath}}" download="{{doc.fileName}}"><i class="fa fa-download fa-lg"><md-tooltip md-direction="top">Download Document</md-tooltip></i></a>
+                                                    <a class="color-black" href="" ng-click="deleteFile(doc.actualPath)"><i class="fa fa-remove fa-lg"><md-tooltip md-direction="top">Delete Document</md-tooltip></i></a>
+                                                </p>
+                                            </div>
+                                        </div>    
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                        </md-tabs>
+                    </div>    
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span ng-if="listView && !loading" class="color-black">{{documents.length > 1 ? (documents.length + ' Files') : (documents.length + ' File')}}</span>
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>

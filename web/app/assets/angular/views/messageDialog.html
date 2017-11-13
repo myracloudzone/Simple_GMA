@@ -1,0 +1,74 @@
+<md-dialog aria-label="" id="messageDialogBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Message</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content dialogContentBox">
+                    <div flex="100">
+                        <md-tabs md-dynamic-height md-border-bottom>
+                            <md-tab label="SMS" md-on-select="isSmsMode = true">
+                                <md-content class="mt15">
+                                    <div flex="100" class="plr15">
+                                        <md-input-container class="md-icon-float md-block">
+                                            <!-- Use floating label instead of placeholder -->
+                                            <label>Name</label>
+                                            <md-icon md-font-icon="fa-user" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.memberName" disable-key type="text"/>
+                                        </md-input-container>
+                                    
+                                        <md-input-container md-no-float class="md-block">
+                                            <md-icon md-font-icon="fa-phone" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.memberMobile" disable-key type="text" placeholder="Phone Number"/>
+                                        </md-input-container>
+                                    
+                                        <md-input-container class="md-block">
+                                            <md-icon md-font-icon="fa-envelope" class="fa fa-lg"></md-icon>
+                                            <textarea ng-model="message.smsContent" placeholder="Message" md-maxlength="160" max-length="160"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                            <md-tab label="EMAIL" md-on-select="isSmsMode = false">
+                                <md-content class="mt15">
+                                    <div flex="100" class="plr15">
+                                        <md-input-container class="md-icon-float md-block">
+                                            <!-- Use floating label instead of placeholder -->
+                                            <label>Name</label>
+                                            <md-icon md-font-icon="fa-user" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.memberName" disable-key type="text"/>
+                                        </md-input-container>
+                                    
+                                        <md-input-container md-no-float class="md-block">
+                                            <md-icon md-font-icon="fa-address-card" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.memberEmail" disable-key type="text" placeholder="Email"/>
+                                        </md-input-container>
+                                        <md-input-container md-no-float class="md-block">
+                                            <md-icon md-font-icon="fa-bandcamp" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.emailContent.subject" type="text" placeholder="Subject" max-length="50"/>
+                                        </md-input-container>
+                                    
+                                        <md-input-container class="md-block">
+                                            <md-icon md-font-icon="fa-envelope" class="fa fa-lg"></md-icon>
+                                            <textarea ui-tinymce="tinymceOptions" ng-model="message.emailContent.msg"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                        </md-tabs>
+                    </div>    
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+                <md-button class="md-raised md-primary" ng-click="sendMessage()" ng-disabled="loading">Send</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
