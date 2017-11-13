@@ -1,16 +1,16 @@
-var sender = 'infoobjecttesting@gmail.com'   // The emailto use in sending the email
-var password = '9352432900'  // password of the email to use
 var nodeMailer = require("nodemailer");
 var fs = require('fs');
 var handlebars = require('handlebars');
 var barcode = require('barcode');
 var config = require('../scripts/config.json');
+var systemVariable = require(config.outputFolder+'/variable.json');
 var moment = require('moment');
 const path = require('path');
 // Send Grid Email
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
-// sgMail.setApiKey('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');
+sgMail.setApiKey(systemVariable.sendGridKey);
+var sender =  systemVariable.email;  // The emailto use in sending the email
+var password = systemVariable.emailPassword;  // password of the email to use
 
 
 // create reusable transport method (opens pool of SMTP connections)
@@ -59,7 +59,6 @@ var readHTMLFile = function(path, callback) {
 var sendMemberRegistrationEmail = function(data) {
     var fileName = (new Date()).getTime()+'.png';
     var outfile = config.outputFolder + '/tmp/' + fileName;
-    console.log("Member Code is "+data.memberCode)
     var code39 = barcode('code128', {
         data: data.memberCode,
         width: 300,
@@ -102,6 +101,12 @@ var sendMemberRegistrationEmail = function(data) {
                     return;
                 }
                 console.log("mail Sent");
+                fs.unlink(outfile, function(err){
+                    if(err) {
+                        console.log("Error Occurred")
+                    }
+                    console.log("File Deleted Successfully.")
+               });
             });
         });
 
@@ -125,7 +130,6 @@ var sendMessage = function(data) {
 
 function saveMessageHistory(data, status) {
     var now = moment().unix();
-    console.log(data)
     var obj = {};
     obj.type = 1;  // 1 represent Email
     obj.to_address = data.to;
@@ -144,7 +148,7 @@ function saveMessageHistory(data, status) {
 }
 
 var sendSendGridEmail = function(to, subject, body) {
-    var sendGridFrom = 'no-reply@gymprosolution.com';
+    var sendGridFrom = systemVariable.sendGridEmail;
     const msg = {
         to: to,
         from: sendGridFrom,
@@ -152,7 +156,6 @@ var sendSendGridEmail = function(to, subject, body) {
         text: 'and easy to do anywhere, even with Node.js',
         html: body,
     };
-    console.log("--------------------Sending Email--------------------");
     sgMail.send(msg);
 }
 
