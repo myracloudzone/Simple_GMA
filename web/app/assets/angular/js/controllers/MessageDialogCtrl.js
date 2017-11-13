@@ -1,4 +1,4 @@
-var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDialog', '$filter', 'notificationService', 'GlobalMethodService', 'GlobalVariableService', 'MemberService','EmailService', 'member', function($scope, $mdDialog, $filter, notificationService, GlobalMethodService, GlobalVariableService, MemberService, EmailService, member){
+var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDialog', '$filter', 'notificationService', 'GlobalMethodService', 'GlobalVariableService', 'MemberService','EmailService', 'SmsService', 'member', function($scope, $mdDialog, $filter, notificationService, GlobalMethodService, GlobalVariableService, MemberService, EmailService, SmsService, member){
     $scope.member = member;
     $scope.isSmsMode = true;
 
@@ -28,6 +28,18 @@ var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDia
         }
         return true;
     }
+
+    $scope.validateSmsContent = function() {
+        if(GlobalMethodService.isEmptyString($scope.message.memberMobile)) {
+            notificationService.error('Mobile No. is required.');
+            return false;
+        } else if(GlobalMethodService.isEmptyString($scope.message.smsContent)) {
+            notificationService.error('Message is required.');
+            return false;
+        }
+        return true;
+    }
+
     $scope.sendMessage = function() {
         if($scope.isSmsMode == false) {
             if(!$scope.validateEmailContent()) {
@@ -45,7 +57,19 @@ var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDia
                 notificationService.error("Error Occurred.");
             });
         } else {
-            
+            if(!$scope.validateSmsContent()) {
+                return;
+            }
+            var msgObject = {};
+            msgObject.mobileNumbers = [$scope.message.memberMobile];
+            msgObject.msg = $scope.message.smsContent;
+            msgObject.memberId = $scope.message.memberId;
+            SmsService.sendMessage(msgObject, function(data) {
+                notificationService.success("SMS Sent.");
+                $scope.close();
+            }, function(error) {
+                notificationService.error("Error Occurred.");
+            });
         }
     }
 
