@@ -25,20 +25,21 @@ module.exports = {
         return text;
     },
     getMembershipEndDate : function(typeId, dateString) {
-        var startDate = new Date(moment(dateString, "DD/MM/YYYY HH:mm:ss").valueOf());
+        // var startDate = new Date(moment(dateString, "DD/MM/YYYY HH:mm:ss").valueOf());
+        var startDate = moment(dateString, "DD/MM/YYYY HH:mm:ss");
         if(typeId == 1) {
-            startDate.setTime(startDate.getTime() + 24*60*60*1000);
+            // startDate.setTime(startDate.getTime() + 24*60*60*1000);
         } else if(typeId == 2) {
-            startDate.setTime(startDate.getTime() + 168*60*60*1000);
+            // startDate.setTime(startDate.getTime() + 168*60*60*1000);
         } else if(typeId == 3) {
-            startDate.setTime(startDate.getTime() + 720*60*60*1000);
+            startDate.add(1, 'M');
         } else if(typeId == 4) {
-            startDate.setTime(startDate.getTime() + 2160*60*60*1000);
+            startDate.add(1, 'Q');
         } else if(typeId == 5) {
-            startDate.setTime(startDate.getTime() + 4320*60*60*1000);
+            startDate.add(2, 'Q');
         } else if(typeId == 6) {
-            startDate.setTime(startDate.getTime() + 8640*60*60*1000);
+            startDate.add(1, 'y');
         }
-        return startDate; 
+        return new Date(startDate.valueOf()); 
     }
 }    
