@@ -2,7 +2,7 @@ GMApp.config(['$routeProvider', '$stateProvider', '$locationProvider','notificat
   function($routeProvider, $stateProvider, $locationProvider, notificationServiceProvider, $urlRouterProvider, $httpProvider) {
     notificationServiceProvider.setDefaults({
         history: false,
-        delay: 2000,
+        delay: 4000,
         closer: true,
         closer_hover: true  
     });

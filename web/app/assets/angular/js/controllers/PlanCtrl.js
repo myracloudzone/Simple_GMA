@@ -53,7 +53,7 @@ var PlanCtrl = GMApp.controller('PlanCtrl', ['$scope', '$rootScope','$mdDialog',
     $scope.editItem = function(ev, id) {
       	$mdDialog.show({
 			controller : function($scope, $mdDialog, PlanService, notificationService,GlobalMethodService){
-				$scope.planTypes = [{id: null, name: 'None'},{id: 1, name: 'Daily'},{id: 2, name: 'Weekly'},{id: 3, name: 'Monthly'},{id: 4, name: 'Quarterly'},{id: 5, name: 'Half-Yearly'},{id: 6, name: 'Yearly'}];
+				$scope.planTypes = [{id: null, name: 'None'}, {id: 3, name: 'Monthly'},{id: 4, name: 'Quarterly'},{id: 5, name: 'Half-Yearly'},{id: 6, name: 'Yearly'}];
 				$scope.loading = true;
 				$scope.plan = {};
 				$scope.getObject = function() {

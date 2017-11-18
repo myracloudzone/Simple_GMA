@@ -1,0 +1,67 @@
+<md-dialog aria-label="" id="messageDialogBox">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Membership</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()">
+                    <i class="fa fa-fw fa-remove color-black"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content dialogContentBox">
+                <div flex="100">
+                    <md-content class="mt15">
+                        <div flex="100" class="plr15">
+                            <md-input-container class="md-icon-float md-block">
+                                <!-- Use floating label instead of placeholder -->
+                                <label>Name</label>
+                                <md-icon md-font-icon="fa-user" class="fa fa-lg"></md-icon>
+                                <input ng-model="membership.name" disable-key type="text" ng-disabled="membershipChangeNotAllowed"/>
+                            </md-input-container>
+                            <md-input-container class="md-icon-float md-block">
+                                <!-- Use floating label instead of placeholder -->
+                                <label>Current Membership Plan</label>
+                                <md-icon md-font-icon="fa-houzz" class="fa fa-lg"></md-icon>
+                                <input disable-key type="text" value="{{getMembershipPlanName(membership.currentPlanId)}}" ng-disabled="membershipChangeNotAllowed"/>
+                            </md-input-container>
+                            <md-input-container class="md-icon-float md-block">
+                                <!-- Use floating label instead of placeholder -->
+                                <label>Membership Start Date</label>
+                                <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
+                                <input value="{{getDateString(membership.currentMembershipStartDate)}}" disable-key type="text" ng-disabled="membershipChangeNotAllowed"/>
+                            </md-input-container>
+                            <md-input-container class="md-icon-float md-block">
+                                <!-- Use floating label instead of placeholder -->
+                                <label>Membership End Date</label>
+                                <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
+                                <input value="{{getDateString(membership.currentMembershipEndDate)}}" disable-key type="text" ng-disabled="membershipChangeNotAllowed"/>
+                            </md-input-container>
+                            <md-input-container class="md-icon-float md-block">
+                                <!-- Use floating label instead of placeholder -->
+                                <label>New Membership Plan</label>
+                                <md-icon md-font-icon="fa-houzz" class="fa fa-lg"></md-icon>
+                                <md-select ng-model="membership.planId" required ng-disabled="membershipChangeNotAllowed">
+                                    <md-option ng-repeat="plan in plans" value="{{plan.id}}"  ng-click="changeRatePlan(plan)">
+                                        {{plan.name}}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                            <div class="signuptoggleMembership">
+                                <md-switch ng-model="membership.isSignUpFee" aria-label="SignUp Fee Applied" ng-disabled="membershipChangeNotAllowed">
+                                        Apply Signup Fee
+                                </md-switch>
+                            </div>
+                        </div>
+                    </md-content>
+                </div>    
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <span flex></span>
+            <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+            <md-button class="md-raised md-primary" ng-click="updateMembership($event)" ng-disabled="loading || membershipChangeNotAllowed">Save</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

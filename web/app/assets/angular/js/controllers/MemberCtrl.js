@@ -376,13 +376,30 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			$scope.plans = plans;
 			$scope.loading = true;
 			$scope.payment = {};
+			$scope.isRefundMode = false;
 			$scope.getMembershipPlan = function() {
 				MembershipService.getByMemberId({id : $scope.member.id}, function(data) {
 					$scope.payment = data;
-					$scope.payment.amount = $scope.payment.dueAmount;
+					$scope.payment.amount = $scope.payment.amount;
+					$scope.payment.prevDue = $scope.payment.dueAmount;
+					if(parseFloat($scope.payment.dueAmount) < 0) {
+						$scope.isRefundMode = true;
+					}
 					$scope.loading = false;
 				})
 			}
+
+			$scope.makeRefund = function() {
+				MembershipService.refundAmount({memberId : $scope.member.id}, function(response) {
+					if(response != null) {
+						notificationService.success("Successfully Updated.");
+						$scope.close(response);
+					} else {
+						notificationService.error("Error Occurred.");
+					}
+				});
+			}
+			
 			$scope.savePayment = function() {
 				if($scope.payment.amountPaid == null || isNaN($scope.payment.amountPaid == null) || parseFloat($scope.payment.amountPaid) <= 0) {
 					notificationService.error('Amount Paid should be greater than 0.');
@@ -416,14 +433,14 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			};
 			$scope.$watch('payment.amountPaid', function(newValue, oldValue) {
 				if(newValue != null && newValue != ''){
-					var temp = parseInt($scope.payment.amount) - parseInt(newValue);
+					var temp = parseInt($scope.payment.prevDue) - parseInt(newValue);
 					if(temp < 0){
 						$scope.payment.amountPaid = oldValue;
 					} else {
 						$scope.payment.dueAmount = temp;
 					}
 				} else {
-					$scope.payment.dueAmount = $scope.payment.amount;
+					$scope.payment.dueAmount = $scope.payment.prevDue;
 				}
 			}, true)
 		  },
@@ -550,6 +567,30 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			
 			}, function() {
 		});
+		$rootScope.dialogList.push(dialog);
+	}
+
+	$scope.manageMemberShip = function(ev) {
+		if($scope.selectedmember.id == null) {
+			return;
+		}
+		var dialog = $mdDialog.show({
+			controller : 'MembershipDialogCtrl',
+			templateUrl: '/app/assets/angular/views/membershipDialog.html',
+			parent: angular.element(document.body),
+			targetEvent: ev,
+			locals: {
+				member : $scope.selectedmember
+			},
+			clickOutsideToClose:true,
+			fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+			})
+			.then(function(answer) {
+				$scope.getMembers();
+			}, function() {
+				$scope.getMembers();
+			}
+		);
 		$rootScope.dialogList.push(dialog);
 	}
 }])

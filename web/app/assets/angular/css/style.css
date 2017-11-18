@@ -744,6 +744,17 @@ tr { outline: none; }
   overflow: hidden;
   text-overflow: ellipsis; 
 }
+.signuptoggleMembership {
+  margin-top: -15px;
+}
+.infoCircle {
+  position: absolute;
+  margin-top: 0px;
+  font-size: 30px;
+}
+.ml50 {
+  margin-left: 50px;
+}
 
 @media (max-width: 420px) {
 	.paginator {
