@@ -202,20 +202,21 @@ module.exports = function (app, cb) {
 
     authenticatUserSession = function (req, res, next) {
         if (req.headers.uuid == null || req.headers.uuid == '' || req.headers.uuid == undefined) {
-            res.status(403).send();
+            res.status(403).send('UUID is required for authentication.');
             return;
         }
         schema = app.get('schema');
-        console.log(req.headers)
         schema.model('UserSession').forge().where({
             uuid: req.headers.uuid,
-            active: 1,
-            accountId : req.headers.account
+            active: 1
+            // accountId : req.headers.account
         }).query(function (qb) {
             qb.debug(false)
         }).fetch().then(function (data) {
             if (data) {
                 var userSession = data.toJSON();
+                req.headers.accountId = userSession.accountId;
+                req.headers.username = userSession.username;
                 var dumpUserSession = _.clone(userSession);
                 currentTime = moment().unix();
                 differenceTime = (currentTime - userSession.lasthit);
