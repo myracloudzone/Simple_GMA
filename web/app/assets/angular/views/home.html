@@ -159,7 +159,10 @@
                             </md-card-title>
                             <div class="container-fluid p0" style="min-height: 300px; overflow: scroll">
                                 <div class="col-xs-12 col-sm-12">
-                                    <div class="row giftDivRow" ng-repeat="member in anniversaryData | orderBy:'firstName'">
+                                    <div class="col-sm-12 text-center p20" ng-if="anniversaryData.length == 0">
+                                        <p class="strong">No Record Found.</p>
+                                    </div> 
+                                    <div class="row giftDivRow" ng-repeat="member in anniversaryData | orderBy:'firstName'"  ng-if="anniversaryData.length > 0">
                                         <div class="col-6 col-sm-6 col-md-6 birthdayTableColumn text-ellipses  pr0">
                                             <i class="fa fa-lg fa-user-circle"><span class="fs16"><md-tooltip md-direction="top">{{member.firstName}} {{member.lastName}}</md-tooltip>  {{member.firstName}} {{member.lastName}}</span></i>
                                         </div>
