@@ -41,5 +41,15 @@ module.exports = {
             startDate.add(1, 'y');
         }
         return new Date(startDate.valueOf()); 
+    },
+    getDocumentName : function(path) {
+        var index = path.indexOf('_____');
+        var name = path.substring((index+5), path.length);
+        return name;
+    },
+    getDocumentRenderPath : function(path) {
+        var renderPath = path.substring(config.outputFolder.length, path.length);
+        return '/media' + renderPath;
     }
+
 }    

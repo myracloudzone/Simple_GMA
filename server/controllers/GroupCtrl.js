@@ -1,41 +1,27 @@
 var schema = require('bookshelf').DB;
 var logger = require('../scripts/logger.js');
+var groupDAO = require('../dao/GroupDAO.js');
+var accountDAO = require('../dao/AccountDAO.js');
 
 module.exports = function(app) {
     var controller = {};
 
     controller.getGroups = function(req, res, next) {
-        schema.model('Group').forge()
-            .where({
-                accountId: req.headers.accountId
-            })
-            .fetchAll().then(function(results) {
-                if (results == null) {
-                    return logger.logResponse(404, "No Record Found.", "No Record Found with given id : "+req.body.id, res, req);
-                } else {
-                    results = results.toJSON();
-                    return logger.logResponse(200, results, null, res, req);
-                }
-            }).catch(function(err) {
-                return logger.logResponse(500, "Error Occured.", err, res, req);
-            })
+        groupDAO.findAll(req.headers.accountId, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, error, error, res, req);
+            }
+            return logger.logResponse(200, data, null, res, req);
+        })
     }
 
     controller.getGroupById = function(req, res, next) {
-        schema.model('Group').forge()
-            .where({
-                id: req.query.id
-            })
-            .fetch().then(function(result) {
-                if (result == null) {
-                    return logger.logResponse(404, "No Record Found.", "No Record Found with given id : "+req.body.id, res, req);
-                } else {
-                    result = result.toJSON();
-                    return logger.logResponse(200, result, null, res, req);
-                }
-            }).catch(function(err) {
-                return logger.logResponse(500, "Error Occured.", err, res, req);
-            })
+        groupDAO.find(req.query.id, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, error, error, res, req);
+            }
+            return logger.logResponse(200, data, null, res, req);
+        })
     }
 
     controller.deleteGroupById = function(req, res, next) {
@@ -56,42 +42,33 @@ module.exports = function(app) {
     }
 
     controller.addGroup = function(req, res, next) {
-        req.body.accountId = 1; // Need to be updated.
+        req.body.accountId = req.headers.accountId;
         if(req.body.id != null) {
-            schema.model('Group').forge().where({
-                id: req.body.id,
-                accountId : req.body.accountId
-            }).fetch().then(function (group) {
-                if (group) {
-                    group.save({
-                        description : req.body.description,
-                        icon_url : req.body.icon_url,
-                        name : req.body.name
-                    }, {
-                        method: 'update',
-                        patch: true,
-                        require: false
-                    }).then(function (result) {
-                        return logger.logResponse(200, result.toJSON(), null, res, req);
-                    }).catch(function (err) {
-                        return logger.logResponse(500, "Error Occured.", err, res, req);
-                    });
-                } else {
-                    return logger.logResponse(404, "No Record Found.", "No Record Found with given id : "+req.body.id, res, req);
+            groupDAO.update(req.body.id, req.headers.accountId, req.body, req, res, function(data, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, error, error, res, req);
                 }
-            }).catch(function (err) {
-                return logger.logResponse(500, "Error Occured.", err, res, req);
-            });
-        } else {
-            schema.model('Group').forge().save(req.body).then(function(group) {
-                if (group) {
-                    return logger.logResponse(200, group.toJSON(), null, res, req);
-                } else {
-                   return logger.logResponse(404, {}, "Not able to create new group.", res, req);
-                }
-            }).catch(function(err) {
-                return logger.logResponse(500, "Error Occured.", err, res, req);
+                return logger.logResponse(200, data, null, res, req);
             })
+        } else {
+            accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, "Error Occured.", error, res, req);
+                }
+                var groupCreditLeft = parseInt(data.group_credit);
+                if(groupCreditLeft > 0) {
+                    groupDAO.save(req.body, req, res, function(data, error, req, res) {
+                        if(error) {
+                            return logger.logResponse(500, error, error, res, req);
+                        }
+                        accountDAO.update(req.headers.accountId, {group_credit : (groupCreditLeft - 1)}, req, res, function(data1, error, req, res) {
+                            return logger.logResponse(200, data, null, res, req);
+                        });  
+                    })  
+                } else {
+                    return logger.logResponse(400, "You account dont have enough credits to create new Group. Please top up credits to create Groups.", "You account dont have enough credits to create new Groups. Please top up credits to create Groups.", res, req);
+                }
+            }); 
         }
     }
 

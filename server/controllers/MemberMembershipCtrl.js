@@ -81,15 +81,6 @@ module.exports = function(app) {
 		});
     }
 
-    function saveTransactionToMember(data, req, res, callback) {
-        schema.model('MemberPaymentTransaction').forge().save(data).then(function(transaction) {
-            callback(transaction, null);        
-        }).catch(function(err) {
-            callback(null, err);
-        })
-
-    }
-
     function updateDueAmountToMember(id, amount, req, res, callback) {
         schema.model('MembershipRateToMember').forge().where({
             id : id,
@@ -236,9 +227,6 @@ module.exports = function(app) {
                             obj.amount = ratePlan.amount;
                             
                             obj.signup_fee_applied = req.body.isSignUpFee == null ? false : req.body.isSignUpFee;
-                            console.log("------------"+req.body.isSignUpFee)
-                            console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                            console.log("------------"+obj.signup_fee_applied)
                             if(!upgrade) {
                                 if(parseFloat(ratePlan.amount) < parseFloat(data.amount)) {
                                     if(data.signup_fee_applied) {
@@ -287,7 +275,8 @@ module.exports = function(app) {
                                     obj.membership_rate_to_member_id = oldMembershipData.id;
                                     obj.date_created = moment().valueOf();
                                     obj.amount = oldMembershipData.due_amount;
-                                    saveTransactionToMember(obj, req, res, function(transactionData, err) {
+                                    obj.accountId = req.headers.accountId;
+                                    membershipDAO.saveTransactionToMember(obj, req, res, function(transactionData, err, req, res) {
                                         if(err) {
                                             return logger.logResponse(500, "Error Occured.", err, res, req);
                                         } else {
@@ -307,7 +296,8 @@ module.exports = function(app) {
                                             obj.membership_rate_to_member_id = newMembershipRatePlan.id;
                                             obj.date_created = moment().valueOf();
                                             obj.amount = newTotalAmount;
-                                            saveTransactionToMember(obj, req, res, function(transactionData, err) {
+                                            obj.accountId = req.body.accountId;
+                                            membershipDAO.saveTransactionToMember(obj, req, res, function(transactionData, err, req, res) {
                                                 if(err) {
                                                     return logger.logResponse(500, "Error Occured.", err, res, req);
                                                 } else {
@@ -380,7 +370,8 @@ module.exports = function(app) {
                     obj.membership_rate_to_member_id = response.id;
                     obj.date_created = moment().valueOf();
                     obj.amount = response.due_amount;
-                    saveTransactionToMember(obj, req, res, function(transactionData, err) {
+                    obj,accountId = req.headers.accountId;
+                    membershipDAO.saveTransactionToMember(obj, req, res, function(transactionData, err, req, res) {
                         if(err) {
                             return logger.logResponse(500, "Error Occured.", err, res, req);
                         } else {
@@ -468,8 +459,9 @@ module.exports = function(app) {
             obj.membership_rate_to_member_id = data.id;
             obj.date_created = moment().valueOf();
             obj.amount = originalAmountDue;
+            obj.accountId = req.headers.accountId;
             console.log(obj)
-            saveTransactionToMember(obj, req, res, function(transactionData, err) {
+            membershipDAO.saveTransactionToMember(obj, req, res, function(transactionData, err, req, res) {
                 if(err) {
                     return logger.logResponse(500, "Error Occured.", err, res, req);
                 } else {

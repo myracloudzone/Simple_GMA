@@ -86,5 +86,15 @@ module.exports = {
 		}).catch(function (err) {
 			success(null, err, req, res);
 		});
+    },
+
+    saveTransactionToMember : function(data, req, res, callback) {
+        schema.model('MemberPaymentTransaction').forge().save(data).then(function(transaction) {
+            callback(transaction, null, req, res);        
+        }).catch(function(err) {
+            callback(null, err, req, res);
+        })
     }
+
+
 }    

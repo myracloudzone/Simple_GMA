@@ -56,7 +56,7 @@ var readHTMLFile = function(path, callback) {
     });
 };
 
-var sendMemberRegistrationEmail = function(data) {
+var sendMemberRegistrationEmail = function(data, callback) {
     var fileName = (new Date()).getTime()+'.png';
     var outfile = config.outputFolder + '/tmp/' + fileName;
     var code39 = barcode('code128', {
@@ -66,8 +66,7 @@ var sendMemberRegistrationEmail = function(data) {
     });
     code39.saveImage(outfile, function (err) {
         if (err)  {
-            console.log(err)
-            return;
+            callback(500, null, err);
         }
         readHTMLFile(__dirname + '/EmailHtml/Registration.html', function(err, html) {
             var template = handlebars.compile(html);
@@ -97,31 +96,32 @@ var sendMemberRegistrationEmail = function(data) {
             }]
             sendMailWithAttachment(data.memberEmail, 'Member Registration', htmlToSend, attachments, function(err, response) {
                 if(err){
-                    console.log(err);
-                    return;
+                    callback(500, null, err);
                 }
-                console.log("mail Sent");
                 fs.unlink(outfile, function(err){
                     if(err) {
                         console.log("Error Occurred")
                     }
                     console.log("File Deleted Successfully.")
-               });
+                });
+                callback(200, "Mail Sent.", err);
             });
         });
 
     });
 }
 
-var sendMessage = function(data) {
+var sendMessage = function(data, callback) {
     readHTMLFile(__dirname + '/EmailHtml/MessageTemplate.html', function(err, html) {
         var htmlToSend = html.replace('{{message}}', data.msg);
         // sendSendGridEmail(data.to, data.subject, htmlToSend);
         sendMail(data.to, data.subject, htmlToSend, function(err, mailData) {
             if(err) {
                 saveMessageHistory(data, 0); // Need to handle this by WebSocket // 0 error
+                callback(500, "Error Occurred.", err);
             } else {
                 saveMessageHistory(data, 1); // Need to handle this by WebSocket // 1 success
+                callback(500, mailData, null);
             }
         })
 
@@ -160,11 +160,11 @@ var sendSendGridEmail = function(to, subject, body) {
 }
 
 module.exports = {
-    sendMail : function(type, data) {
+    sendMail : function(type, data, callback) {
         if(type == 'MEMBER_REGISTRATION') {
-            sendMemberRegistrationEmail(data);
+            sendMemberRegistrationEmail(data, callback);
         } else if(type == 'MESSAGE') {
-            sendMessage(data);
+            sendMessage(data, callback);
         }
     }
 }   
