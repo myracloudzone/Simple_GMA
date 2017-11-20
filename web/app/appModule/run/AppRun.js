@@ -22,6 +22,15 @@ GMApp.run(['$rootScope', '$http', '$window', '$filter', 'ipCookie', '$mdDialog',
 			})
 		})
 
+		if(window.navigator.platform.toLowerCase().indexOf('mac') < 0) {
+			var link = document.createElement( "link" );
+			link.href = location.protocol+'//'+location.host+'/app/assets/angular/css/customScrollBar.css'
+			link.type = "text/css";
+			link.rel = "stylesheet";
+			link.media = "screen,print";
+			document.getElementsByTagName( "head" )[0].appendChild( link );
+		}
+
 		var isSideBarOpen = ipCookie('appSideBar');
 		if(isSideBarOpen) {
 			$("body").toggleClass("sidenav-toggled");
