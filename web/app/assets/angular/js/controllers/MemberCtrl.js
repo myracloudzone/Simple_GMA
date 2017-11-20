@@ -81,7 +81,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 	$scope.getMembers = function() {
 		$scope.listLoading = true;
 		$scope.selectedmember = {id : null};
-		MemberService.list({page : $scope.pagination.page, pageSize : $scope.pageSize, search : $scope.initVariables.search}, function(data) {
+		MemberService.list({page : $scope.pagination.page, pageSize : $scope.pageSize, search : $scope.initVariables.search, active : true}, function(data) {
 			if(data != null && data.data != null) {
 				$scope.members = data.data;
 				$scope.pagination.page = data.pagination.page;
@@ -140,7 +140,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			return '';
 		}
 		date = new Date(parseInt(date));
-		return $filter('date')(date, 'dd/MM/yyyy HH:mm:ss');
+		return $filter('date')(date, 'dd/MM/yyyy');
 	}
 
 	$scope.getMembers();
@@ -342,8 +342,13 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 							$scope.loading = false;
 							$scope.close(member);
 						}, function(error) {
-							$scope.loading = false;
-							notificationService.error('Error Occured');
+							if(error.status == 400) {
+								$scope.loading = false;
+								notificationService.error(error.data);
+							} else {
+								$scope.loading = false;
+								notificationService.error('Error Occured');
+							}
 						})
 					}	
 				}
@@ -399,7 +404,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 					}
 				});
 			}
-			
+
 			$scope.savePayment = function() {
 				if($scope.payment.amountPaid == null || isNaN($scope.payment.amountPaid == null) || parseFloat($scope.payment.amountPaid) <= 0) {
 					notificationService.error('Amount Paid should be greater than 0.');

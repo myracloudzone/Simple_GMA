@@ -21,5 +21,10 @@ GMApp.run(['$rootScope', '$http', '$window', '$filter', 'ipCookie', '$mdDialog',
 				$mdDialog.hide(v);
 			})
 		})
+
+		var isSideBarOpen = ipCookie('appSideBar');
+		if(isSideBarOpen) {
+			$("body").toggleClass("sidenav-toggled");
+		}
     }
 ])

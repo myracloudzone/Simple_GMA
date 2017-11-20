@@ -30,8 +30,12 @@
                     Documents
                 </md-button>
                 <md-button md-no-ink class="md-primary" ng-click="manageMemberShip()">
-                    <md-icon md-font-icon="fa-houzz" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    <md-icon md-font-icon="fa-handshake-o" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Membership
+                </md-button>
+                <md-button md-no-ink class="md-primary" ng-click="messageMember($event)">
+                    <md-icon md-font-icon="fa-envelope" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Message
                 </md-button>
                 <md-menu>
                     <md-button class="md-primary" ng-click="$mdOpenMenu($event)">
@@ -39,23 +43,19 @@
                         Payments
                     </md-button>
                     <md-menu-content width="4">
-                      <md-menu-item>
+                        <md-menu-item>
                         <md-button ng-click="addPayment($event)">
                             Make Payment
                         </md-button>
-                      </md-menu-item>
-                      <md-menu-divider></md-menu-divider>
-                      <md-menu-item>
+                        </md-menu-item>
+                        <md-menu-divider></md-menu-divider>
+                        <md-menu-item>
                         <md-button ng-click="viewPaymentHistory($event)">
-                          Payment History
+                            Payment History
                         </md-button>
-                      </md-menu-item>
+                        </md-menu-item>
                     </md-menu-content>
                 </md-menu>
-                <md-button md-no-ink class="md-primary" ng-click="messageMember($event)">
-                    <md-icon md-font-icon="fa-envelope" class="fa fa-lg md-primary md-hue-2"></md-icon>
-                    Message
-                </md-button>
                 <md-button md-no-ink class="md-primary" ng-click="deleteMember($event, selectedmember.id)">
                     <md-icon md-font-icon="fa-remove" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Delete
@@ -498,7 +498,7 @@
                                         <th>Date</th>
                                         <th>Membership Plan</th>
                                         <th>Total Amount</th>
-                                        <th>Amount Paid</th>
+                                        <th>Amount Paid/Adjust</th>
                                         <th>Amount Due</th>
                                         <th>Description</th>
                                     </tr>

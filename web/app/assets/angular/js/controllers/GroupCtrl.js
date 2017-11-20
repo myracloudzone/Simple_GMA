@@ -79,8 +79,13 @@ var GroupCtrl = GMApp.controller('GroupCtrl', ['$scope', '$rootScope', '$mdDialo
 						notificationService.success("Saved Successfully.");
 						$scope.close(data);
 					}, function(error) {
-						$scope.loading = false;
-						notificationService.error("Error occured while saving.");
+						if(error.status == 400) {
+							$scope.loading = false;
+							notificationService.error(error.data);
+						} else {
+							$scope.loading = false;
+							notificationService.error("Error occured while saving.");
+						}
 					});
 				}
         	},

@@ -15,7 +15,12 @@
                         <md-tabs md-dynamic-height md-border-bottom>
                             <md-tab label="SMS" md-on-select="isSmsMode = true">
                                 <md-content class="mt15">
-                                    <div flex="100" class="plr15">
+                                    <div flex="100" ng-if="loading">
+                                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                    </div> 
+                                    <div flex="100" class="plr15" ng-if="!loading">
                                         <md-input-container class="md-icon-float md-block">
                                             <!-- Use floating label instead of placeholder -->
                                             <label>Name</label>
@@ -37,7 +42,12 @@
                             </md-tab>
                             <md-tab label="EMAIL" md-on-select="isSmsMode = false">
                                 <md-content class="mt15">
-                                    <div flex="100" class="plr15">
+                                    <div flex="100" ng-if="loading">
+                                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                    </div> 
+                                    <div flex="100" class="plr15" ng-if="!loading">
                                         <md-input-container class="md-icon-float md-block">
                                             <!-- Use floating label instead of placeholder -->
                                             <label>Name</label>

@@ -1,11 +1,16 @@
-var NavigationCtrl = GMApp.controller('NavigationCtrl', ['$scope', '$rootScope', function($scope, $rootScope){
+var NavigationCtrl = GMApp.controller('NavigationCtrl', ['$scope', '$rootScope', 'ipCookie', '$state', function($scope, $rootScope, ipCookie, $state){
     $scope.toggleNavbar = function() {
       	if($("body").hasClass("sidenav-toggled")) {
+			ipCookie('appSideBar', true, { expires: 2 });
         	$('.userImage').show();
       	} else {
+			ipCookie('appSideBar', false, { expires: 2 });
         	$('.userImage').hide();
      	}
-      	$("body").toggleClass("sidenav-toggled");
+		$("body").toggleClass("sidenav-toggled");
+		if($state.current.name.indexOf('home') >= 0) {
+			$state.go($state.current.name, $state.params, { reload: true });
+		}
     }
 
     $scope.showUserImage = function() {

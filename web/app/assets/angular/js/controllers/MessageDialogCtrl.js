@@ -1,7 +1,7 @@
 var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDialog', '$filter', 'notificationService', 'GlobalMethodService', 'GlobalVariableService', 'MemberService','EmailService', 'SmsService', 'member', function($scope, $mdDialog, $filter, notificationService, GlobalMethodService, GlobalVariableService, MemberService, EmailService, SmsService, member){
     $scope.member = member;
     $scope.isSmsMode = true;
-
+    $scope.loading = false;
     $scope.tinymceOptions = {
         plugins: 'link image code',
         toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code'
@@ -50,11 +50,17 @@ var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDia
             msgObject.subject = $scope.message.emailContent.subject;
             msgObject.msg = $scope.message.emailContent.msg;
             msgObject.memberId = $scope.message.memberId;
+            $scope.loading = true;
             EmailService.sendEmail(msgObject, function(data) {
                 notificationService.success("Email Sent.");
                 $scope.close();
             }, function(error) {
-                notificationService.error("Error Occurred.");
+                if(error.status == 400) {
+                    notificationService.error(error.data);
+                } else {
+                    notificationService.error("Error Occurred.");
+                }
+                $scope.loading = false;
             });
         } else {
             if(!$scope.validateSmsContent()) {
@@ -64,11 +70,17 @@ var MessageDialogCtrl = GMApp.controller('MessageDialogCtrl', ['$scope', '$mdDia
             msgObject.mobileNumbers = [$scope.message.memberMobile];
             msgObject.msg = $scope.message.smsContent;
             msgObject.memberId = $scope.message.memberId;
+            $scope.loading = true;
             SmsService.sendMessage(msgObject, function(data) {
                 notificationService.success("SMS Sent.");
                 $scope.close();
             }, function(error) {
-                notificationService.error("Error Occurred.");
+                if(error.status == 400) {
+                    notificationService.error(error.data);
+                } else {
+                    notificationService.error("Error Occurred.");
+                }
+                $scope.loading = false;
             });
         }
     }

@@ -7,6 +7,8 @@ GMApp.factory('MemberService',['$resource',function($resource) {
             getById: { method: 'GET', params: { id : '@id' , path: 'getById'}, isArray: false },
             updateMember: { method: 'POST', params: { accountId : '@accountId', id : '@id' , path: 'update'}, isArray: false },
             deleteMember: { method: 'POST', params: { accountId : '@accountId', id : '@id' , path: 'delete'}, isArray: false },
-            documents: { method: 'GET', params: { accountId : '@accountId' , path: 'documents'}, isArray: true }
+            documents: { method: 'GET', params: { accountId : '@accountId' , path: 'documents'}, isArray: true },
+            count: { method: 'GET', params: { accountId : '@accountId' , path: 'count'}, isArray: false },
+
     });
 }]);

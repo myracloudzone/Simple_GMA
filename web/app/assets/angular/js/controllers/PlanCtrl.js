@@ -118,8 +118,13 @@ var PlanCtrl = GMApp.controller('PlanCtrl', ['$scope', '$rootScope','$mdDialog',
 							notificationService.success("Successfully Saved.");
 							$scope.close(data);
 						}, function(error) {
-							$scope.loading = false;
-							notificationService.error("Error Occured.")
+							if(error.status == 400) {
+								$scope.loading = false;
+								notificationService.error(error.data);
+							} else {
+								$scope.loading = false;
+								notificationService.error("Error Occured.");	
+							}
 						})
 					}
 				}

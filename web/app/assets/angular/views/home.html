@@ -8,10 +8,10 @@
                     <div class="md-toolbar-tools">
                         <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Dashboard</md-truncate>
                         <span flex></span>
-						<!-- <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
+                        <!-- <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
                             <md-tooltip md-direction="top">Refresh</md-tooltip>
                             <i class="fa fa-fw fa-refresh"></i>
-                        </md-button> -->
+                            </md-button> -->
                     </div>
                 </md-toolbar>
             </div>
@@ -24,13 +24,13 @@
                                 <div class="card-body-icon">
                                     <i class="fa fa-fw  fa-bell"></i>
                                 </div>
-                                <div class="mr-5">10 Members Renew Due</div>
+                                <div class="mr-5">{{overDueMemberCount}} Members Renew Due</div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="">
-                                <span class="float-left">View Details</span>
-                                <span class="float-right">
-                                <i class="fa fa-angle-right"></i>
-                                </span>
+                            <a class="card-footer text-white clearfix small z-1" href="" ng-click="goToOverDueSection()">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                            <i class="fa fa-angle-right"></i>
+                            </span>
                             </a>
                         </div>
                     </div>
@@ -40,13 +40,13 @@
                                 <div class="card-body-icon">
                                     <i class="fa fa-fw  fa-dollar"></i>
                                 </div>
-                                <div class="mr-5">Rs 8500.00 Collection </div>
+                                <div class="mr-5">Rs {{financialData.receivedAmount - financialData.refundAmount}} Collection </div>
                             </div>
                             <a class="card-footer text-white clearfix small z-1" href="">
-                                <span class="float-left">View Details</span>
-                                <span class="float-right">
-                                <i class="fa fa-angle-right"></i>
-                                </span>
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                            <i class="fa fa-angle-right"></i>
+                            </span>
                             </a>
                         </div>
                     </div>
@@ -59,10 +59,10 @@
                                 <div class="mr-5">123 Pending Queries</div>
                             </div>
                             <a class="card-footer text-white clearfix small z-1" href="">
-                                <span class="float-left">View Details</span>
-                                <span class="float-right">
-                                <i class="fa fa-angle-right"></i>
-                                </span>
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                            <i class="fa fa-angle-right"></i>
+                            </span>
                             </a>
                         </div>
                     </div>
@@ -72,140 +72,156 @@
                                 <div class="card-body-icon">
                                     <i class="fa fa-fw fa-users"></i>
                                 </div>
-                                <div class="mr-5">102 Active Members</div>
+                                <div class="mr-5">{{activeMemberCount}} Active Members</div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="">
-                                <span class="float-left">View Details</span>
-                                <span class="float-right">
-                                <i class="fa fa-angle-right"></i>
-                                </span>
+                            <a class="card-footer text-white clearfix small z-1" href="/secure/member/">
+                            <span class="float-left">View Details</span>
+                            <span class="float-right">
+                            <i class="fa fa-angle-right"></i>
+                            </span>
                             </a>
                         </div>
                     </div>
                 </div>
                 <!-- End Of Row 1 -->
                 <div class="row">
-                    <div class="col-sm-8">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fa fa-bell-o"></i> Members Overdue</div>
-                            <div class="list-group list-group-flush small">
-                                <table class="table table table-responsive">
+                    <div class="col-xl-6 col-sm-12 col-md-6 col-xs-12">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch>
+                            <md-card-title class="card-header">
+                                <md-card-title-text>
+                                    <span class="md-headline text-center"><i class="fa fa-superpowers"></i></i>  Credits Balance</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <div class="col-sm-12 text-center p20" ng-if="creditLoading" style="min-height: 300px">
+                                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                            </div>
+                            <div class="col-sm-12 text-center p20" ng-if="noCreditData" style="min-height: 300px">
+                                <p class="strong">No Record Found.</p>
+                            </div> 
+                            <nvd3 ng-if="!creditLoading && !noCreditData" options="options" data="creditData"></nvd3>
+                        </md-card>
+                    </div>
+                    <div class="col-xl-6 col-sm-12 col-md-6 col-xs-12">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch>
+                            <md-card-title class="card-header">
+                                <md-card-title-text>
+                                    <span class="md-headline text-center"><i class="fa fa-dollar"></i>  Collections/Refunds</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <nvd3 options="options2" data="incomeDataHistory" ng-if="showTransactionData" api="api"></nvd3>
+                        </md-card>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 col-md-12 col-xs-12"  id="overDueDiv">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch>
+                            <md-card-title class="card-header">
+                                <md-card-title-text>
+                                    <span class="md-headline text-center"><i class="fa fa-bell-o"></i></i>  Member Overdue</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <md-card-content layout="row" class="p0 pt5 dueMemberTable">
+                                <table class="table table table-responsive table-sm table-hover table-dark">
                                     <thead class="thead-inverse">
                                         <tr>
                                             <th>#</th>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Username</th>
+                                            <th class="min-w150 max-w60">Membership Id</th>
+                                            <th class="min-w150">Name</th>
                                             <th>Mobile No.</th>
-                                            <th>Plan Detail</th>
-                                            <th>OverDue/Renew Date</th>
+                                            <th class="min-w100">Plan Name</th>
+                                            <th class="min-w120">Renew Date</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="table-warning">
-                                            <th scope="row">1</th>
-                                            <td>Mark</td>
-                                            <td>Otto</td>
-                                            <td>@mdo</td>
-                                            <td>7877439550</td>
-                                            <td>MR-Yearly</td>
-                                            <td>28/Sep/2017</td>
-                                        </tr>
-                                        <tr class="table-info">
-                                            <th scope="row">2</th>
-                                            <td>Jacob</td>
-                                            <td>Thornton</td>
-                                            <td>@fat</td>
-                                            <td>4898439550</td>
-                                            <td>MR-Yearly</td>
-                                            <td>08/Nov/2017</td>
-                                        </tr>
-                                        <tr class="table-warning">
-                                            <th scope="row">3</th>
-                                            <td>Larry</td>
-                                            <td>the Bird</td>
-                                            <td>@twitter</td>
-                                            <td>4538765550</td>
-                                            <td>MR-Yearly</td>
-                                            <td>13/Oct/2017</td>
+                                        <tr class="" ng-repeat="member in overDueMembers">
+                                            <td>{{$index + 1}}</td>
+                                            <td>{{member.id}}</td>
+                                            <td>{{member.firstName}} {{member.lastName}}</td>
+                                            <td>{{member.mobile}}</td>
+                                            <td>{{getMembershipPlanName(member.planId)}}</td>
+                                            <td>{{getDateString(member.membershipEndDate)}}</td>
+                                            <td class=""><i class="fa fa-envelope-open fa-lg"><md-tooltip md-direction="top">Send Reminder</md-tooltip></i></td>
                                         </tr>
                                     </tbody>
                                 </table>
-                                <a class="list-group-item list-group-item-action" href="#">View all list...</a>
-                            </div>
-                        </div>
+                            </md-card-content>
+                        </md-card>
                     </div>
-                    <!-- End of col-sm-6  -->
-                    <div class="col-sm-4">
-                        <div class="col-sm-12">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fa fa-chain"></i>  Shortcuts</div>
-                            <section layout="row" layout-sm="column" layout-align="center center" layout-wrap="">
-                                <md-button class="md-fab" aria-label="Add Member">
-                                    <md-tooltip md-direction="top">Add Member</md-tooltip>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6 col-sm-12 col-md-6 col-xs-12">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch>
+                            <md-card-title class="card-header">
+                                <md-card-title-text>
+                                    <span class="md-headline text-center"><i class="fa  fa-birthday-cake"></i>  Birthday/Anniversary</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <div class="container-fluid p0" style="min-height: 300px; overflow: scroll">
+                                <div class="col-xs-12 col-sm-12">
+                                    <div class="row giftDivRow" ng-repeat="member in anniversaryData | orderBy:'firstName'">
+                                        <div class="col-6 col-sm-6 col-md-6 birthdayTableColumn text-ellipses  pr0">
+                                            <i class="fa fa-lg fa-user-circle"><span class="fs16"><md-tooltip md-direction="top">{{member.firstName}} {{member.lastName}}</md-tooltip>  {{member.firstName}} {{member.lastName}}</span></i>
+                                        </div>
+                                        <div class="col-4 col-sm-4 col-md-4 pt10 text-ellipses pr0">
+                                            <i class="fa fa-lg"><span class="fs16">  {{member.typeDisplayName}} </span></i>
+                                        </div>
+                                        <div class="col-2 col-sm-2 col-md-2 giftDiv">
+                                            <md-button class="md-fab md-mini md-hue-2" aria-label="Message" ng-click="sendGreetingMsg()">
+                                                <md-tooltip md-direction="top">Send Greeting Message</md-tooltip>
+                                                <i class="fa  fa-gift"></i>
+                                            </md-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </md-card>
+                    </div>
+                    <div class="col-xl-6 col-sm-12 col-md-6 col-xs-12">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch>
+                            <md-card-title class="card-header">
+                                <md-card-title-text>
+                                    <span class="md-headline text-center"><i class="fa  fa-signal"></i>  New Registration Analysis</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <div class="container-fluid p0" style="min-height: 300px; overflow: scroll">
+                                <div class="col-xs-12 col-sm-12">
+                                    <nvd3 options="memberAnalysisOption" data="memberAnalysisData"></nvd3>
+                                </div>
+                            </div>
+                        </md-card>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 col-md-12 col-xs-12">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch>
+                            <md-card-title class="card-header">
+                                <md-card-title-text>
+                                    <span class="md-headline text-center"><i class="fa fa-navicon"></i></i>  Shortcuts</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <section layout="row" layout-align="center center" layout-wrap="">
+                                <md-button class="md-fab md-mini md-primary" aria-label="Add Member">
+                                    <md-tooltip md-direction="top">Members</md-tooltip>
                                     <i class="fa fa-lg fa-user-plus"></i>
                                 </md-button>
-
-                                <md-button class="md-fab md-primary" aria-label="Plans">
-                                    <md-tooltip md-direction="top">Plans</md-tooltip>
-                                    <i class="fa fa-lg fa-edit"></i>
+                                <md-button class="md-fab md-mini md-primary" aria-label="Plans">
+                                    <md-tooltip md-direction="top">Membership Plans</md-tooltip>
+                                    <i class="fa fa-lg fa-handshake-o"></i>
                                 </md-button>
-
-                                <md-button class="md-fab" aria-label="Users">
+                                <md-button class="md-fab md-mini  md-primary" aria-label="Users">
+                                    <md-tooltip md-direction="top">Groups</md-tooltip>
+                                    <i class="fa fa-lg fa-object-group"></i>
+                                </md-button>
+                                <md-button class="md-fab md-mini md-primary md-hue-2" aria-label="Profile">
                                     <md-tooltip md-direction="top">Users</md-tooltip>
-                                    <i class="fa fa-lg fa-users"></i>
-                                </md-button>
-
-                                <md-button class="md-fab md-primary md-hue-2" aria-label="Profile">
-                                    <md-tooltip md-direction="top">Profile</md-tooltip>
                                     <i class="fa fa-lg fa-envelope-square"></i>
                                 </md-button>
-                            </section>
-                        </div>
+                            </section>    
+                        </md-card>
                     </div>
-                    <div class="col-sm-12">
-                        <div class="card mb-3">
-                            <div class="card-header">
-                                <i class="fa  fa-calendar"></i>  Birthday/Anniversary
-                            </div>
-                            <md-list class="md-dense" flex>
-                                <md-list-item class="md-1-line">
-                                    <div class="col-sm-6">
-                                        <i class="fa fa-lg fa-user-circle"><span class="fs16">  Akshay Soni</span></i>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <i class="fa fa-lg"><span class="fs16">  Anniversary</span></i>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <md-button class="md-fab md-mini md-hue-2" aria-label="Message">
-                                            <md-tooltip md-direction="top">Send Message</md-tooltip>
-                                            <i class="fa  fa-envelope-o"></i>
-                                        </md-button>
-                                    </div>
-                                </md-list-item>
-                                <md-list-item class="md-1-line">
-                                    <div class="col-sm-6">
-                                        <i class="fa fa-lg fa-user-circle"><span class="fs16">  Vineet Vijay</span></i>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <i class="fa fa-lg"><span class="fs16">  Birthday</span></i>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <md-button class="md-fab md-mini md-hue-2" aria-label="Message">
-                                            <md-tooltip md-direction="top">Send Message</md-tooltip>
-                                            <i class="fa  fa-envelope-o"></i>
-                                        </md-button>
-                                    </div>
-                                </md-list-item>
-                            </md-list>
-                        </div>
-                    </div>
-                    </div>
-                    <!-- End of col-sm-6 -->
                 </div>
-            </div>    
+            </div>
         </div>
     </div>
 </div>

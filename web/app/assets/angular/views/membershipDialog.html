@@ -23,7 +23,7 @@
                             <md-input-container class="md-icon-float md-block">
                                 <!-- Use floating label instead of placeholder -->
                                 <label>Current Membership Plan</label>
-                                <md-icon md-font-icon="fa-houzz" class="fa fa-lg"></md-icon>
+                                <md-icon md-font-icon="fa-handshake-o" class="fa fa-lg"></md-icon>
                                 <input disable-key type="text" value="{{getMembershipPlanName(membership.currentPlanId)}}" ng-disabled="membershipChangeNotAllowed"/>
                             </md-input-container>
                             <md-input-container class="md-icon-float md-block">
@@ -41,7 +41,7 @@
                             <md-input-container class="md-icon-float md-block">
                                 <!-- Use floating label instead of placeholder -->
                                 <label>New Membership Plan</label>
-                                <md-icon md-font-icon="fa-houzz" class="fa fa-lg"></md-icon>
+                                <md-icon md-font-icon="fa-handshake-o" class="fa fa-lg"></md-icon>
                                 <md-select ng-model="membership.planId" required ng-disabled="membershipChangeNotAllowed">
                                     <md-option ng-repeat="plan in plans" value="{{plan.id}}"  ng-click="changeRatePlan(plan)">
                                         {{plan.name}}
