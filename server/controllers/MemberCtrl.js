@@ -160,13 +160,17 @@ module.exports = function (app) {
                             obj.membership_plan_id = req.body.planId;
                             obj.rate_to_membership_plan_id = req.body.ratePlanId;
                             obj.amount = data.amount;
-                            obj.signup_fee_applied = req.body.isSignUpFee != null && req.body.isSignUpFee != '' ? req.body.isSignUpFee : 1;
+                            obj.signup_fee_applied = req.body.isSignUpFee != null && req.body.isSignUpFee != '' && req.body.isSignUpFee == true ? req.body.isSignUpFee : 0;
                             if(obj.signup_fee_applied && obj.signup_fee_applied == 1) {
                                 obj.sign_up_fee = data.signup_fee;
                             } else {
                                 obj.sign_up_fee = 0;
                             }
-                            obj.due_amount = data.amount;
+                            if(obj.signup_fee_applied == true) {
+                                obj.due_amount = parseFloat(data.amount) + parseFloat(data.signup_fee);
+                            } else {
+                                obj.due_amount = parseFloat(data.amount);
+                            }
                             obj.date_created = now;
                             schema.model('MembershipRateToMember').forge().save(obj).then(function(membershipRateToMember) {
                                 if(membershipRateToMember != null) {
