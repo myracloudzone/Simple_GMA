@@ -13,6 +13,9 @@
 .pt10 {
   padding-top: 10px;
 }
+.fs14 {
+  font-size: 14px !important;
+}
 .fs28 {
   font-size: 28px !important;
 }
@@ -542,6 +545,10 @@ footer {
     #notificationDropdownBox {
         left: -150px !important;
     }
+    #accountSettingDropdownBox {
+      left: -130px !important;
+      width: 250px;
+    }
 }
 .wp40 {
   width: 40%;
@@ -836,6 +843,10 @@ tr { outline: none; }
   }
   .min-w120 {
     min-width: 120px;
+  }
+  #accountSettingDropdownBox {
+    position: absolute;
+    width: 250px;
   }
 }
 @media (max-width: 1100px) {

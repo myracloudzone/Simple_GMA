@@ -60,6 +60,9 @@ GMApp.directive('disableKey', function() {
 		element.bind("keydown keypress", function(event) {
 			event.preventDefault();
 		});
+		element.bind("click", function(event) {
+			event.preventDefault();
+		});
 	};
 });
 GMApp.directive('googleplace', function() {

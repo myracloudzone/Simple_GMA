@@ -269,13 +269,25 @@
         </div>
       </li>
       <li class="nav-item" ng-if="showUserImage()">
-        <div class="avatar-dash">
-            <img src="/app/assets/angular/images/avatars/avatar4.png" alt=""><md-tooltip md-direction="bottom">Akshay Soni</md-tooltip></img>
+        <div class="avatar-dash cursor-pointer" style="display: inline-flex">
+            <a id="accountSetingDropdown"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="/app/assets/angular/images/avatars/avatar4.png" alt=""><md-tooltip md-direction="bottom">Akshay Soni</md-tooltip></img></a>
+            <a class="nav-link" data-toggle="modal" logout>
+                <i class="fa fa-fw fa-sign-out"></i>Logout</a>
+                <div class="dropdown-menu" id="accountSettingDropdownBox" aria-labelledby="accountSetingDropdown" >
+                    <a class="dropdown-item" href="" ng-click="changePassword()">
+                      <strong class="fs14">Change Password</strong>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="">
+                      <strong class="fs14">Buy Credits</strong>
+                    </a>
+                  </div>
         </div>
+        
       </li>
       <li class="nav-item">
-        <a class="nav-link" data-toggle="modal" logout>
-          <i class="fa fa-fw fa-sign-out"></i>Logout</a>
+        <!-- <a class="nav-link" data-toggle="modal" logout>
+          <i class="fa fa-fw fa-sign-out"></i>Logout</a> -->
       </li>
     </ul>
   </div>
