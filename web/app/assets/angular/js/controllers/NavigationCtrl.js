@@ -33,7 +33,7 @@ var NavigationCtrl = GMApp.controller('NavigationCtrl', ['$scope', '$rootScope',
 					} else {
 						$mdDialog.cancel();
 					}
-				};
+				}; 
 
 				$scope.validate = function() {
 					if(GlobalMethodService.isEmptyString($scope.user.currentPassword)) {
