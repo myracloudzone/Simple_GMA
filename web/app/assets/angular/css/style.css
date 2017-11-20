@@ -823,9 +823,6 @@ tr { outline: none; }
   #messageDialogBox {
     width: 80%;
   }
-  .dashboardDiv {
-    height: calc(100vh - 195px);
-  }
 }
 @media (max-width: 992px) {
 	#messageDialogBox {
