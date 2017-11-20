@@ -15,7 +15,7 @@ var NavigationCtrl = GMApp.controller('NavigationCtrl', ['$scope', '$rootScope',
 	}
 	
 	$scope.changePassword = function(ev) {
-		$('.navbar-collapse').hide();
+		$(".navbar-toggler").trigger( "click" );
 		var dialog = $mdDialog.show({
 			controller : function($scope, $mdDialog, $filter, notificationService, GlobalMethodService, GlobalVariableService, UserService) {
 				$scope.loading = true;
@@ -77,9 +77,9 @@ var NavigationCtrl = GMApp.controller('NavigationCtrl', ['$scope', '$rootScope',
 			fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
 			})
 			.then(function(answer) {
-				
+				// $('.navbar-toggler').removeClass('collapsed');
 			}, function() {
-				
+				// $('.navbar-toggler').removeClass('collapsed');
 			}
 		);
 		$rootScope.dialogList.push(dialog);
