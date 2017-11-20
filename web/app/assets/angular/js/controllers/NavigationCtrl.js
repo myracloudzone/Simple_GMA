@@ -13,6 +13,25 @@ var NavigationCtrl = GMApp.controller('NavigationCtrl', ['$scope', '$rootScope',
 			$state.go($state.current.name, $state.params, { reload: true });
 		}
 	}
+
+	$scope.handleMouseEnter = function() {
+		$scope.isOriginallyCollapsed = $("body").hasClass("sidenav-toggled");
+		if($scope.isOriginallyCollapsed == true) {
+			var winWidth = window.innerWidth;
+			if(winWidth > 992) {
+				$("body").removeClass("sidenav-toggled");
+			}
+		}
+	}
+
+	$scope.handleMouseLeave = function() {
+		if($scope.isOriginallyCollapsed == true) {
+			var winWidth = window.innerWidth;
+			if(winWidth > 992) {
+				$("body").addClass("sidenav-toggled");
+			}
+		}
+	}
 	
 	$scope.changePassword = function(ev) {
 		$(".navbar-toggler").trigger( "click" );
