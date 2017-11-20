@@ -6,6 +6,10 @@ var HomeCtrl = GMApp.controller('HomeCtrl', ['$scope', '$rootScope', '$statePara
     $scope.showTransactionData = false;
     $scope.overDueMemberCount = 0;
     $rootScope.api = {};
+
+    $scope.goToState = function(state) {
+        $state.go(state, {id : $rootScope.accountId});
+    }
     
     $scope.options = {
         chart: {

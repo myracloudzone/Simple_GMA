@@ -207,15 +207,15 @@
                                 </md-card-title-text>
                             </md-card-title>
                             <section layout="row" layout-align="center center" layout-wrap="">
-                                <md-button class="md-fab md-mini md-primary" aria-label="Add Member">
+                                <md-button class="md-fab md-mini md-primary" aria-label="Add Member" ng-click="goToState('member')">
                                     <md-tooltip md-direction="top">Members</md-tooltip>
                                     <i class="fa fa-lg fa-user-plus"></i>
                                 </md-button>
-                                <md-button class="md-fab md-mini md-primary" aria-label="Plans">
+                                <md-button class="md-fab md-mini md-primary" aria-label="Membership Plans"  ng-click="goToState('plan')">
                                     <md-tooltip md-direction="top">Membership Plans</md-tooltip>
                                     <i class="fa fa-lg fa-handshake-o"></i>
                                 </md-button>
-                                <md-button class="md-fab md-mini  md-primary" aria-label="Users">
+                                <md-button class="md-fab md-mini  md-primary" aria-label="Groups" ng-click="goToState('group')">
                                     <md-tooltip md-direction="top">Groups</md-tooltip>
                                     <i class="fa fa-lg fa-object-group"></i>
                                 </md-button>
