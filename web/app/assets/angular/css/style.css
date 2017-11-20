@@ -790,6 +790,11 @@ tr { outline: none; }
   max-height: 355px;
   overflow: auto;
 }
+.birdthdayNoData {
+  margin-top: 80px;
+  font-size: 18px;
+}
+
 
 
 @media (max-width: 420px) {

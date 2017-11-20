@@ -96,7 +96,7 @@
                                 <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
                             </div>
                             <div class="col-sm-12 text-center p20" ng-if="noCreditData" style="min-height: 300px">
-                                <p class="strong">No Record Found.</p>
+                                <p class="strong">No Data Available.</p>
                             </div> 
                             <nvd3 ng-if="!creditLoading && !noCreditData" options="options" data="creditData"></nvd3>
                         </md-card>
@@ -160,7 +160,7 @@
                             <div class="container-fluid p0" style="min-height: 300px; overflow: scroll">
                                 <div class="col-xs-12 col-sm-12">
                                     <div class="col-sm-12 text-center p20" ng-if="anniversaryData.length == 0">
-                                        <p class="strong">No Record Found.</p>
+                                        <p class="strong birdthdayNoData">No Data Available.</p>
                                     </div> 
                                     <div class="row giftDivRow" ng-repeat="member in anniversaryData | orderBy:'firstName'"  ng-if="anniversaryData.length > 0">
                                         <div class="col-6 col-sm-6 col-md-6 birthdayTableColumn text-ellipses  pr0">
