@@ -231,7 +231,7 @@ module.exports = function (app) {
             if(error) {
                 return logger.logResponse(500, "Error Occured.", err, res, req);
             }
-            return logger.logResponse(200, results, null, res, req);
+            return logger.logResponse(200, data, null, res, req);
         })
     }
 
