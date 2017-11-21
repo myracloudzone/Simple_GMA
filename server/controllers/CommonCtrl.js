@@ -1,5 +1,6 @@
 var connection = require('../scripts/db.js');
 var moment = require('moment');
+var config = require('../scripts/config.json');
 module.exports = {
     makeDBRequest : function(queryObject, success) {
         connection.query('use half_dome_gym_app;');
