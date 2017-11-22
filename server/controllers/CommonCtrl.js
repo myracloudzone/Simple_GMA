@@ -51,6 +51,12 @@ module.exports = {
     getDocumentRenderPath : function(path) {
         var renderPath = path.substring(config.outputFolder.length, path.length);
         return '/media' + renderPath;
+    },
+    isEmptyString : function(string) {
+        if(string == null || string == '') {
+            return true;
+        } 
+        return false;
     }
 
 }    

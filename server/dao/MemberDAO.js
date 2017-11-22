@@ -74,6 +74,13 @@ module.exports = {
 		});
     },
 
+    removeGroupToMember : function(groupId, req, res, callback) {
+        var query = 'update member m set m.group = null where m.group = '+groupId;
+        commonUtils.makeDBRequest(query, function(error, data) {
+            callback(data, error, req, res);
+        });    
+    },
+
     getMembersWithBirthdayRange : function(searchFilter, req, res, callback) {
         var query = 'SELECT * FROM member WHERE (MONTH(FROM_UNIXTIME(birthday/1000))=MONTH(FROM_UNIXTIME('+searchFilter.date+')) AND DAY(FROM_UNIXTIME(birthday/1000))=DAY(FROM_UNIXTIME('+searchFilter.date+'))) OR (DAY(LAST_DAY(FROM_UNIXTIME(birthday/1000)))=29 AND DAY(FROM_UNIXTIME(birthday/1000))=29 AND DAY(LAST_DAY(FROM_UNIXTIME('+searchFilter.date+')))=28) order by first_name asc';
         commonUtils.makeDBRequest(query, function(error, data) {
@@ -174,7 +181,7 @@ module.exports = {
             .andWhere('member.active', searchFilter.active)
             .andWhere('membership_plan_to_member.is_current', true)
             .andWhere('membership_plan_to_member.membership_end_date', '<', searchFilter.searchDate)
-            .orderBy('member.first_name' , 'asc')
+            .orderBy('membership_plan_to_member.membership_end_date' , 'asc')
             .debug(true);
         }).fetchAll().then(function (membersData) {
             if(membersData == null) {

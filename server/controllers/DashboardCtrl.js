@@ -11,7 +11,7 @@ module.exports = function(app) {
     var controller = {};
     controller.getMembershipDueMembers = function(req, res, next) {
         var todayDate = req.query.filterDate;
-        todayDate = moment(todayDate, "MM/DD/YYYY HH:mm:ss").add(1, 'days').valueOf();
+        todayDate = moment(todayDate, "MM/DD/YYYY HH:mm:ss").add(15, 'days').valueOf();
         console.log(todayDate)
         var searchFilter = {};
         searchFilter.searchDate = todayDate;

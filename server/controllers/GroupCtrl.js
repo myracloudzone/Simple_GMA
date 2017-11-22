@@ -2,6 +2,7 @@ var schema = require('bookshelf').DB;
 var logger = require('../scripts/logger.js');
 var groupDAO = require('../dao/GroupDAO.js');
 var accountDAO = require('../dao/AccountDAO.js');
+var memberDAO = require('../dao/MemberDAO.js');
 
 module.exports = function(app) {
     var controller = {};
@@ -31,7 +32,13 @@ module.exports = function(app) {
                 id: req.body.id
             }).del().then(function(deletedGroup) {
                 if (deletedGroup > 0) {
-                    return logger.logResponse(200, {"response" : "Deleted Successfully."}, null, res, req);
+                    memberDAO.removeGroupToMember(req.body.id, req, res, function(data, error, req, res) {
+                        if(error) {
+                            console.log(error)
+                            return logger.logResponse(500, "Error Occured.", error, res, req);
+                        }
+                        return logger.logResponse(200, {"response" : "Deleted Successfully."}, null, res, req);
+                    })                   
                 } else {
                     return logger.logResponse(404, "No Record Found.", "No Record Found with given id : "+req.body.id, res, req);
                 }    
