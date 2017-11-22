@@ -137,7 +137,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="" ng-repeat="member in overDueMembers">
+                                        <tr class="" ng-repeat="member in overDueMembers" ng-class="getMembershipDateDifferenceInDays(member.membershipEndDate) < 0 ? 'warningGreen' : (getMembershipDateDifferenceInDays(member.membershipEndDate) >= 0 && getMembershipDateDifferenceInDays(member.membershipEndDate) <= 15) ? 'warningYellow' : 'warningRed'">
                                             <td>{{$index + 1}}</td>
                                             <td>{{member.id}}</td>
                                             <td>{{member.firstName}} {{member.lastName}}</td>

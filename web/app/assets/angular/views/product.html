@@ -1,0 +1,119 @@
+<!-- Navigation-->
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper mb40">
+    <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Product</md-truncate>
+                        <span flex></span>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="getProducts($event)">
+                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                            <i class="fa fa-fw fa-refresh"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="addProduct($event)">
+                            <md-tooltip md-direction="top">Add New</md-tooltip>
+                            <i class="fa fa-fw fa-plus"></i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+            <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+            </div>
+            <div class="col-sm-12 mt10">
+                <input type="text" class="form-control search-form" placeholder="Search" ng-model="searchFilter"/>
+            </div>
+            <div class="col-sm-12 productTableDiv mt10" id="listTable" ng-if="!listLoading">
+                <div class="row">
+                    
+                    <div class="col-xs-6 col-sm-6 col-md-4 col-lg-4 p0" ng-repeat="product in products | filter : {name : searchFilter}" ng-if="!loading && products.length > 0">
+                        <md-card md-theme="{{ showDarkTheme ? 'dark-purple' : 'default' }}" md-theme-watch>
+                            <md-card-title>
+                                <md-card-title-text class="text-ellipses">
+                                <span class="md-headline"><md-tooltip md-direction="top">{{product.name}}</md-tooltip>{{product.name}}</span>
+                                <span class="md-subhead"><strong>Sold:</strong> {{product.quantity - product.quantity_left}}</span>
+                                <span class="md-subhead"><strong>Quantity Left:</strong> {{product.quantity_left}}</span>
+                                <span class="md-subhead"><strong>Price:</strong> {{product.selling_price}}</span>
+                                <span class="md-subhead">{{product.quantity_left > 0 ? 'In Stock' : 'Out of Stock'}}</span>
+                                </md-card-title-text>
+                                <md-card-title-media>
+                                <div class="md-media-sm card-media"><img src="/app/assets/angular/images/product2.png" style="width : 80px;" alt=""></img></div>
+                                </md-card-title-media>
+                            </md-card-title>
+                            <md-card-actions layout="row" layout-align="end center" class="productActionBox">
+                                <md-button class="md-icon-button m0" aria-label="Edit" ng-click="addProduct($event, product.id)">
+                                    <md-tooltip md-direction="top">Edit</md-tooltip>
+                                    <i class="fa fa-lg fa-edit"></i>
+                                </md-button>
+                                <md-button class="md-icon-button m0" aria-label="Delete" ng-click="deleteProduct(product.id)">
+                                        <md-tooltip md-direction="top">Delete</md-tooltip>
+                                    <i class="fa fa-lg fa-remove"></i>
+                                </md-button>
+                            </md-card-actions>
+                        </md-card>    
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+
+<script type="text/ng-template" id="addProduct.html">
+<md-dialog aria-label="" id="messageDialogBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Add Product</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content dialogContentBox">
+                    <div flex="100">
+                        <md-content class="mt15">
+                            <div flex="100" class="plr15">
+                                <md-input-container class="md-icon-float md-block">
+                                    <!-- Use floating label instead of placeholder -->
+                                    <label>Product Name</label>
+                                    <md-icon md-font-icon="fa-product-hunt" class="fa fa-lg"></md-icon>
+                                    <input ng-model="product.name" type="text"/>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Description</label>
+                                    <md-icon md-font-icon="fa-info-circle" class="fa fa-lg"></md-icon>
+                                    <input type="text" maxlength="100" ng-model="product.description"/>
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Cost Price</label>
+                                    <md-icon md-font-icon="fa-money" class="fa fa-lg"></md-icon>
+                                    <input ng-model="product.costPrice" type="number" required  maxlength="10">
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Selling Price</label>
+                                    <md-icon md-font-icon="fa-money" class="fa fa-lg"></md-icon>
+                                    <input ng-model="product.sellingPrice" type="number" required maxlength="10">
+                                </md-input-container>
+                                <md-input-container class="md-icon-float md-block">
+                                    <label>Quantity</label>
+                                    <md-icon md-font-icon="fa-spotify" class="fa fa-lg"></md-icon>
+                                    <input ng-model="product.quantity" type="number" required maxlength="6">
+                                </md-input-container>
+                            </div>
+                        </md-content>
+                    </div>    
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+                <md-button class="md-raised md-primary" ng-click="addProduct($event)" ng-disabled="loading">Save</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>    

@@ -7,6 +7,15 @@ var HomeCtrl = GMApp.controller('HomeCtrl', ['$scope', '$rootScope', '$statePara
     $scope.overDueMemberCount = 0;
     $rootScope.api = {};
 
+    $scope.getMembershipDateDifferenceInDays = function(timestamp) {
+        var currentTimeStamp = (new Date()).getTime();
+        var endTimeStamp = new Date(parseFloat(timestamp)).getTime();
+        var timeDiff = Math.abs(endTimeStamp - currentTimeStamp);
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+        console.log(diffDays);
+        return currentTimeStamp >= endTimeStamp ? diffDays : (-1) * diffDays;
+    }
+    
     $scope.goToState = function(state) {
         $state.go(state, {id : $rootScope.accountId});
     }

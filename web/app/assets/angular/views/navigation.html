@@ -10,93 +10,99 @@
             <img src="/app/assets/angular/images/avatars/avatar4.png" alt=""></img>
         </div>
       </li> -->
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref='home({ id: accountId })'>
           <i class="fa fa-fw fa-home"></i>
           <span class="nav-link-text">Dashboard</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Member">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Member" ng-click="handleMouseLeave()">
         <a class="nav-link" ui-sref="member({id : accountId })">
           <i class="fa fa-fw fa-user-plus"></i>
           <span class="nav-link-text">Member</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Membership Plan">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Membership Plan" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref="plan({id : accountId })">
           <i class="fa fa-fw fa-handshake-o"></i>
           <span class="nav-link-text">Membership Plan</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Group">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Group" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref="group({id : accountId })">
           <i class="fa fa-fw fa-object-group"></i>
           <span class="nav-link-text">Group</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/users">
           <i class="fa fa-fw fa-edit"></i>
           <span class="nav-link-text">Activity</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Attendance">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Attendance" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/users">
           <i class="fa fa-fw fa-signal"></i>
           <span class="nav-link-text">Attendance</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/users">
           <i class="fa fa-fw fa-users"></i>
           <span class="nav-link-text">Staff Member</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Accountant">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Accountant" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/accountant">
           <i class="fa fa-fw  fa-pie-chart"></i>
           <span class="nav-link-text">Accountant</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="payment">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="payment" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/payment">
           <i class="fa fa-fw fa-money"></i>
           <span class="nav-link-text">Payment</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Payment">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Payment" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/nutritionSchedule">
           <i class="fa fa-fw fa-heartbeat"></i>
           <span class="nav-link-text">Nutrition Schedule</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Product & Store">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Product" ng-click="handleMouseLeave()">
+          <a class="nav-link"  ui-sref="product({id : accountId })">
+            <i class="fa fa-fw fa-product-hunt"></i>
+            <span class="nav-link-text">Product</span>
+          </a>
+      </li>
+      <!-- <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Product & Store" ng-click="handleMouseLeave()">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#productComponents" data-parent="#exampleAccordion">
           <i class="fa fa-fw fa-product-hunt"></i>
-          <span class="nav-link-text">Product & Store</span>
-        </a>
-        <ul class="sidenav-second-level collapse" id="productComponents">
+          <span class="nav-link-text">Product</span>
+        </a> -->
+        <!-- <ul class="sidenav-second-level collapse" id="productComponents">
           <li>
             <a href="navbar.html">Product</a>
           </li>
           <li>
             <a href="cards.html">Store</a>
           </li>
-        </ul>
-      </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Message">
+        </ul> -->
+      <!-- </li> -->
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Message" ng-click="handleMouseLeave()">
         <a class="nav-link" href="/secure/message">
           <i class="fa fa-fw fa-commenting"></i>
           <span class="nav-link-text">Message</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Report">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Report" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/report">
           <i class="fa fa-fw fa-wpforms"></i>
           <span class="nav-link-text">Report</span>
         </a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Setting">
+      <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Setting" ng-click="handleMouseLeave()">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#settingComponents" data-parent="#exampleAccordion">
           <i class="fa fa-fw fa-wrench"></i>
           <span class="nav-link-text">Setting</span>
