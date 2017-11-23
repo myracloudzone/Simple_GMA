@@ -10,6 +10,7 @@ var readDirFiles = require('read-dir-files');
 var config = require('../scripts/config.json');
 var memberDAO = require('../dao/MemberDAO.js');
 var accountDAO = require('../dao/AccountDAO.js');
+var smsSender = require('../lib/SmsSender.js');
 
 module.exports = function (app) {
     var filePath = __dirname;
@@ -178,11 +179,15 @@ module.exports = function (app) {
                                         if(error) {
                                             return logger.logResponse(500, "Error Occured.", error, res, req);
                                         } else {
-                                            var resultData = {};
-                                            resultData.member = memeber;
-                                            resultData.membershipPlanToMember = membershipPlanToMember;
-                                            resultData.membershipRateToMember = membershipRateToMember;
-                                            return logger.logResponse(200, resultData, null, res, req);
+                                            var sendTo = [memeber.mobile];
+                                            var msg = "Dear "+memeber.first_name+ " "+ memeber.last_name+",\nYou have been successfully registered.\nYour Membership Id is "+memeber.id+'.\nThank You!!!';
+                                            smsSender.sendMessage(sendTo, msg, req, res, function(data, statusCode, req, res) {
+                                                var resultData = {};
+                                                resultData.member = memeber;
+                                                resultData.membershipPlanToMember = membershipPlanToMember;
+                                                resultData.membershipRateToMember = membershipRateToMember;
+                                                return logger.logResponse(200, resultData, null, res, req);
+                                            });
                                         }
                                     });
                                 } else {
