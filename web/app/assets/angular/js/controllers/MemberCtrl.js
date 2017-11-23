@@ -28,18 +28,8 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 		}, 10)
 	}
 
-	$(".bodyClass").bind("resize", function() {
-		alert("B");
-		$scope.setPageLayoutHeight();
-	});
-
-	$("body").bind("resize", function() {
-		alert("A");
-		$scope.setPageLayoutHeight();
-	});
-
 	angular.element(window).on("resize", function() {
-        alert("C")
+        $scope.setPageLayoutHeight();
     });
 
 	angular.element($window).bind('resize', function(){
