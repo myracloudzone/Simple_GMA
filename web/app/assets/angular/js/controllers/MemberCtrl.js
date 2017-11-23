@@ -16,15 +16,19 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 
 	$scope.setPageLayoutHeight = function() {
 		setTimeout(function() {
+			var remainingHeight = null;
+			var winWidth = window.innerWidth;
 			if($scope.selectedmember.id == null) {
 				var height = $('.navbar-expand-lg').height() + $('.md-toolbar-tools').height() + 75 + $('.optionSection').height() + $('.memberSearchBox').height() + $('.paginator').height(); 
 				var remainingHeight = $(window).innerHeight() - height;
-				$(".memberTableDiv").css("height", remainingHeight + "px");
 			} else {
 				var height = $('.navbar-expand-lg').height() + $('.md-toolbar-tools').height() + 75 + $('.optionSection').height() + $('.memberSearchBox').height() + $('.paginator').height(); 
 				var remainingHeight = $(window).innerHeight() - height;
-				$(".memberTableDiv").css("height", remainingHeight + "px");
 			}
+			if(winWidth < 992) {
+				remainingHeight = remainingHeight + 40;
+			}
+			$(".memberTableDiv").css("height", remainingHeight + "px");
 		}, 10)
 	}
 
