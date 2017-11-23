@@ -847,6 +847,16 @@ tr { outline: none; }
   #messageDialogBox {
     width: 80%;
   }
+  .md-button {
+    min-width: 20px !important
+  }
+  .optionSection span{
+    display: none !important;
+  }
+  .optionSectionButton {
+    margin: 0px 6px !important;
+    padding: 2px !important;
+  }
 }
 @media (max-width: 992px) {
 	#messageDialogBox {

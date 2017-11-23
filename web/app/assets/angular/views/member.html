@@ -21,24 +21,24 @@
             </div>
          <div class="col-sm-12 p0">
             <section class="optionSection text-center" layout-wrap ng-if="selectedmember.id != null">
-                <md-button md-no-ink class="md-primary" ng-click="addMember($event, selectedmember.id)">
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="addMember($event, selectedmember.id)">
                     <md-icon md-font-icon="fa-edit" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Edit
                 </md-button>
-                <md-button md-no-ink class="md-primary" ng-click="viewDocuments($event)">
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="viewDocuments($event)">
                     <md-icon md-font-icon="fa-file-text" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Documents
                 </md-button>
-                <md-button md-no-ink class="md-primary" ng-click="manageMemberShip()">
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="manageMemberShip()">
                     <md-icon md-font-icon="fa-handshake-o" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Membership
                 </md-button>
-                <md-button md-no-ink class="md-primary" ng-click="messageMember($event)">
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="messageMember($event)">
                     <md-icon md-font-icon="fa-envelope" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Message
                 </md-button>
                 <md-menu>
-                    <md-button class="md-primary" ng-click="$mdOpenMenu($event)">
+                    <md-button class="md-primary optionSectionButton" ng-click="$mdOpenMenu($event)">
                         <md-icon md-font-icon="fa-money" class="fa fa-lg md-primary md-hue-2"></md-icon>
                         Payments
                     </md-button>
