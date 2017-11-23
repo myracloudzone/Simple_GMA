@@ -25,7 +25,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 				var height = $('.navbar-expand-lg').height() + $('.md-toolbar-tools').height() + 75 + $('.optionSection').height() + $('.memberSearchBox').height() + $('.paginator').height(); 
 				var remainingHeight = $(window).innerHeight() - height;
 			}
-			if(winWidth < 992) {
+			if(winWidth < 992 && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
 				remainingHeight = remainingHeight + 40;
 			}
 			$(".memberTableDiv").css("height", remainingHeight + "px");
