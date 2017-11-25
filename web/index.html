@@ -25,6 +25,11 @@
     <link href='https://cdnjs.cloudflare.com/ajax/libs/pnotify/3.0.0/pnotify.buttons.css' rel='stylesheet' />
     <link rel="stylesheet" href="/app/assets/angular/css/library/ui-grid.css" type="text/css" />
     <link href="/app/assets/angular/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/ng-material-datetimepicker@1.9.6/dist/material-datetimepicker.min.css" rel="stylesheet" type="text/css">
+    <link href="/app/assets/angular/css/library/select2.css" rel="stylesheet" type="text/css">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.7.0/fullcalendar.print.css" rel="stylesheet"> -->
+    
     <!-- <link href="https://www.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"> -->
 
     <!-- Custom fonts for this template-->
@@ -44,6 +49,8 @@
     <script src="/app/assets/angular/vendor/datatables/jquery.dataTables.js"></script>
     <script src="/app/assets/angular/vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    <script src="/app/assets/angular/libs/fullcalendar.min.js"></script>
+    <script src="/app/assets/angular/libs/select2.js"></script>
     <!-- <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBhEL6-yFvB6NlmdSo_9Pp5hang78WOsSQ"></script> -->
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyC4800hPOBqQwb29yNPMuj1c5QUZ_ksLcQ"></script>
     
@@ -74,14 +81,18 @@
     <script src="/app/assets/angular/libs/qrcode.js"></script>
     <script src="/app/assets/angular/libs/qrcode_UTF8.js"></script>
     <script src="/app/assets/angular/libs/angular/angular-qr.js"></script>
-    
+    <script src="/app/assets/angular/libs/angular-ui-calendar.js"></script>
 
     <script src="https://tinymce.cachefly.net/4.0/tinymce.min.js"></script>
     <script src="/app/assets/angular/libs/angular-tinymce.js"></script>
+    
 
     <!-- <script src="/app/assets/angular/libs/angular/angular-ui/ui-utils.min.js"></script> -->
     <!-- <script src="/app/assets/angular/libs/angular/angular-chosen.js"></script> -->
     <!-- <script src="/app/assets/angular/libs/angular/angular-touch.js"></script> -->
+
+    <script src="https://unpkg.com/ng-material-datetimepicker@1.9.6/dist/angular-material-datetimepicker.min.js"></script>
+    <script src="https://unpkg.com/ng-material-datetimepicker@1.9.6/dist/angular-material-datetimepicker.min.js.map"></script>
     <script src="/app/assets/angular/libs/angular/angular-ui-switch.js"></script>
     <!-- <script src="/app/assets/angular/libs/angular/angular-local-storage.min.js"></script> -->
     <!-- <script src="/app/assets/angular/libs/angular/angular-cookies-custom.js"></script> -->
@@ -100,6 +111,7 @@
     <script src="/app/assets/angular/libs/angular/ipcookie.js"></script>
     <script src="/app/assets/angular/libs/angular/stateEvents.js"></script>
     <script src="/app/assets/angular/libs/autocomplete.min.js"></script>
+    <script src="/app/assets/angular/libs/angular-select2.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.js"></script>
@@ -131,6 +143,7 @@
     <script src="/app/appModule/interceptor/RequestInterceptor.js"></script>
     <script src="/app/assets/angular/js/controllers/LoginCtrl.js"></script>
     <script src="/app/assets/angular/js/controllers/LogoutCtrl.js"></script>
+    <script src="/app/assets/angular/js/controllers/ActivityCtrl.js"></script>
     <script src="/app/assets/angular/js/controllers/ProductCtrl.js"></script>
     <script src="/app/assets/angular/js/controllers/HomeCtrl.js"></script>
     <script src="/app/assets/angular/js/controllers/NavigationCtrl.js"></script>
