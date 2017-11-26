@@ -37,6 +37,9 @@
 .mt50{
   margin-top: 50px;
 }
+.mr5 {
+  margin-right: 5px;
+}
 .mr10 {
   margin-right: 10px;
 }
@@ -437,7 +440,7 @@ form .md-datepicker-input-container{
   border-radius: 5px 5px 0 0;
 }
 .popover-content {
-  padding: 9px 14px;
+  padding: 0px 14px;
 }
 .popover > .arrow,
 .popover > .arrow:after {
@@ -869,6 +872,14 @@ button.chipClose:focus {
 }
 .select2-container {
   margin-top: 5px !important;
+}
+.popover-content {
+  min-width: 300px !important;
+  width: 300px;
+  overflow: auto;
+}
+.popover {
+  max-width: 300px !important;
 }
 
 /* Date Picker CSS */
