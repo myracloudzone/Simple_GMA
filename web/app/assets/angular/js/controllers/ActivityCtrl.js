@@ -79,15 +79,22 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
             right: 'today prev,next'
           },
           eventClick: function(calEvent, jsEvent, view) {
+                if($scope.popOverContextObject != null && $scope.popOverContextObject.id == calEvent.id) {
+                    $($scope.popOverContextObject).popover('hide');
+                    $scope.popOverContextObject = null;
+                    return;
+                }
                 if ($scope.popOverContextObject != null) {
                     $($scope.popOverContextObject).popover('hide');
+                    $scope.popOverContextObject = null;
+                    return;
                 }
                 $scope.calendarPopOverClass = { 'border-left' : '15px solid ' + calEvent.color};
                 $scope.selectedActivity = calEvent;
                 $scope.showPopoverOnClick(jsEvent, calEvent);
                 setTimeout(function() {
                     $($scope.popOverContextObject).popover('show');
-                }, 100);    
+                }, 10);    
             
             },
             eventDrop: $scope.alertOnDrop,
