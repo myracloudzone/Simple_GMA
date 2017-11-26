@@ -1,5 +1,21 @@
 <!-- Navigation-->
 <div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div id="popover-content" style="display: none;">
+    <div class="row popOverData" ng-style="calendarPopOverClass">
+        <div class="col-sm-12 title-box text-ellipses">
+            <strong>{{selectedActivity.title}}</strong>
+            <md-tooltip md-direction="top">{{selectedActivity.title}}</md-tooltip>
+        </div>
+        <hr class="popover-divider">
+        <div class="col-sm-12">
+            <p>Start: {{getTimeFromString(selectedActivity.start)}}</p>
+            <p>End: {{getTimeFromString(selectedActivity.end)}}</p>
+        </div>    
+        <div class="col-sm-12 unscheduleBox">
+            <span class="pull-right"><i class="fa fa-edit edit-icon  mr5"></i><i class="fa fa-trash-o delete-icon"></i></span>
+        </div>    
+    </div>
+</div>
 <div class="content-wrapper mb40">
     <div class="container-fluid mt50">
         <div class="col-sm-12 borderAll p0">
@@ -8,7 +24,7 @@
                     <div class="md-toolbar-tools">
                         <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Activity</md-truncate>
                         <span flex></span>
-						<md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
+						<md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="getActivities($event, '')">
                             <md-tooltip md-direction="top">Refresh</md-tooltip>
                             <i class="fa fa-fw fa-refresh"></i>
                         </md-button>
@@ -19,11 +35,11 @@
                     </div>
                 </md-toolbar>
             </div>
-            <div class="col-sm-12 text-center p20" ng-if="listLoading">
+            <div class="col-sm-12 text-center p20" ng-if="activitiesLoading">
                 <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
             </div>
-            <div class="col-sm-12 activityDiv mt10" id="listTable">
-                <div ui-calendar="uiConfig.calendar" ng-model="eventSources"></div>
+            <div class="col-sm-12 activityDiv mt10" id="listTable" ng-if="!activitiesLoading">
+                <div ui-calendar="uiConfig.calendar" ng-model="eventSources" calendar="myCalendar"></div>
             </div>    
         </div>
     </div>
@@ -48,14 +64,14 @@
                     <div layout="row" layout-wrap>
                         <div flex="100">
                             <md-input-container class="md-icon-float md-block">
-                                <label>Name:</label>
+                                <label>Name</label>
                                 <md-icon md-font-icon="fa-tag" class="fa fa-lg"></md-icon>
                                 <input ng-model="activity.name" maxlength="100"/>
                             </md-input-container>
                         </div>
                         <div flex="100">
                             <md-input-container class="md-block">
-                                <label>Description:</label>
+                                <label>Description</label>
                                 <md-icon md-font-icon="fa-info-circle" class="fa fa-lg"></md-icon>
                                 <input ng-model="activity.description" maxlength="200"/>
                             </md-input-container>
@@ -69,23 +85,46 @@
                                     <label>Start Date</label>
                                     <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
                                     <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
-                                    click-outside-to-close="true" show-todays-date="true" ng-model="activity.startDate" min-date="calendar.minDate"
+                                    click-outside-to-close="true" show-todays-date="true" ng-model="activity.start" min-date="calendar.minDate"
                                     max-date="calendar.maxDate" class=" md-input">
                                 </md-input-container>
                                 <md-input-container class="md-block md-icon-float" flex-gt-xs>
                                     <label>Start Time</label>
                                     <md-icon md-font-icon="fa-clock-o" class="fa fa-lg"></md-icon>
                                     <input mdc-datetime-picker="" date="false" time="true" type="text" short-time="true"
-                                    min-date="minDate" format="hh:mm a" ng-model="activity.startTime" class=" md-input"
+                                    min-date="minDate" format="hh:mm a" ng-model="activity.start" class=" md-input"
                                     readonly="readonly">
                                 </md-input-container>
                                 <md-input-container class="md-block md-icon-float" flex-gt-xs>
                                     <label>End Time</label>
                                     <md-icon md-font-icon="fa-clock-o" class="fa fa-lg"></md-icon>
                                     <input mdc-datetime-picker="" date="false" time="true" type="text" id="time" short-time="true"
-                                    min-date="minDate" format="hh:mm a" ng-model="activity.endTime" class=" md-input"
+                                    min-date="minDate" format="hh:mm a" ng-model="activity.end" class=" md-input"
                                     readonly="readonly">
                                 </md-input-container>
+                            </div>
+                        </div>
+                        <div flex="100">
+                            <div class="row plr15">
+                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-sm>
+                                    <label>Repeat Mode</label>
+                                    <md-icon md-font-icon="fa-repeat" class="fa fa-lg"></md-icon>
+                                    <md-select ng-model="activity.repeatMode">
+                                        <md-option value="DO_NOT_REPEAT">Does not repeat</md-option>
+                                        <md-option value="EVERY_DAY">Every day</md-option>
+                                        <md-option value="EVERY_WEEK">Every week</md-option>
+                                        <md-option value="EVERY_MONTH">Every month</md-option>
+                                        <md-option value="EVERY_YEAR">Every year</md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-xs ng-if="activity.repeatMode != 'DO_NOT_REPEAT'">
+                                    <label>Repeat End Date</label>
+                                    <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
+                                    <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
+                                    click-outside-to-close="true" show-todays-date="true" ng-model="activity.endDate" min-date="calendar.minDate"
+                                    max-date="calendar.maxDate" class=" md-input">
+                                </md-input-container>
+                                <div md-color-picker="colorPicker.options" ng-model="activity.color" md-color-clear-button="false" class="col-12 col-sm-12 col-md-6 p0" disable-key></div>
                             </div>
                         </div>
                         <div flex="100">
@@ -98,16 +137,31 @@
                             <div class="mt5 dashed">
                             </div>    
                         </div>
-                        <div flex="100" id="activityMemberChip" class="mt10">
+                        <div flex="100" id="activityMemberChip" class="mt15" ng-if="activity.assignField == 'member'">
                             <md-input-container class="md-block md-icon-float">
                                 <label>Select Members</label>
                                 <md-icon md-font-icon="fa-users" class="fa fa-lg"></md-icon>
-                                <select ui-select2="{minimumResultsForSearch: -1,  placeholder: 'Select Members'}" ng-model="select2" multiple data-placeholder="Search" style="width:100%;" class="input-xxlarge form-control mt10" >
+                                <select ui-select2="{minimumResultsForSearch: -1,  placeholder: 'Select Members'}" ng-model="activity.selectedMember" multiple data-placeholder="Search" style="width:100%;" class="input-xxlarge form-control mt10" >
                                     <option value=""></option>
                                     <option ng-repeat="member in members" value="{{member.id}}">{{member.firstName}} {{member.lastName}}</option>
                                 </select>
                             </md-input-container>
-                        </div>                 
+                        </div>
+                        <div flex="100" id="activityMemberChip" class="mt15" ng-if="activity.assignField == 'group'">
+                            <md-input-container class="md-block md-icon-float">
+                                <label>Select Groups</label>
+                                <md-icon md-font-icon="fa-users" class="fa fa-lg"></md-icon>
+                                <select ui-select2="{minimumResultsForSearch: -1,  placeholder: 'Select Group'}" ng-model="activity.selectedGroup" multiple data-placeholder="Search" style="width:100%;" class="input-xxlarge form-control mt10" >
+                                    <option value=""></option>
+                                    <option ng-repeat="group in groups" value="{{group.id}}">{{group.name}}</option>
+                                </select>
+                            </md-input-container>
+                        </div>
+                        <div flex="100">
+                            <md-checkbox ng-model="activity.notifyBySMS" aria-label="Notify Members by SMS">
+                                Notify Members by SMS
+                            </md-checkbox>
+                        </div>    
                     </div>
                 </div>
             </md-dialog-content>
@@ -115,7 +169,7 @@
         <md-dialog-actions layout="row">
                 <span flex></span>
                 <md-button class="md-raised" ng-click="close()">Cancel</md-button>
-                <md-button class="md-raised md-primary">Save</md-button>
+                <md-button class="md-raised md-primary" ng-click="saveActivity()">Save</md-button>
             </md-dialog-actions>
     </md-dialog>
 </script>
