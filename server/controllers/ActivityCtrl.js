@@ -188,131 +188,131 @@ module.exports = function (app) {
         obj.notify_by_sms = req.body.notifyBySMS;
         obj.date_created = now;
         obj.assigned_users = req.body.trainerIds == null ? JSON.stringify([]) : JSON.stringify(req.body.trainerIds);
-        var data = getStartAndEndDates(start, end, endRange, req.body.repeatMode);
-        async.mapSeries(data.startTimes, function(startTime, cb) {
-            var index = data.startTimes.indexOf(startTime);
-            var tempStartTime = startTime;
-            var tempEndTime = data.endTimes[index];
-            obj.start = tempStartTime;
-            obj.end = tempEndTime;
-            activityDAO.save(obj, req, res, function(data, error, req, res) {
-                if(error) {
-                    return logger.logResponse(500, "Error Occured.", error, res, req);
-                }
-                
-                cb();
-            });
-        })
-        endDateForMsg = moment(data.endTimes(data.endTimes.length - 1)).format("DD/MM/YYYY");
-        console.log("----------------------------------------------------"+endDateForMsg);
-        if(req.body.notifyBySMS != null && req.body.notifyBySMS == true) {
-            if(obj.assign_field == 'member') {
-                if(req.body.assignIds != null && req.body.assignIds.length > 0) {
-                    var ids = req.body.assignIds.join();
-                    var query = "select * from member where id in ("+ids+") and active = 1 and accountId = "+req.headers.accountId;
-                    commonUtils.makeDBRequest(query, function(error, data) {
-                        if(error) {
-                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
-                        }
-                        if(data == null) {
-                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
-                        }
-                        var phoneNumbers = [];
-                        async.mapSeries(data, function (member, cb1) {
-                            phoneNumbers.push(member.mobile);
-                            cb1();
-                        });
-                        if(phoneNumbers.length > 0) {
-                            accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
-                                if(error) {
-                                    return logger.logResponse(500, error, null, res, req); 
-                                }
-                                var smsCreditLeft = parseInt(data.sms_credit);
-                                if(smsCreditLeft >= phoneNumbers.length) {
-                                    var startDate = moment(start).format("YYYY-MM-DD");
-                                    var startTime = moment(start).format("hh:mm a");
-                                    var msg = "A session for "+obj.name+" has been scheduled on "+getTimeBasis(obj)+" from "+startDate+" at "+startTime+" till "+endDateForMsg+".\n\nThank You!!!";
-                                    async.mapSeries(phoneNumbers, function (number, cb2) {
-                                        smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
-                                             
-                                        });
-                                        cb2();
-                                    })
-                                    accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
-                                        if(error) {
-                                            return logger.logResponse(500, "Error Occured.", error, res, req);
-                                        } else {
-                                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
-                                        }
-                                    }); 
-                                } else {
-                                    return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
-                                }
-                            }); 
-                        } else {
-                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
-                        }
-                    })    
-                } else {
-                    return logger.logResponse(200, "Saved Successfully.", null, res, req); 
-                }
-            } else if(obj.assign_field == 'group') {
-                if(req.body.assignIds != null && req.body.assignIds.length > 0) {
-                    var ids = req.body.assignIds.join();
-                    var query = "select * from member m where m.group in ("+ids+") and m.active = 1 and m.accountId = "+req.headers.accountId;
-                    commonUtils.makeDBRequest(query, function(error, data) {
-                        if(error) {
-                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
-                        }
-                        if(data == null) {
-                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
-                        }
-                        var phoneNumbers = [];
-                        async.mapSeries(data, function (member, cb) {
-                            phoneNumbers.push(member.mobile);
-                            cb();
-                        });
-                        if(phoneNumbers.length > 0) {
-                            accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
-                                if(error) {
-                                    return logger.logResponse(500, error, null, res, req); 
-                                }
-                                var smsCreditLeft = parseInt(data.sms_credit);
-                                if(smsCreditLeft >= phoneNumbers.length) {
-                                    var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
-                                    var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
-                                    var msg = "A session for "+obj.name+" has been scheduled on "+getTimeBasis(obj)+" from "+startDate+" at "+startTime+" till "+endDateForMsg+".\n\nThank You!!!";
-                                    async.mapSeries(phoneNumbers, function (number, cb) {
-                                        smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
-                                             
-                                        });
-                                        cb();
-                                    })
-                                    accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
-                                        if(error) {
-                                            return logger.logResponse(500, "Error Occured.", error, res, req);
-                                        } else {
-                                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
-                                        }
-                                    }); 
-                                } else {
-                                    return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
-                                }
+        getStartAndEndDates(start, end, endRange, req.body.repeatMode, function(data) {
+            async.mapSeries(data.startTimes, function(startTime, cb) {
+                var index = data.startTimes.indexOf(startTime);
+                var tempStartTime = startTime;
+                var tempEndTime = data.endTimes[index];
+                obj.start = tempStartTime;
+                obj.end = tempEndTime;
+                activityDAO.save(obj, req, res, function(data, error, req, res) {
+                    if(error) {
+                        return logger.logResponse(500, "Error Occured.", error, res, req);
+                    }
+                    
+                    cb();
+                });
+            })
+            endDateForMsg = moment(data.endTimes[data.endTimes.length - 1]).format("DD/MM/YYYY");
+            if(req.body.notifyBySMS != null && req.body.notifyBySMS == true) {
+                if(obj.assign_field == 'member') {
+                    if(req.body.assignIds != null && req.body.assignIds.length > 0) {
+                        var ids = req.body.assignIds.join();
+                        var query = "select * from member where id in ("+ids+") and active = 1 and accountId = "+req.headers.accountId;
+                        commonUtils.makeDBRequest(query, function(error, data) {
+                            if(error) {
+                                return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                            }
+                            if(data == null) {
+                                return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                            }
+                            var phoneNumbers = [];
+                            async.mapSeries(data, function (member, cb1) {
+                                phoneNumbers.push(member.mobile);
+                                cb1();
                             });
-                        } else {
-                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
-                        }
-                    })    
-                } else {
-                    return logger.logResponse(200, "Saved Successfully.", null, res, req);  
-                }    
+                            if(phoneNumbers.length > 0) {
+                                accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                                    if(error) {
+                                        return logger.logResponse(500, error, null, res, req); 
+                                    }
+                                    var smsCreditLeft = parseInt(data.sms_credit);
+                                    if(smsCreditLeft >= phoneNumbers.length) {
+                                        var startDate = moment(start).format("YYYY-MM-DD");
+                                        var startTime = moment(start).format("hh:mm a");
+                                        var msg = "A session for "+obj.name+" has been scheduled on "+getTimeBasis(obj)+" from "+startDate+" at "+startTime+" till "+endDateForMsg+".\n\nThank You!!!";
+                                        async.mapSeries(phoneNumbers, function (number, cb2) {
+                                            smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
+                                                 
+                                            });
+                                            cb2();
+                                        })
+                                        accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
+                                            if(error) {
+                                                return logger.logResponse(500, "Error Occured.", error, res, req);
+                                            } else {
+                                                return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                                            }
+                                        }); 
+                                    } else {
+                                        return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
+                                    }
+                                }); 
+                            } else {
+                                return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                            }
+                        })    
+                    } else {
+                        return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                    }
+                } else if(obj.assign_field == 'group') {
+                    if(req.body.assignIds != null && req.body.assignIds.length > 0) {
+                        var ids = req.body.assignIds.join();
+                        var query = "select * from member m where m.group in ("+ids+") and m.active = 1 and m.accountId = "+req.headers.accountId;
+                        commonUtils.makeDBRequest(query, function(error, data) {
+                            if(error) {
+                                return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                            }
+                            if(data == null) {
+                                return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                            }
+                            var phoneNumbers = [];
+                            async.mapSeries(data, function (member, cb) {
+                                phoneNumbers.push(member.mobile);
+                                cb();
+                            });
+                            if(phoneNumbers.length > 0) {
+                                accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                                    if(error) {
+                                        return logger.logResponse(500, error, null, res, req); 
+                                    }
+                                    var smsCreditLeft = parseInt(data.sms_credit);
+                                    if(smsCreditLeft >= phoneNumbers.length) {
+                                        var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
+                                        var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
+                                        var msg = "A session for "+obj.name+" has been scheduled on "+getTimeBasis(obj)+" from "+startDate+" at "+startTime+" till "+endDateForMsg+".\n\nThank You!!!";
+                                        async.mapSeries(phoneNumbers, function (number, cb) {
+                                            smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
+                                                 
+                                            });
+                                            cb();
+                                        })
+                                        accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
+                                            if(error) {
+                                                return logger.logResponse(500, "Error Occured.", error, res, req);
+                                            } else {
+                                                return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                                            }
+                                        }); 
+                                    } else {
+                                        return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
+                                    }
+                                });
+                            } else {
+                                return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                            }
+                        })    
+                    } else {
+                        return logger.logResponse(200, "Saved Successfully.", null, res, req);  
+                    }    
+                }
+            } else {
+                return logger.logResponse(200, "Saved Successfully.", null, res, req);
             }
-        } else {
-            return logger.logResponse(200, "Saved Successfully.", null, res, req);
-        }
+        })
     };
 
-    function getStartAndEndDates(start, end, endDateRange, repeatType) {
+    function getStartAndEndDates(start, end, endDateRange, repeatType, callback) {
         var startDatesArray = [];
         var endDateArray = [];
         var count = 0;
@@ -345,7 +345,8 @@ module.exports = function (app) {
                 end = moment(end).add(1, 'days').valueOf(); 
             }
         }
-        return {startTimes : startDatesArray, endTimes : endDateArray};
+        var result =  {startTimes : startDatesArray, endTimes : endDateArray};
+        callback(result);
     };
     controller.getActivities = function(req, res, next) {
         var obj = {};
