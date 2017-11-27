@@ -12,6 +12,18 @@ module.exports = function (app) {
     var errorMsg = '';
     var repeatMode = ['DO_NOT_REPEAT', 'EVERY_DAY', 'EVERY_WEEK', 'EVERY_MONTH', 'EVERY_YEAR'];
 
+    function getTimeBasis(obj) {
+        if(obj.repeat_mode == 'EVERY_DAY') {
+            return 'daily basis';
+        } else if(obj.repeat_mode == 'EVERY_WEEK') {
+            return 'weekly basis';
+        } else if(obj.repeat_mode == 'EVERY_MONTHLY') {
+            return 'monthly basis';
+        } else if(obj.repeat_mode == 'EVERY_YEAR') {
+            return 'yearly basis';
+        }
+    }
+
     controller.addActivity = function(req, res, next) {
         var obj = {};
         var now = moment().valueOf();
@@ -146,14 +158,194 @@ module.exports = function (app) {
                     }     
                 })
             } else if(repeatMode.indexOf(req.body.repeatMode) >= 0) {
-
-
+                handleActivityWithRepeatMode(req, res);
             } else {
                 return logger.logResponse(400, "Invalid Repeat Mode.", "Invalid Repeat Mode.", res, req);
             }
         } else {
             return logger.logResponse(400, "Repeat Mode is required.", "Repeat Mode is required.", res, req);
         }
+    };
+
+    function handleActivityWithRepeatMode(req, res) {
+        var now = moment().valueOf();
+        var start = moment(req.body.start, "DD/MM/YYYY HH:mm:ss").valueOf();
+        var end = moment(req.body.end, "DD/MM/YYYY HH:mm:ss").valueOf();
+        var endRange = moment(req.body.endDate, "DD/MM/YYYY HH:mm:ss");
+        var endDateForMsg = end;
+        endRange.set({h: 23, m: 59});
+        endRange = endRange.valueOf();
+        var obj = {};
+        obj.name = req.body.name;
+        obj.description = req.body.description;
+        obj.repeat_mode = req.body.repeatMode;
+        obj.code = now;
+        obj.color = req.body.color;
+        obj.assign_field = req.body.assignField;
+        obj.assigned_ids = JSON.stringify(req.body.assignIds);
+        obj.accountId = req.headers.accountId;
+        obj.active = true;
+        obj.notify_by_sms = req.body.notifyBySMS;
+        obj.date_created = now;
+        obj.assigned_users = req.body.trainerIds == null ? JSON.stringify([]) : JSON.stringify(req.body.trainerIds);
+        var data = getStartAndEndDates(start, end, endRange, req.body.repeatMode);
+        async.mapSeries(data.startTimes, function(startTime, cb) {
+            var index = data.startTimes.indexOf(startTime);
+            var tempStartTime = startTime;
+            var tempEndTime = data.endTimes[index];
+            obj.start = tempStartTime;
+            obj.end = tempEndTime;
+            activityDAO.save(obj, req, res, function(data, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, "Error Occured.", error, res, req);
+                }
+                
+                cb();
+            });
+        })
+        endDateForMsg = moment(data.endTimes(data.endTimes.length - 1)).format("DD/MM/YYYY");
+        console.log("----------------------------------------------------"+endDateForMsg);
+        if(req.body.notifyBySMS != null && req.body.notifyBySMS == true) {
+            if(obj.assign_field == 'member') {
+                if(req.body.assignIds != null && req.body.assignIds.length > 0) {
+                    var ids = req.body.assignIds.join();
+                    var query = "select * from member where id in ("+ids+") and active = 1 and accountId = "+req.headers.accountId;
+                    commonUtils.makeDBRequest(query, function(error, data) {
+                        if(error) {
+                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                        }
+                        if(data == null) {
+                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                        }
+                        var phoneNumbers = [];
+                        async.mapSeries(data, function (member, cb1) {
+                            phoneNumbers.push(member.mobile);
+                            cb1();
+                        });
+                        if(phoneNumbers.length > 0) {
+                            accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                                if(error) {
+                                    return logger.logResponse(500, error, null, res, req); 
+                                }
+                                var smsCreditLeft = parseInt(data.sms_credit);
+                                if(smsCreditLeft >= phoneNumbers.length) {
+                                    var startDate = moment(start).format("YYYY-MM-DD");
+                                    var startTime = moment(start).format("hh:mm a");
+                                    var msg = "A session for "+obj.name+" has been scheduled on "+getTimeBasis(obj)+" from "+startDate+" at "+startTime+" till "+endDateForMsg+".\n\nThank You!!!";
+                                    async.mapSeries(phoneNumbers, function (number, cb2) {
+                                        smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
+                                             
+                                        });
+                                        cb2();
+                                    })
+                                    accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
+                                        if(error) {
+                                            return logger.logResponse(500, "Error Occured.", error, res, req);
+                                        } else {
+                                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                                        }
+                                    }); 
+                                } else {
+                                    return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
+                                }
+                            }); 
+                        } else {
+                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                        }
+                    })    
+                } else {
+                    return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                }
+            } else if(obj.assign_field == 'group') {
+                if(req.body.assignIds != null && req.body.assignIds.length > 0) {
+                    var ids = req.body.assignIds.join();
+                    var query = "select * from member m where m.group in ("+ids+") and m.active = 1 and m.accountId = "+req.headers.accountId;
+                    commonUtils.makeDBRequest(query, function(error, data) {
+                        if(error) {
+                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                        }
+                        if(data == null) {
+                            return logger.logResponse(200, "Saved Successfully.", null, res, req); 
+                        }
+                        var phoneNumbers = [];
+                        async.mapSeries(data, function (member, cb) {
+                            phoneNumbers.push(member.mobile);
+                            cb();
+                        });
+                        if(phoneNumbers.length > 0) {
+                            accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                                if(error) {
+                                    return logger.logResponse(500, error, null, res, req); 
+                                }
+                                var smsCreditLeft = parseInt(data.sms_credit);
+                                if(smsCreditLeft >= phoneNumbers.length) {
+                                    var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
+                                    var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
+                                    var msg = "A session for "+obj.name+" has been scheduled on "+getTimeBasis(obj)+" from "+startDate+" at "+startTime+" till "+endDateForMsg+".\n\nThank You!!!";
+                                    async.mapSeries(phoneNumbers, function (number, cb) {
+                                        smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
+                                             
+                                        });
+                                        cb();
+                                    })
+                                    accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
+                                        if(error) {
+                                            return logger.logResponse(500, "Error Occured.", error, res, req);
+                                        } else {
+                                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                                        }
+                                    }); 
+                                } else {
+                                    return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
+                                }
+                            });
+                        } else {
+                            return logger.logResponse(200, "Saved Successfully.", null, res, req);
+                        }
+                    })    
+                } else {
+                    return logger.logResponse(200, "Saved Successfully.", null, res, req);  
+                }    
+            }
+        } else {
+            return logger.logResponse(200, "Saved Successfully.", null, res, req);
+        }
+    };
+
+    function getStartAndEndDates(start, end, endDateRange, repeatType) {
+        var startDatesArray = [];
+        var endDateArray = [];
+        var count = 0;
+        if(repeatType == 'EVERY_MONTH') {   
+            while(end <= endDateRange) {
+                startDatesArray.push(start);
+                endDateArray.push(end);
+                start = moment(start).add(1, 'M').valueOf();
+                end = moment(end).add(1, 'm').valueOf(); 
+            }
+        } else if(repeatType == 'EVERY_WEEK') {   
+            while(end <= endDateRange) {
+                startDatesArray.push(start);
+                endDateArray.push(end);
+                start = moment(start).add(7, 'days').valueOf();
+                end = moment(end).add(7, 'days').valueOf(); 
+            }
+        } if(repeatType == 'EVERY_YEAR') {   
+            while(end <= endDateRange) {
+                startDatesArray.push(start);
+                endDateArray.push(end);
+                start = moment(start).add(1, 'y').valueOf();
+                end = moment(end).add(1, 'y').valueOf(); 
+            }
+        } if(repeatType == 'EVERY_DAY') {   
+            while(end <= endDateRange) {
+                startDatesArray.push(start);
+                endDateArray.push(end);
+                start = moment(start).add(1, 'days').valueOf();
+                end = moment(end).add(1, 'days').valueOf(); 
+            }
+        }
+        return {startTimes : startDatesArray, endTimes : endDateArray};
     };
     controller.getActivities = function(req, res, next) {
         var obj = {};
