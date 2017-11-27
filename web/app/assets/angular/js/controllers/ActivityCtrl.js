@@ -163,6 +163,7 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
                 }
                 temp.start = $filter('date')(temp.start, "dd/MM/yyyy HH:mm:ss");
                 temp.end = $filter('date')(temp.end, "dd/MM/yyyy HH:mm:ss");
+                temp.endDate = $filter('date')(temp.endDate, "dd/MM/yyyy HH:mm:ss");
                 temp.assignIds = $scope.activity.assignField == 'member' ? $scope.activity.selectedMember : $scope.activity.selectedGroup;
                 temp.trainerIds = [];
                 ActivityService.addActivity(temp, function(data) {
