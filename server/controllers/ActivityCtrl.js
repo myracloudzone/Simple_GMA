@@ -24,6 +24,37 @@ module.exports = function (app) {
         }
     }
 
+
+    function sendMeetingNotification (phoneNumbers, msg, req, res, callback) {
+        if(phoneNumbers.length > 0) {
+            accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                if(error) {
+                    callback(null, error, 500);
+                }
+                var smsCreditLeft = parseInt(data.sms_credit);
+                if(smsCreditLeft >= phoneNumbers.length) {
+                    async.mapSeries(phoneNumbers, function (number, cb) {
+                        smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
+                             
+                        });
+                        cb();
+                    })
+                    accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
+                        if(error) {
+                            callback(null, error, 500);
+                        } else {
+                            callback("Sent Successfully", null, 200);
+                        }
+                    }); 
+                } else {
+                    callback("You account dont have enough credits to send SMS. Please top up credits to send SMS.", "You account dont have enough credits to send SMS. Please top up credits to send SMS.", 400);
+                }
+            }); 
+        } else {
+            callback("Phone Numbers are empty.", null, 200);
+        }
+    }
+
     controller.addActivity = function(req, res, next) {
         var obj = {};
         var now = moment().valueOf();
@@ -53,105 +84,141 @@ module.exports = function (app) {
                     }
                     if(req.body.notifyBySMS != null && req.body.notifyBySMS == true) {
                         if(data.assign_field == 'member') {
-                            if(req.body.assignIds != null && req.body.assignIds.length > 0) {
-                                var ids = req.body.assignIds.join();
-                                var query = "select * from member where id in ("+ids+") and active = 1 and accountId = "+req.headers.accountId;
-                                commonUtils.makeDBRequest(query, function(error, data) {
-                                    if(error) {
-                                        return logger.logResponse(200, savedActivity, null, res, req); 
-                                    }
-                                    if(data == null) {
-                                        return logger.logResponse(200, savedActivity, null, res, req); 
-                                    }
-                                    var phoneNumbers = [];
-                                    async.mapSeries(data, function (member, cb) {
-                                        phoneNumbers.push(member.mobile);
-                                        cb();
-                                    });
-                                    if(phoneNumbers.length > 0) {
-                                        accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                            async.parallel({
+                                notifyMembers: function(callbackNotifyMember) {
+                                    if(req.body.assignIds != null && req.body.assignIds.length > 0) {
+                                        var ids = req.body.assignIds.join();
+                                        var query = "select * from member where id in ("+ids+") and active = 1 and accountId = "+req.headers.accountId;
+                                        commonUtils.makeDBRequest(query, function(error, data) {
                                             if(error) {
-                                                return logger.logResponse(500, error, null, res, req); 
+                                                callbackNotifyMember(null, savedActivity);
                                             }
-                                            var smsCreditLeft = parseInt(data.sms_credit);
-                                            if(smsCreditLeft >= phoneNumbers.length) {
-                                                var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
-                                                var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
-                                                var msg = "A session for "+savedActivity.name+" has been scheduled on "+startDate+" at "+startTime+".\n\nThank You!!!";
-                                                async.mapSeries(phoneNumbers, function (number, cb) {
-                                                    smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
-                                                         
-                                                    });
-                                                    cb();
-                                                })
-                                                accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
-                                                    if(error) {
-                                                        return logger.logResponse(500, "Error Occured.", error, res, req);
-                                                    } else {
-                                                        return logger.logResponse(200, savedActivity, null, res, req);
-                                                    }
-                                                }); 
-                                            } else {
-                                                return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
+                                            if(data == null) {
+                                                callbackNotifyMember(null, savedActivity);
                                             }
-                                        }); 
+                                            var phoneNumbers = [];
+                                            async.mapSeries(data, function (member, cb) {
+                                                phoneNumbers.push(member.mobile);
+                                                cb();
+                                            });
+                                            var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
+                                            var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
+                                            var msg = "A session for "+savedActivity.name+" has been scheduled on "+startDate+" at "+startTime+".\n\nThank You!!!";
+                                            sendMeetingNotification(phoneNumbers,msg, req, res, function(msg, error, statusCode) {
+                                                if(error) {
+                                                    callbackNotifyMember({errorCode : statusCode, error : error}, null);
+                                                }
+                                                callbackNotifyMember(null, savedActivity);
+                                            })
+                                        })    
                                     } else {
-                                        return logger.logResponse(200, savedActivity, null, res, req);
-                                    }
-                                })    
-                            } else {
+                                        callbackNotifyMember(null, savedActivity);
+                                    } 
+                                },
+                                notifyUsers: function(callbackNotifyUser) {
+                                    if(req.body.trainerIds != null && req.body.trainerIds.length > 0) {
+                                        var ids = req.body.assignIds.join();
+                                        var query = "select * from users u where u.id in ("+ids+") and u.active = 1 and u.accountId = "+req.headers.accountId;
+                                        commonUtils.makeDBRequest(query, function(error, data) {
+                                            if(error) {
+                                                callbackNotifyUser(null, savedActivity);
+                                            }
+                                            if(data == null) {
+                                                callbackNotifyUser(null, savedActivity);
+                                            }
+                                            var phoneNumbers = [];
+                                            async.mapSeries(data, function (member, cb) {
+                                                phoneNumbers.push(member.mobile);
+                                                cb();
+                                            });
+                                            var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
+                                            var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
+                                            var msg = "A session for "+savedActivity.name+" has been scheduled for you as a mentor on "+startDate+" at "+startTime+".\n\nThank You!!!";
+                                            sendMeetingNotification(phoneNumbers,msg, req, res, function(msg, error, statusCode) {
+                                                if(error) {
+                                                    callbackNotifyUser({errorCode : statusCode, error : error}, null);
+                                                }
+                                                callbackNotifyUser(null, savedActivity);
+                                            })
+                                        })    
+                                    } else {
+                                        callbackNotifyUser(null, savedActivity);
+                                    } 
+                                }
+                            }, function(err, results) {
+                                if(err) {
+                                    return logger.logResponse(err.errorCode, err.error, err.error, res, req);
+                                }
                                 return logger.logResponse(200, savedActivity, null, res, req); 
-                            }
+                            }); 
                         } else if(data.assign_field == 'group') {
-                            if(req.body.assignIds != null && req.body.assignIds.length > 0) {
-                                var ids = req.body.assignIds.join();
-                                var query = "select * from member m where m.group in ("+ids+") and m.active = 1 and m.accountId = "+req.headers.accountId;
-                                commonUtils.makeDBRequest(query, function(error, data) {
-                                    if(error) {
-                                        return logger.logResponse(200, savedActivity, null, res, req); 
-                                    }
-                                    if(data == null) {
-                                        return logger.logResponse(200, savedActivity, null, res, req); 
-                                    }
-                                    var phoneNumbers = [];
-                                    async.mapSeries(data, function (member, cb) {
-                                        phoneNumbers.push(member.mobile);
-                                        cb();
-                                    });
-                                    if(phoneNumbers.length > 0) {
-                                        accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
+                            async.parallel({
+                                notifyMembers: function(callbackNotifyMember) {
+                                    if(req.body.assignIds != null && req.body.assignIds.length > 0) {
+                                        var ids = req.body.assignIds.join();
+                                        var query = "select * from member m where m.group in ("+ids+") and m.active = 1 and m.accountId = "+req.headers.accountId;
+                                        commonUtils.makeDBRequest(query, function(error, data) {
                                             if(error) {
-                                                return logger.logResponse(500, error, null, res, req); 
+                                                callbackNotifyMember(null, savedActivity);
                                             }
-                                            var smsCreditLeft = parseInt(data.sms_credit);
-                                            if(smsCreditLeft >= phoneNumbers.length) {
-                                                var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
-                                                var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
-                                                var msg = "A session for "+savedActivity.name+" has been scheduled on "+startDate+" at "+startTime+".\n\nThank You!!!";
-                                                async.mapSeries(phoneNumbers, function (number, cb) {
-                                                    smsSender.sendMessage(number, msg, req, res, function(data, statusCode, req, res) {
-                                                         
-                                                    });
-                                                    cb();
-                                                })
-                                                accountDAO.update(req.headers.accountId, {sms_credit : (smsCreditLeft - phoneNumbers.length)}, req, res, function(data, error, req, res) {
-                                                    if(error) {
-                                                        return logger.logResponse(500, "Error Occured.", error, res, req);
-                                                    } else {
-                                                        return logger.logResponse(200, savedActivity, null, res, req);
-                                                    }
-                                                }); 
-                                            } else {
-                                                return logger.logResponse(400, "You account dont have enough credits to send SMS. Please top up credits to send SMS.", "Dont have enough credits to send SMS. Please top up credits to send SMS.", res, req);
+                                            if(data == null) {
+                                                callbackNotifyMember(null, savedActivity);
                                             }
-                                        });
+                                            var phoneNumbers = [];
+                                            async.mapSeries(data, function (member, cb) {
+                                                phoneNumbers.push(member.mobile);
+                                                cb();
+                                            });
+                                            var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
+                                            var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
+                                            var msg = "A session for "+savedActivity.name+" has been scheduled on "+startDate+" at "+startTime+".\n\nThank You!!!";
+                                            sendMeetingNotification(phoneNumbers,msg, req, res, function(msg, error, statusCode) {
+                                                if(error) {
+                                                    callbackNotifyMember({errorCode : statusCode, error : error}, null);
+                                                }
+                                                callbackNotifyMember(null, savedActivity);
+                                            })
+                                        })    
                                     } else {
-                                        return logger.logResponse(200, savedActivity, null, res, req);
-                                    }
-                                })    
-                            } else {
-                                return logger.logResponse(200, savedActivity, null, res, req);  
-                            }    
+                                        callbackNotifyMember(null, savedActivity);
+                                    } 
+                                },
+                                notifyUsers: function(callbackNotifyUser) {
+                                    if(req.body.trainerIds != null && req.body.trainerIds.length > 0) {
+                                        var ids = req.body.assignIds.join();
+                                        var query = "select * from users u where u.id in ("+ids+") and u.active = 1 and u.accountId = "+req.headers.accountId;
+                                        commonUtils.makeDBRequest(query, function(error, data) {
+                                            if(error) {
+                                                callbackNotifyUser(null, savedActivity);
+                                            }
+                                            if(data == null) {
+                                                callbackNotifyUser(null, savedActivity);
+                                            }
+                                            var phoneNumbers = [];
+                                            async.mapSeries(data, function (member, cb) {
+                                                phoneNumbers.push(member.mobile);
+                                                cb();
+                                            });
+                                            var startDate = moment(parseFloat(savedActivity.start)).format("YYYY-MM-DD");
+                                            var startTime = moment(parseFloat(savedActivity.start)).format("hh:mm a");
+                                            var msg = "A session for "+savedActivity.name+" has been scheduled for you as a mentor on "+startDate+" at "+startTime+".\n\nThank You!!!";
+                                            sendMeetingNotification(phoneNumbers,msg, req, res, function(msg, error, statusCode) {
+                                                if(error) {
+                                                    callbackNotifyUser({errorCode : statusCode, error : error}, null);
+                                                }
+                                                callbackNotifyUser(null, savedActivity);
+                                            })
+                                        })    
+                                    } else {
+                                        callbackNotifyUser(null, savedActivity);
+                                    } 
+                                }
+                            }, function(err, results) {
+                                if(err) {
+                                    return logger.logResponse(err.errorCode, err.error, err.error, res, req);
+                                }
+                                return logger.logResponse(200, savedActivity, null, res, req); 
+                            });       
                         }
                     } else {
                         return logger.logResponse(200, savedActivity, null, res, req);
@@ -348,6 +415,7 @@ module.exports = function (app) {
         var result =  {startTimes : startDatesArray, endTimes : endDateArray};
         callback(result);
     };
+
     controller.getActivities = function(req, res, next) {
         var obj = {};
         obj.accountId = req.headers.accountId;
@@ -381,15 +449,18 @@ module.exports = function (app) {
     };
 
     controller.deleteActivity = function(req, res, next) {
-        var condition = {};
-        condition.code = req.body.code;
-        condition.accountId = req.headers.accountId;
-        activityDAO.update(condition, {active : false}, req, res, function(data, error, req, res) {
+        var query = "";
+        if(req.body.id != null) {
+            query = "update activity a set a.active = 0  where a.id = "+req.body.id+" and a.accountId="+req.headers.accountId;
+        } else {
+            query = "update activity a set a.active = 0  where a.code = "+req.body.code+" and a.accountId="+req.headers.accountId;
+        }
+        commonUtils.makeDBRequest(query, function(error, data) {
             if(error) {
                 return logger.logResponse(500, "Error Occurred.", error, res, req);
             }
-            return logger.logResponse(200, "Successfully Deleted.", null, res, req);
-        })
+            return logger.logResponse(200, "Successfully Deleted.", null, res, req);    
+        });
     };
 
     function validateField(req) {
