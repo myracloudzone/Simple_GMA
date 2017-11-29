@@ -61,13 +61,16 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
             });
             $('.delete-icon').on('click', function(e) {
                 e.stopImmediatePropagation();
-                $scope.deleteActivity();
+                $scope.deleteActivity(e);
             });
         }, 500);
     };
 
-    
     $scope.getActivities();
+
+    $scope.alertOnDrop = function(event, delta, revertFunc, jsEvent, ui, view){
+        // $scope.updateAgendaEvent(event, delta,'DROP');
+    };
     
     $scope.uiConfig = {
         calendar:{
@@ -108,16 +111,54 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
         }
     };
 
-    $scope.deleteActivity = function() {
+    $scope.deleteActivity = function(ev) {
         $($scope.popOverContextObject).popover('hide');
         $scope.popOverContextObject = null;
-        ActivityService.deleteActivity({code : $scope.selectedActivity.code}, function(data) {
-            notificationService.success("Deleted Successfully.");
-            uiCalendarConfig.calendars['myCalendar'].fullCalendar('removeEvents', $scope.selectedActivity.id);
-            $scope.selectedActivity = null;
-        }, function(error) {
-            notificationService.error("Error Occurred.");
-        })
+        if($scope.selectedActivity.repeatMode != 'DO_NOT_REPEAT') {
+            var confirm = $mdDialog.confirm()
+            .title('This is a recurring activity. Do you want to delete all the occurances of this activity?')
+            .textContent('')
+            .ariaLabel('Delete')
+            .targetEvent(ev)
+            .ok('Please do it!')
+            .cancel('No, Just delete this one!');
+              $mdDialog.show(confirm).then(function() {
+                ActivityService.deleteActivity({code : $scope.selectedActivity.code}, function(data) {
+                    notificationService.success("Deleted Successfully.");
+                    $scope.getActivities();
+                    $scope.selectedActivity = null;
+                }, function(error) {
+                    notificationService.error("Error Occurred.");
+                })
+              }, function() {
+                    ActivityService.deleteActivity({id : $scope.selectedActivity.id}, function(data) {
+                        notificationService.success("Deleted Successfully.");
+                        uiCalendarConfig.calendars['myCalendar'].fullCalendar('removeEvents', $scope.selectedActivity.id);
+                        $scope.selectedActivity = null;
+                    }, function(error) {
+                        notificationService.error("Error Occurred.");
+                    })
+              });
+        } else {
+            var confirm = $mdDialog.confirm()
+            .title('Would you like to delete this activity?')
+            .textContent('')
+            .ariaLabel('Delete')
+            .targetEvent(ev)
+            .ok('Please do it!')
+            .cancel('Cancel');
+            $mdDialog.show(confirm).then(function() {
+                ActivityService.deleteActivity({id : $scope.selectedActivity.id}, function(data) {
+                    notificationService.success("Deleted Successfully.");
+                    uiCalendarConfig.calendars['myCalendar'].fullCalendar('removeEvents', $scope.selectedActivity.id);
+                    $scope.selectedActivity = null;
+                }, function(error) {
+                    notificationService.error("Error Occurred.");
+                })
+            }, function() {
+        
+            });
+        }
     }
     $scope.editActivity = function() {
         alert("Under Construction.");
