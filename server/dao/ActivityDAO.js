@@ -15,6 +15,8 @@ module.exports = {
     },
     findAll : function(condition, req, res, callback) {
         console.log("--------------------------------DAO---------------------------------------------");
+        console.log("-------condition is ")
+        console.log(condition)
         schema.model('Activity').forge().where(condition).orderBy('name', 'ASC').fetchAll().then(function (result) {
             console.log("--------------------------------DAO1---------------------------------------------");
             if(result == null) {
