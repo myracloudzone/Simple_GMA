@@ -491,9 +491,7 @@ module.exports = function (app) {
                 obj.color = activity.color;
                 results.push(obj);
                 console.log("--------------------------------FF---------------------------------------------");
-                setImmediate(function() {
-                    cb(); 
-                });
+                cb(); 
                     
             });
             console.log("--------------------------------EE---------------------------------------------");
