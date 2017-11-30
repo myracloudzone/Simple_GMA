@@ -492,7 +492,7 @@ module.exports = function (app) {
                 results.push(obj);
                 console.log("--------------------------------FF---------------------------------------------");
                 setTimeout(function() {
-                    cb(); });
+                    cb(); 
                 }, 10);
                     
             });
