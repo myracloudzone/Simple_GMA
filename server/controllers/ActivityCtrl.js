@@ -491,9 +491,9 @@ module.exports = function (app) {
                 obj.color = activity.color;
                 results.push(obj);
                 console.log("--------------------------------FF---------------------------------------------");
-                setTimeout(function() {
+                setImmediate(function() {
                     cb(); 
-                }, 10);
+                });
                     
             });
             console.log("--------------------------------EE---------------------------------------------");
