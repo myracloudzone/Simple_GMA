@@ -1,3 +1,4 @@
+
 var schema = require('bookshelf').DB;
 var logger = require('../scripts/logger.js');
 var moment = require('moment');
@@ -445,10 +446,12 @@ module.exports = function (app) {
             }
         } if(repeatType == 'EVERY_DAY') {   
             while(end <= endDateRange) {
-                startDatesArray.push(start);
-                endDateArray.push(end);
-                start = moment(start).add(1, 'days').valueOf();
-                end = moment(end).add(1, 'days').valueOf(); 
+                setTimeout(function() {
+                    startDatesArray.push(start);
+                    endDateArray.push(end);
+                    start = moment(start).add(1, 'days').valueOf();
+                    end = moment(end).add(1, 'days').valueOf(); 
+                }, 100)
             }
         }
         var result =  {startTimes : startDatesArray, endTimes : endDateArray};
