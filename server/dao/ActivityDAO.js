@@ -16,6 +16,7 @@ module.exports = {
     findAll : function(condition, req, res, callback) {
         console.log("--------------------------------DAO---------------------------------------------");
         console.log("-------condition is ")
+        try {
         console.log(condition)
         schema.model('Activity').forge().where(condition).orderBy('name', 'ASC').fetchAll().then(function (result) {
             console.log("--------------------------------DAO1---------------------------------------------");
@@ -28,7 +29,11 @@ module.exports = {
 		}).catch(function (err) {
             console.log("--------------------------------DAO4---------------------------------------------");
 			callback(null, err, req, res);
-		});
+        });
+        } catch(ex) {
+            console.log("--------------------------------DAOError---------------------------------------------");
+            console.log(ex)
+        }
     },
     update : function(condition, obj, req, res, callback) {
         schema.model('Activity').forge().where(condition).fetch().then(function (activity) {
