@@ -456,18 +456,23 @@ module.exports = function (app) {
     };
 
     controller.getActivities = function(req, res, next) {
+        console.log("-------------------------------------------------------------------------------");
         var obj = {};
         obj.accountId = req.headers.accountId;
         obj.active = true;
         activityDAO.findAll(obj, req, res, function(data, error, req, res) {
+            console.log("-------------------------------------AAA----------------------------------------");
             if(error) {
+                console.log("--------------------------------BB---------------------------------------------");
                 return logger.logResponse(500, "Error Occurred.", error, res, req);
             }
             var results = [];
             if(data == null || data.length == 0) {
+                console.log("--------------------------------CC---------------------------------------------");
                 return logger.logResponse(200, results, null, res, req);
             }
             async.mapSeries(data, function (activity, cb) {
+                console.log("--------------------------------DD---------------------------------------------");
                 var obj = {};
                 obj.id = activity.id;
                 obj.accountId = activity.accountId;
@@ -484,8 +489,10 @@ module.exports = function (app) {
                 obj.trainerIds = activity.assigned_users;
                 obj.color = activity.color;
                 results.push(obj);
+                console.log("--------------------------------FF---------------------------------------------");
                 cb();
             });
+            console.log("--------------------------------EE---------------------------------------------");
             return logger.logResponse(200, results, null, res, req);
         })
     };
