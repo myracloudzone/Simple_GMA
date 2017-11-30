@@ -491,8 +491,10 @@ module.exports = function (app) {
                 obj.color = activity.color;
                 results.push(obj);
                 console.log("--------------------------------FF---------------------------------------------");
-                process.nextTick(function() { 
+                setTimeout(function() {
                     cb(); });
+                }, 10);
+                    
             });
             console.log("--------------------------------EE---------------------------------------------");
             return logger.logResponse(200, results, null, res, req);
