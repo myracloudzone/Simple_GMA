@@ -464,6 +464,9 @@ module.exports = function (app) {
                 return logger.logResponse(500, "Error Occurred.", error, res, req);
             }
             var results = [];
+            if(data == null || data.length == 0) {
+                return logger.logResponse(200, results, null, res, req);
+            }
             async.mapSeries(data, function (activity, cb) {
                 var obj = {};
                 obj.id = activity.id;
