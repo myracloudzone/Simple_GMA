@@ -446,12 +446,10 @@ module.exports = function (app) {
             }
         } if(repeatType == 'EVERY_DAY') {   
             while(end <= endDateRange) {
-                setTimeout(function() {
-                    startDatesArray.push(start);
-                    endDateArray.push(end);
-                    start = moment(start).add(1, 'days').valueOf();
-                    end = moment(end).add(1, 'days').valueOf(); 
-                }, 100)
+                startDatesArray.push(start);
+                endDateArray.push(end);
+                start = moment(start).add(1, 'days').valueOf();
+                end = moment(end).add(1, 'days').valueOf(); 
             }
         }
         var result =  {startTimes : startDatesArray, endTimes : endDateArray};
@@ -493,7 +491,7 @@ module.exports = function (app) {
                 obj.color = activity.color;
                 results.push(obj);
                 console.log("--------------------------------FF---------------------------------------------");
-                cb();
+                setImmediate(cb());
             });
             console.log("--------------------------------EE---------------------------------------------");
             return logger.logResponse(200, results, null, res, req);
