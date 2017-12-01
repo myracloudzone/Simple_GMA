@@ -85,7 +85,7 @@
                                     <label>Start Date</label>
                                     <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
                                     <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
-                                    click-outside-to-close="true" show-todays-date="true" ng-model="activity.start" min-date="calendar.minDate"
+                                    click-outside-to-close="true" show-todays-date="true" ng-model="activity.startDate" min-date="calendar.minDate"
                                     max-date="calendar.maxDate" class=" md-input">
                                 </md-input-container>
                                 <md-input-container class="md-block md-icon-float" flex-gt-xs>
@@ -104,12 +104,12 @@
                                 </md-input-container>
                             </div>
                         </div>
-                        <div flex="100">
+                        <div flex="100" ng-if="activity.id == null">
                             <div class="row plr15">
                                 <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-sm>
                                     <label>Repeat Mode</label>
                                     <md-icon md-font-icon="fa-repeat" class="fa fa-lg"></md-icon>
-                                    <md-select ng-model="activity.repeatMode">
+                                    <md-select ng-model="activity.repeatMode" ng-disabled="activity.id != null">
                                         <md-option value="DO_NOT_REPEAT">Does not repeat</md-option>
                                         <md-option value="EVERY_DAY">Every day</md-option>
                                         <md-option value="EVERY_WEEK">Every week</md-option>
@@ -117,12 +117,12 @@
                                         <md-option value="EVERY_YEAR">Every year</md-option>
                                     </md-select>
                                 </md-input-container>
-                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-xs ng-if="activity.repeatMode != 'DO_NOT_REPEAT'">
+                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-xs ng-if="activity.repeatMode != 'DO_NOT_REPEAT'" >
                                     <label>Repeat End Date</label>
                                     <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
                                     <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
                                     click-outside-to-close="true" show-todays-date="true" ng-model="activity.endDate" min-date="calendar.minDate"
-                                    max-date="calendar.maxDate" class=" md-input">
+                                    max-date="calendar.maxDate" class=" md-input" ng-disabled="activity.id != null">
                                 </md-input-container>
                                 <div md-color-picker="colorPicker.options" ng-model="activity.color" md-color-clear-button="false" class="col-12 col-sm-12 col-md-6 p0" disable-key></div>
                             </div>
@@ -161,7 +161,7 @@
                             <md-checkbox ng-model="activity.notifyBySMS" aria-label="Notify Members by SMS">
                                 Notify Members by SMS
                             </md-checkbox>
-                        </div>    
+                        </div>   
                     </div>
                 </div>
             </md-dialog-content>

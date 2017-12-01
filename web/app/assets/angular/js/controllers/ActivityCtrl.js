@@ -160,10 +160,11 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
             });
         }
     }
-    $scope.editActivity = function() {
-        alert("Under Construction.");
+    $scope.editActivity = function(ev) {
+        $scope.add(ev, $scope.selectedActivity.id);
     }
 
+    
     $scope.eventRender = function( event, element, view ) {
         element.context.innerHTML = '<div class="fc-content mt10"><div class="fc-title">'+'<span class="boldFont">'+event.title+'</span>'+'</div></div><div class="fc-bg"></div><div class="fc-resizer fc-end-resizer"></div>';
         $compile(element)($scope);
@@ -178,6 +179,30 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
             $scope.activity = {assignField : "member", repeatMode : "DO_NOT_REPEAT", color : '#3F51B5', selectedMember : [], selectedGroup : []};
             $scope.colorPicker = {};
             $scope.groups =[];
+            $scope.loading = true;
+            $scope.fetchData = function() {
+                if(id == null) {
+                    $scope.loading = false;
+                } else {
+                    ActivityService.getActivityById({id :id}, function(data) {
+                        $scope.activity = data;
+                        $scope.activityBackup = angular.copy(data); 
+                        $scope.activity.startDate = new Date($scope.activity.start);
+                        $scope.activity.start = new Date($scope.activity.start);
+                        $scope.activity.end = new Date($scope.activity.end);
+                        if($scope.activity.assignField == 'member') {
+                            $scope.activity.selectedMember = JSON.parse($scope.activity.assignIds);
+                        } else if($scope.activity.assignField == 'group') {
+                            $scope.activity.selectedGroup = JSON.parse($scope.activity.assignIds);
+                        }
+                        $scope.loading = false;
+                    }, function(error) {
+                        $scope.loading = false;
+                    });
+                }
+            }
+            $scope.fetchData();
+            
             $scope.colorPicker.options = {
                 label: "Color",
                 default: "#f00",
@@ -195,35 +220,67 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
                 if(!$scope.validateData()) {
                     return;
                 }
-                var temp = angular.copy($scope.activity);
-                temp.start.setSeconds(0);
-                temp.end = $scope.getEndTime();
-                if(temp.start.getTime() >= temp.end.getTime()) {
-                    notificationService.error("Start Time cannot be greater than End Time.");
-                    return;
-                }
-                temp.start = $filter('date')(temp.start, "dd/MM/yyyy HH:mm:ss");
-                temp.end = $filter('date')(temp.end, "dd/MM/yyyy HH:mm:ss");
-                temp.endDate = $filter('date')(temp.endDate, "dd/MM/yyyy HH:mm:ss");
-                temp.assignIds = $scope.activity.assignField == 'member' ? $scope.activity.selectedMember : $scope.activity.selectedGroup;
-                temp.trainerIds = [];
-                ActivityService.addActivity(temp, function(data) {
-                    notificationService.success('Saved Successfully.');
-                    $scope.close(data);
-                }, function(error) {
-                    if(error.status == 400) {
-                        notificationService.error("You don't have enough credits to send SMS. Please top up to get instant SMS.");
-                        $scope.close({});
+                if($scope.activity.id == null) {
+                    var temp = angular.copy($scope.activity);
+                    temp.start = $scope.getStartTime();
+                    temp.end = $scope.getEndTime();
+                    if(temp.start.getTime() >= temp.end.getTime()) {
+                        notificationService.error("Start Time cannot be greater than End Time.");
+                        return;
                     }
-                    $scope.close({});
-                });
+                    temp.start = $filter('date')(temp.start, "dd/MM/yyyy HH:mm:ss");
+                    temp.end = $filter('date')(temp.end, "dd/MM/yyyy HH:mm:ss");
+                    temp.endDate = $filter('date')(temp.endDate, "dd/MM/yyyy HH:mm:ss");
+                    temp.assignIds = $scope.activity.assignField == 'member' ? $scope.activity.selectedMember : $scope.activity.selectedGroup;
+                    temp.trainerIds = [];
+                    ActivityService.addActivity(temp, function(data) {
+                        notificationService.success('Saved Successfully.');
+                        $scope.close(data);
+                    }, function(error) {
+                        if(error.status == 400) {
+                            notificationService.error("You don't have enough credits to send SMS. Please top up to get instant SMS.");
+                            $scope.close({});
+                        }
+                        $scope.close({});
+                    });
+                } else {
+                    var temp = angular.copy($scope.activity);
+                    temp.start = $scope.getStartTime();
+                    temp.end = $scope.getEndTime();
+                    if(temp.start.getTime() >= temp.end.getTime()) {
+                        notificationService.error("Start Time cannot be greater than End Time.");
+                        return;
+                    }
+                    temp.start = $filter('date')(temp.start, "dd/MM/yyyy HH:mm:ss");
+                    temp.end = $filter('date')(temp.end, "dd/MM/yyyy HH:mm:ss");
+                    temp.assignIds = $scope.activity.assignField == 'member' ? $scope.activity.selectedMember : $scope.activity.selectedGroup;
+                    temp.trainerIds = [];
+                    ActivityService.updateActivity(temp, function(data) {
+                        notificationService.success('Saved Successfully.');
+                        $scope.close(data);
+                    }, function(error) {
+                        if(error.status == 400) {
+                            notificationService.error("You don't have enough credits to send SMS. Please top up to get instant SMS.");
+                            $scope.close({});
+                        }
+                        $scope.close({});
+                    });
+                }
             };
 
             $scope.getEndTime = function() {
-                var tempDate = angular.copy($scope.activity.start);
+                var tempDate = angular.copy($scope.activity.startDate);
                 tempDate.setHours($scope.activity.end.getHours());
                 tempDate.setMinutes($scope.activity.end.getMinutes());
                 tempDate.setSeconds(0);
+                return tempDate;
+            }
+
+            $scope.getStartTime = function() {
+                var tempDate = angular.copy($scope.activity.startDate);
+                tempDate.setSeconds(0);
+                tempDate.setHours($scope.activity.start.getHours());
+                tempDate.setMinutes($scope.activity.start.getMinutes());
                 return tempDate;
             }
 
@@ -231,8 +288,11 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
                 if(GlobalMethodService.isEmptyString($scope.activity.name)) {
                     notificationService.error('Name is required.');
                     return false;
-                } else if(GlobalMethodService.isEmptyString($scope.activity.start)) {
+                } else if(GlobalMethodService.isEmptyString($scope.activity.startDate)) {
                     notificationService.error('Start Date is required.');
+                    return false;
+                } else if(GlobalMethodService.isEmptyString($scope.activity.start)) {
+                    notificationService.error('Start Time is required.');
                     return false;
                 } else if(GlobalMethodService.isEmptyString($scope.activity.end)) {
                     notificationService.error('End Time is required.');
