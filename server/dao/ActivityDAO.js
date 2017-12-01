@@ -14,26 +14,26 @@ module.exports = {
         })
     },
     findAll : function(condition, req, res, callback) {
-        console.log("--------------------------------DAO---------------------------------------------");
-        console.log("-------condition is ")
-        try {
-        console.log(condition)
         schema.model('Activity').forge().where(condition).orderBy('name', 'ASC').fetchAll().then(function (result) {
-            console.log("--------------------------------DAO1---------------------------------------------");
             if(result == null) {
-                console.log("--------------------------------DAO2---------------------------------------------");
                 callback([], null, req, res);
             }
-            console.log("--------------------------------DAO3---------------------------------------------");
             callback(result.toJSON(), null, req, res);
 		}).catch(function (err) {
-            console.log("--------------------------------DAO4---------------------------------------------");
-			callback(null, err, req, res);
+        	callback(null, err, req, res);
         });
-        } catch(ex) {
-            console.log("--------------------------------DAOError---------------------------------------------");
-            console.log(ex)
-        }
+    },
+    find : function(id, req, res, callback) {
+        schema.model('Activity').forge().where({
+            id: id
+		}).fetch().then(function (result) {
+            if(result == null) {
+                callback(null, "No Record Found", req, res);
+            }
+            callback(result.toJSON(), null, req, res);
+		}).catch(function (err) {
+			callback(null, err, req, res);
+		});
     },
     update : function(condition, obj, req, res, callback) {
         schema.model('Activity').forge().where(condition).fetch().then(function (activity) {
