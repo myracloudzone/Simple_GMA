@@ -682,36 +682,71 @@ module.exports = function (app) {
         var obj = {};
         obj.accountId = req.headers.accountId;
         obj.active = true;
-        activityDAO.findAll(obj, req, res, function(data, error, req, res) {
-            if(error) {
-                return logger.logResponse(500, "Error Occurred.", error, res, req);
-            }
-            var results = [];
-            if(data == null || data.length == 0) {
+        if(req.query.search == null || req.query.search == '') {
+            activityDAO.findAll(obj, req, res, function(data, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, "Error Occurred.", error, res, req);
+                }
+                var results = [];
+                if(data == null || data.length == 0) {
+                    return logger.logResponse(200, results, null, res, req);
+                }
+                async.mapSeries(data, function (activity, cb) {
+                    var obj = {};
+                    obj.id = activity.id;
+                    obj.accountId = activity.accountId;
+                    obj.active = activity.active;
+                    obj.name = activity.name;
+                    obj.description = activity.description;
+                    obj.start = moment(parseFloat(activity.start)).format("YYYY-MM-DDTHH:mm:ss");
+                    obj.end = moment(parseFloat(activity.end)).format("YYYY-MM-DDTHH:mm:ss");
+                    obj.repeatMode = activity.repeat_mode;
+                    obj.code = activity.code;
+                    obj.assignField = activity.assign_field;
+                    obj.assignIds = activity.assigned_ids;
+                    obj.notifyBySMS = activity.notify_by_sms;
+                    obj.trainerIds = activity.assigned_users;
+                    obj.color = activity.color;
+                    results.push(obj);
+                    cb(); 
+                        
+                });
                 return logger.logResponse(200, results, null, res, req);
-            }
-            async.mapSeries(data, function (activity, cb) {
-                var obj = {};
-                obj.id = activity.id;
-                obj.accountId = activity.accountId;
-                obj.active = activity.active;
-                obj.name = activity.name;
-                obj.description = activity.description;
-                obj.start = moment(parseFloat(activity.start)).format("YYYY-MM-DDTHH:mm:ss");
-                obj.end = moment(parseFloat(activity.end)).format("YYYY-MM-DDTHH:mm:ss");
-                obj.repeatMode = activity.repeat_mode;
-                obj.code = activity.code;
-                obj.assignField = activity.assign_field;
-                obj.assignIds = activity.assigned_ids;
-                obj.notifyBySMS = activity.notify_by_sms;
-                obj.trainerIds = activity.assigned_users;
-                obj.color = activity.color;
-                results.push(obj);
-                cb(); 
-                    
+            })
+        } else {
+            obj.search = req.query.search;
+            activityDAO.findBySearchTerm(obj, req, res, function(data, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, "Error Occurred.", error, res, req);
+                }
+                var results = [];
+                if(data == null || data.length == 0) {
+                    return logger.logResponse(200, results, null, res, req);
+                }
+                async.mapSeries(data, function (activity, cb) {
+                    var obj = {};
+                    obj.id = activity.id;
+                    obj.accountId = activity.accountId;
+                    obj.active = activity.active;
+                    obj.name = activity.name;
+                    obj.description = activity.description;
+                    obj.start = moment(parseFloat(activity.start)).format("YYYY-MM-DDTHH:mm:ss");
+                    obj.end = moment(parseFloat(activity.end)).format("YYYY-MM-DDTHH:mm:ss");
+                    obj.repeatMode = activity.repeat_mode;
+                    obj.code = activity.code;
+                    obj.assignField = activity.assign_field;
+                    obj.assignIds = activity.assigned_ids;
+                    obj.notifyBySMS = activity.notify_by_sms;
+                    obj.trainerIds = activity.assigned_users;
+                    obj.color = activity.color;
+                    results.push(obj);
+                    cb(); 
+                        
+                });
+                return logger.logResponse(200, results, null, res, req);
             });
-            return logger.logResponse(200, results, null, res, req);
-        })
+        }
+        
     };
 
     controller.deleteActivity = function(req, res, next) {

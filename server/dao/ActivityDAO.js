@@ -58,4 +58,21 @@ module.exports = {
 			callback(null, err, req, res);
 		});
     },
+    findBySearchTerm : function(searchFilter, req, res, callback) {
+        var likeSearchTerm = '%' + searchFilter.search + '%';
+        schema.model('Activity').forge().query( function(qb) {
+            qb
+            .where('activity.accountId', searchFilter.accountId)
+            .andWhere('activity.active', searchFilter.active)
+            .andWhere('activity.name', 'like', likeSearchTerm)
+            .orderBy('activity.name')
+        }).fetchAll().then(function (result) {
+            if(result == null) {
+                callback([], null, req, res);
+            }
+            callback(result.toJSON(), null, req, res);
+        }).catch(function (err) {
+            callback(null, err, req, res);
+        });    
+    }
 }
