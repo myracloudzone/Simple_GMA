@@ -154,7 +154,7 @@
 	border-bottom: 1px solid #cdcdcd;
 }
 .activityDiv {
-  height: calc(100vh - 150px);
+  height: calc(100vh - 180px);
   overflow: auto;
 	border-bottom: 1px solid #cdcdcd;
 }
@@ -282,6 +282,9 @@ form .md-datepicker-input-container{
 .search-btn {
     border-radius: 0px 30px 30px 0px;
     cursor:pointer;
+}
+.fc-view-container {
+  margin-bottom: 5px !important;
 }
 .border-l-r-b {
   border-left: 1px solid #ccc;
@@ -903,6 +906,26 @@ button.chipClose:focus {
 .dtp > .dtp-content > .dtp-date-view > header.dtp-header {
   background: rgb(63,81,181) !important;
 }
+/* ---Full Calendar CSS---- */
+.fc-button {
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,.26) !important;
+  background: #3f51b5 !important;
+  color: #fff !important;
+}
+.fc-button:focus {
+  outline:none !important;
+}
+.fc-next-button {
+  background : #ddd !important;
+  color: #000 !important;
+}
+.fc-prev-button {
+  background : #ddd !important;
+  color: #000 !important;
+}
+.fc-button {
+  font-size: 14px !important;
+}
 /* --------------------------- */
 @media (max-width: 420px) {
 	.paginator {
@@ -929,6 +952,30 @@ button.chipClose:focus {
   }
   #messageDialogBox {
     width: 80%;
+  }
+  .fc-button {
+    font-size: 13px !important;
+  }
+  h2 {
+    font-size: 24px !important;
+    margin-top: 5px !important;
+  }
+  .fc-day-header span {
+    font-size: 12px !important;
+  }
+  .fc-title span {
+    font-size: 12px !important;
+  }
+  .fc-time span {
+    font-size: 12px !important;
+  }
+  .fc-axis span {
+    font-size: 12px !important;
+  }
+  .activityDiv {
+    height: calc(100vh - 175px);
+    overflow: auto;
+    border-bottom: 1px solid #cdcdcd;
   }
 }
 @media (max-width: 992px) {

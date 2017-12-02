@@ -24,12 +24,16 @@
                     <div class="md-toolbar-tools">
                         <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Activity</md-truncate>
                         <span flex></span>
-						<md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="getActivities($event, '')">
-                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Search" ng-click="isSearchOpen =! isSearchOpen">
+                            <md-tooltip md-direction="bottom">Search</md-tooltip>
+                            <i class="fa fa-fw fa-search"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="getActivities($event, '')">
+                            <md-tooltip md-direction="bottom">Refresh</md-tooltip>
                             <i class="fa fa-fw fa-refresh"></i>
                         </md-button>
                         <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="add($event)">
-                            <md-tooltip md-direction="top">Add New</md-tooltip>
+                            <md-tooltip md-direction="bottom">Add New</md-tooltip>
                             <i class="fa fa-fw fa-plus"></i>
                         </md-button>
                     </div>
@@ -39,6 +43,15 @@
                 <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
             </div>
             <div class="col-sm-12 activityDiv mt10" id="listTable" ng-if="!activitiesLoading">
+                <div class="col-sm-12 mt5 p0 memberSearchBox mb10" ng-if="isSearchOpen">
+                    <div class="input-group col-sm-12 p0">
+                        <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="getActivities()"/>
+                        <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="getActivities()"><i class="fa fa-search"></i>
+                        </button>
+                        </span>
+                    </div>
+                </div>
                 <div ui-calendar="uiConfig.calendar" ng-model="eventSources" calendar="myCalendar"></div>
             </div>    
         </div>
@@ -60,7 +73,10 @@
             </md-toolbar>
 
             <md-dialog-content>
-                <div class="md-dialog-content">
+                <div class="col-sm-12 text-center p20" ng-if="loading">
+                    <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                </div>
+                <div class="md-dialog-content" ng-if="!loading">
                     <div layout="row" layout-wrap>
                         <div flex="100">
                             <md-input-container class="md-icon-float md-block">
@@ -104,9 +120,9 @@
                                 </md-input-container>
                             </div>
                         </div>
-                        <div flex="100" ng-if="activity.id == null">
+                        <div flex="100">
                             <div class="row plr15">
-                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-sm>
+                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-sm ng-if="activity.id == null">
                                     <label>Repeat Mode</label>
                                     <md-icon md-font-icon="fa-repeat" class="fa fa-lg"></md-icon>
                                     <md-select ng-model="activity.repeatMode" ng-disabled="activity.id != null">
@@ -117,7 +133,7 @@
                                         <md-option value="EVERY_YEAR">Every year</md-option>
                                     </md-select>
                                 </md-input-container>
-                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-xs ng-if="activity.repeatMode != 'DO_NOT_REPEAT'" >
+                                <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-xs ng-if="activity.repeatMode != 'DO_NOT_REPEAT' && activity.id == null">
                                     <label>Repeat End Date</label>
                                     <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
                                     <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"

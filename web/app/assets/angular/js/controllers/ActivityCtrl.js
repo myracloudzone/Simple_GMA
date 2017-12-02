@@ -1,18 +1,35 @@
 var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$location','AuthService', 'ipCookie', '$state', '$mdDialog', 'ActivityService', '$filter', 'notificationService', 'uiCalendarConfig', function($scope, $rootScope, $location, AuthService, ipCookie, $state, $mdDialog, ActivityService, $filter, notificationService, uiCalendarConfig) {
-    
+    $scope.popOverContextObject = null;
+    $scope.activityIds = [];
+    $scope.initVariables = {search : ""};
+    $scope.isSearchOpen = false;
+    $scope.closePopover = function() {
+        $($scope.popOverContextObject).popover('hide');
+        $scope.popOverContextObject = null;
+    }
+
     $scope.getActivities = function() {
+        $scope.closePopover();
         $scope.activitiesLoading = true;
         $scope.eventSources = [];
+        $scope.activities = [];
         var index = 1;
-        ActivityService.list({accountId : $rootScope.accountId}, function(data) {
+        $scope.activityIds = [];
+        ActivityService.list({accountId : $rootScope.accountId, search : $scope.initVariables.search}, function(data) {
             if(data != null) {
                 angular.forEach(data, function(v,k) {
                     v.title = v.name;
                     v.start = $filter('date')(v.start, "yyyy-MM-ddTHH:mm:ss");
                     v.end = $filter('date')(v.end, "yyyy-MM-ddTHH:mm:ss");
                     v.className = index + '_Activity';
+                    $scope.activityIds.push(v.id);
                     index++;
                 })
+                $scope.activities = data;
+                if($scope.initVariables.search != null && $scope.initVariables.search != '') {
+                    var msg = data.length == 0 ? 'No record found.' : data.length == 1 ? data.length + ' record found.' : data.length + ' records found.'
+                    notificationService.info(msg);
+                }
                 $scope.eventSources.push(data);
             }
             $scope.activitiesLoading = false;
@@ -20,7 +37,6 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
     };
 
     $scope.getTimeFromString = function(date) {
-        date = new Date(date);
         return $filter('date')(date, 'yyyy-MM-dd hh:mm a');
     }
 
@@ -68,9 +84,63 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
 
     $scope.getActivities();
 
-    $scope.alertOnDrop = function(event, delta, revertFunc, jsEvent, ui, view){
+    $scope.alertOnDrop = function(event, delta, revertFunc, jsEvent, ui, view) {
+        $scope.handleCalendarEvents(event, delta, 'DROP', revertFunc);
         // $scope.updateAgendaEvent(event, delta,'DROP');
     };
+
+    $scope.alertOnResize = function(event, delta, revertFunc, jsEvent, ui, view) {
+        $scope.handleCalendarEvents(event, delta, 'RESIZE', revertFunc);
+    };
+
+    $scope.handleCalendarEvents = function(event, delta, type, revertFunc) {
+        var index = $scope.activityIds.indexOf(event.id);
+        var object = angular.copy($scope.activities[index]);
+        if(type == 'DROP') {
+            var now = (new Date()).getTime();
+            object.start = new Date(new Date(object.start).getTime() + delta);
+            object.end = new Date(new Date(object.end).getTime() + delta);
+            if(object.start < now) {
+                notificationService.error('Activity can\'t be moved to past date.');
+                revertFunc();
+            } else {
+                object.start = $filter('date')(object.start, "dd/MM/yyyy HH:mm:ss");
+                object.end = $filter('date')(object.end, "dd/MM/yyyy HH:mm:ss");
+                object.assignIds = JSON.parse(object.assignIds);
+                object.trainerIds = JSON.parse(object.trainerIds);
+                ActivityService.updateActivity(object, function(data) {
+                    notificationService.success('Saved Successfully.');
+                }, function(error) {
+                    if(error.status == 400) {
+                        notificationService.error("You don't have enough credits to send SMS. Please top up to get instant SMS.");
+                    }
+                });
+            }
+        } else {
+            var endRange = new Date(object.start);
+            endRange.setHours(23);
+            endRange.setMinutes(59);
+            object.start = new Date(new Date(object.start).getTime());
+            object.end = new Date(new Date(object.end).getTime() + delta);
+            if(object.end > endRange) {
+                notificationService.error('Activity should end on the same day.');
+                revertFunc();
+            } else {
+                object.start = $filter('date')(object.start, "dd/MM/yyyy HH:mm:ss");
+                object.end = $filter('date')(object.end, "dd/MM/yyyy HH:mm:ss");
+                object.assignIds = JSON.parse(object.assignIds);
+                object.trainerIds = JSON.parse(object.trainerIds);
+                ActivityService.updateActivity(object, function(data) {
+                    notificationService.success('Saved Successfully.');
+                }, function(error) {
+                    if(error.status == 400) {
+                        notificationService.error("You don't have enough credits to send SMS. Please top up to get instant SMS.");
+                    }
+                });
+            }
+        }
+        
+    }   
     
     $scope.uiConfig = {
         calendar:{
@@ -112,25 +182,40 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
     };
 
     $scope.deleteActivity = function(ev) {
-        $($scope.popOverContextObject).popover('hide');
-        $scope.popOverContextObject = null;
+        $scope.closePopover();
         if($scope.selectedActivity.repeatMode != 'DO_NOT_REPEAT') {
-            var confirm = $mdDialog.confirm()
-            .title('This is a recurring activity. Do you want to delete all the occurances of this activity?')
-            .textContent('')
-            .ariaLabel('Delete')
-            .targetEvent(ev)
-            .ok('Please do it!')
-            .cancel('No, Just delete this one!');
-              $mdDialog.show(confirm).then(function() {
-                ActivityService.deleteActivity({code : $scope.selectedActivity.code}, function(data) {
-                    notificationService.success("Deleted Successfully.");
-                    $scope.getActivities();
-                    $scope.selectedActivity = null;
-                }, function(error) {
-                    notificationService.error("Error Occurred.");
-                })
-              }, function() {
+            var dialog = $mdDialog.show({
+                targetEvent: ev,
+                template:
+                  '<md-dialog>' +
+                  '  <md-dialog-content><div class="col-sm-12"><p><h5>This is a recurring activity. Do you want to delete all the occurances of this activity?</h5></p></div></md-dialog-content>' +
+      
+                  '  <md-dialog-actions>' +
+                  '    <md-button ng-click="close()" class="md-primary">' +
+                  '      Cancel' +
+                  '    </md-button>' +  
+                  '    <md-button ng-click="close(singleDeleteAction)" class="md-primary">' +
+                  '      No, Just delete this one!' +
+                  '    </md-button>' +
+                  '    <md-button ng-click="close(allDeleteAction)" class="md-primary">' +
+                  '      Please do it!' +
+                  '    </md-button>' +                
+                  '  </md-dialog-actions>' +
+                  '</md-dialog>',
+                controller: function($scope, $mdDialog) {
+                    $scope.singleDeleteAction = 'SINGLE_DELETE';
+                    $scope.allDeleteAction = 'ALL_DELETE';
+                    $scope.close = function(result) {
+                        if (result != null) {
+                            $mdDialog.hide(result);
+                        } else {
+                            $mdDialog.cancel();
+                        }
+                    };
+                },
+            })
+            .then(function(answer) {
+                if(answer == 'SINGLE_DELETE') {
                     ActivityService.deleteActivity({id : $scope.selectedActivity.id}, function(data) {
                         notificationService.success("Deleted Successfully.");
                         uiCalendarConfig.calendars['myCalendar'].fullCalendar('removeEvents', $scope.selectedActivity.id);
@@ -138,7 +223,19 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
                     }, function(error) {
                         notificationService.error("Error Occurred.");
                     })
-              });
+                } else if(answer == 'ALL_DELETE') {
+                    ActivityService.deleteActivity({code : $scope.selectedActivity.code}, function(data) {
+                        notificationService.success("Deleted Successfully.");
+                        $scope.getActivities();
+                        $scope.selectedActivity = null;
+                    }, function(error) {
+                        notificationService.error("Error Occurred.");
+                    });
+               }
+            }, function() {
+                
+            });
+            $rootScope.dialogList.push(dialog);
         } else {
             var confirm = $mdDialog.confirm()
             .title('Would you like to delete this activity?')
@@ -161,6 +258,7 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
         }
     }
     $scope.editActivity = function(ev) {
+        $scope.closePopover();
         $scope.add(ev, $scope.selectedActivity.id);
     }
 
@@ -171,6 +269,7 @@ var ActivityCtrl = GMApp.controller('ActivityCtrl', ['$scope', '$rootScope','$lo
     };
 
     $scope.add = function(ev, id) {
+        $scope.closePopover();
         var dialog = $mdDialog.show({
           controller : function($scope, $mdDialog, MemberService, $window, $mdSelect, GroupService, GlobalMethodService, notificationService, $filter, ActivityService) {
             $scope.calendar = { minDate : new Date(), maxDate : new Date('01/12/2099') };
