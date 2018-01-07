@@ -31,12 +31,14 @@ module.exports = {
     },
     findByUserName : function(username, req, res, callback) {
         schema.model('User').forge().where({
-            username : username
+            username : username,
+            active : true
         }).fetch().then(function (result) {
             if(result == null) {
                 callback(null, "No Record Found.", req, res);
+            } else {
+                callback(result.toJSON(), null, req, res);
             }
-            callback(result.toJSON(), null, req, res);
 		}).catch(function (err) {
 			callback(null, err, req, res);
         });
