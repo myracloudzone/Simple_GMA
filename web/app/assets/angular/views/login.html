@@ -2,11 +2,67 @@
   <div class="inner-container">
     <div class="box">
       <h1>Login</h1>
-      <input type="text" placeholder="Username" ng-model="user.username"/>
-      <input type="password" placeholder="Password" ng-model="user.password"/>
+      <input type="text" placeholder="Username" ng-model="user.username" maxlength="100"/>
+      <input type="password" placeholder="Password" ng-model="user.password" ng-enter="login()"  maxlength="50"/>
       <md-button class="md-raised md-primary" ng-click="login()">Login</md-button>
-      <p>Not a member? <span>Sign Up</span></p>
-      <p ng-if="invalidCredential">Invalid Username/Password</p>
+      <p ng-if="invalidCredential"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Invalid Username/Password</p>
+      <p>Not a member? <span> Sign Up</span></p>
+      <p>Forgot Password?<a href="" ng-click="forgotPassword($event)"> Reset</a></p> 
     </div>
   </div>
 </div>
+
+<script type="text/ng-template" id="forgotPassword.html">
+  <md-dialog aria-label="" id="forgotPasswordBox">
+      <form ng-cloak>
+          <md-toolbar>
+              <div class="md-toolbar-tools">
+                  <h2>Reset Password</h2>
+                  <span flex></span>
+                  <md-button class="md-icon-button" ng-click="close()">
+                      <i class="fa fa-fw fa-remove color-black"></i>
+                  </md-button>
+              </div>
+          </md-toolbar>
+
+          <md-dialog-content>
+              <div class="md-dialog-content">
+                  <div layout="row" layout-wrap>
+                      <div class="col-sm-12" ng-if="showOTP">
+                            <md-input-container class="md-block">
+                                <label>Username</label>
+                                <input class="form-control" type="email" ng-model="user.username" maxlength="255"/>
+                            </md-input-container>
+                            <p ng-if="showOTP" class="text-center" style="margin-top: -30px"><md-button class="md-raised md-primary" ng-click="sendOTP()">Get OTP</md-button></p>
+                      </div>
+                      <div class="col-sm-12" ng-if="!showOTP" style="margin-top: -30px">
+                          <md-input-container class="md-block">
+                              <label>OTP</label>
+                              <input class="form-control" type="text" ng-model="user.OTP" maxlength="6" md-maxlength="6"/>
+                          </md-input-container>
+                      </div>
+                      <div class="col-sm-12" ng-if="!showOTP" style="margin-top: -30px">
+                          <md-input-container class="md-block">
+                              <label>New Password</label>
+                              <input class="form-control" type="password" ng-model="user.password" maxlength="50" md-maxlength="50"/>
+                          </md-input-container>
+                      </div> 
+                      <div class="col-sm-12" ng-if="!showOTP" style="margin-top: -30px">
+                          <md-input-container class="md-block">
+                              <label>Confirm Password</label>
+                              <input class="form-control" type="password" ng-model="user.confirmPassword" maxlength="50" md-maxlength="50"/>
+                          </md-input-container>
+                      </div>    
+                  </div>
+              </div>
+          </md-dialog-content>
+
+          <md-dialog-actions layout="row" ng-if="!loading">
+              <span flex></span>
+              <md-button class="md-raised" ng-click="close()">Cancel</md-button>
+              <md-button class="md-raised md-primary"  ng-if="!showOTP"  ng-click="updatePassword()">Save</md-button>
+          </md-dialog-actions>
+      </form>
+  </md-dialog>
+</script>
+
