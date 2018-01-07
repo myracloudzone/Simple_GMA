@@ -75,7 +75,8 @@ var LoginCtrl = GMApp.controller('LoginCtrl', ['$scope', '$rootScope','$location
 							return;
 						}
 						PasswordService.updateUserPassword($scope.user, function(data) {
-
+							notificationService.success("Password changed successfully.");
+							$scope.close();
 						}, function(error) {
 							notificationService.error(error.data.message);
 						})
@@ -88,7 +89,6 @@ var LoginCtrl = GMApp.controller('LoginCtrl', ['$scope', '$rootScope','$location
 					fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
 				})
 				.then(function(answer) {
-					$scope.refresh();
 				}, function() {
 			});
 		}
