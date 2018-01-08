@@ -19,9 +19,6 @@
                     </div>
                 </md-toolbar>
             </div>
-            <div class="col-sm-12 text-center p20" ng-if="listLoading">
-                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
-            </div>
             <div class="col-sm-12 mt5 p0 memberSearchBox">
                 <div class="input-group col-sm-12">
                     <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="init()"/>
@@ -30,6 +27,9 @@
                     </button>
                     </span>
                 </div>
+            </div>
+            <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
             </div>
             <div class="col-sm-12 groupTableDiv mt10" ng-if="!listLoading" id="listTable">
                 <table class="table table-hover table-responsive table-sm">
