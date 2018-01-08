@@ -12,8 +12,37 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 	$scope.selectedmember = {id : null};
 	$scope.listLoading = true;
 	$scope.isFirstLoad = true;
+	$scope.sortOrder = 'ASC';
+	$scope.sortField = 'first_name';
+	$scope.descendingOffImagePath = "/app/assets/angular/images/sort_descending_off.png";
+	$scope.descendingOnImagePath = "/app/assets/angular/images/sort_descending_on.png";
+	$scope.ascendingOnImagePath = "/app/assets/angular/images/sort_ascending_on.png";
 	
 
+	$scope.applySort = function(fieldName) {
+		if($scope.sortOrder.indexOf('ASC') < 0) {
+			$scope.sortOrder = 'ASC';
+		} else {
+			$scope.sortOrder = 'DESC';
+		}
+		$scope.sortField = fieldName;
+		$scope.getMembers();
+	}
+
+	$scope.getSortImage = function(fieldName) {
+		if($scope.sortField.indexOf(fieldName) < 0) {
+			return $scope.descendingOffImagePath;
+		} else {
+			if($scope.sortOrder == "ASC") {
+				return $scope.descendingOnImagePath;
+			} else if($scope.sortOrder == "DESC") {
+				return $scope.ascendingOnImagePath;
+			} else {
+				return $scope.descendingOffImagePath;
+			}
+		}
+	}
+	
 	$scope.setPageLayoutHeight = function() {
 		setTimeout(function() {
 			var remainingHeight = null;
@@ -79,7 +108,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 	$scope.getMembers = function() {
 		$scope.listLoading = true;
 		$scope.selectedmember = {id : null};
-		MemberService.list({page : $scope.pagination.page, pageSize : $scope.pageSize, search : $scope.initVariables.search, active : true}, function(data) {
+		MemberService.list({page : $scope.pagination.page, pageSize : $scope.pageSize, search : $scope.initVariables.search, active : true, sortOrder : $scope.sortOrder, sortField : $scope.sortField}, function(data) {
 			if(data != null && data.data != null) {
 				$scope.members = data.data;
 				$scope.pagination.page = data.pagination.page;
@@ -526,7 +555,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 		  
 		});
 	  	$rootScope.dialogList.push(dialog);
-  }
+  	}
 
 
   	$scope.viewDocuments = function(ev) {
@@ -596,4 +625,55 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 		);
 		$rootScope.dialogList.push(dialog);
 	}
+
+
+	$scope.viewIDCard = function(ev) {
+		if($scope.selectedmember.id == null) {
+			return;
+		}
+		var dialog = $mdDialog.show({
+		  controller : function($scope, $mdDialog, $filter, notificationService, GlobalMethodService, GlobalVariableService, MemberService, member){
+				$scope.member = member;
+				$scope.close = function(result) {
+					if(result != null) {
+						$mdDialog.hide(result);
+					} else {
+						$mdDialog.cancel();
+					}
+				};
+				setTimeout(function() {
+					var element = $("#rowBox");
+					var getCanvas;
+					html2canvas(element, {
+						onrendered: function (canvas) {
+						   getCanvas = canvas;
+						   var imgageData = getCanvas.toDataURL("image/png");
+						   var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
+						   $("#btn-Convert-Html2Image").attr("download", $scope.member.firstName+"_"+$scope.member.lastName).attr("href", newData);
+						}
+				  	});
+				}, 1000)
+				$(document).ready(function() {
+					
+				});
+		    },
+		    templateUrl: 'memberCard.html',
+		    parent: angular.element(document.body),
+		    targetEvent: ev,
+		    locals: {
+				member : $scope.selectedmember
+		   	},
+		   	clickOutsideToClose:true,
+		   	fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+		})
+		.then(function(answer) {
+			
+		}, function() {
+		  
+		});
+	  	$rootScope.dialogList.push(dialog);
+  	}
 }])
+
+
+

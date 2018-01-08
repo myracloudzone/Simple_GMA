@@ -21,13 +21,17 @@
             </div>
          <div class="col-sm-12 p0">
             <section class="optionSection text-center" layout-wrap ng-if="selectedmember.id != null">
-                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="addMember($event, selectedmember.id)">
-                    <md-icon md-font-icon="fa-edit" class="fa fa-lg md-primary md-hue-2"></md-icon>
-                    Edit
-                </md-button>
                 <md-button md-no-ink class="md-primary optionSectionButton" ng-click="viewDocuments($event)">
                     <md-icon md-font-icon="fa-file-text" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Documents
+                </md-button>
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="addMember($event, selectedmember.id)">
+                    <md-icon md-font-icon="fa-edit" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                        Edit
+                </md-button>
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="viewIDCard($event)">
+                    <md-icon md-font-icon="fa-address-card" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                        ID Card
                 </md-button>
                 <md-button md-no-ink class="md-primary optionSectionButton" ng-click="manageMemberShip()">
                     <md-icon md-font-icon="fa-handshake-o" class="fa fa-lg md-primary md-hue-2"></md-icon>
@@ -81,13 +85,13 @@
                      <thead class="thead-inverse">
                         <tr>
                            <th>#</th>
-                           <th>Reg. Id</th>
-                           <th>Name<i class="fa fa-fw fa-sort-asc"></i><i class="fa fa-fw fa-sort-desc"></i></th>
-                           <th>Mobile</th>
-                           <th>Type</th>
-                           <th>Group</th>
-                           <th>Plan</th>
-                           <th>Membership End Date</th>
+                           <th>Reg. Id  <a href="" class="cursor-pointer color-white" ng-click="applySort('id')">  <img ng-src="{{getSortImage('id')}}" aria-hidden="true"></img></a></th>
+                           <th>Name <a href="" class="cursor-pointer color-white" ng-click="applySort('first_name')"> <img ng-src="{{getSortImage('first_name')}}" aria-hidden="true"></img></a></th>
+                           <th>Mobile <a href="" class="cursor-pointer color-white" ng-click="applySort('mobile')"> <img ng-src="{{getSortImage('mobile')}}" aria-hidden="true"></img></a></th>
+                           <th>Type <a href="" class="cursor-pointer color-white" ng-click="applySort('member_type')"> <img ng-src="{{getSortImage('member_type')}}" aria-hidden="true"></img></a></th>
+                           <th>Group <a href="" class="cursor-pointer color-white" ng-click="applySort('group.name')"> <img ng-src="{{getSortImage('group.name')}}" aria-hidden="true"></img></a></th>
+                           <th>Plan <a href="" class="cursor-pointer color-white" ng-click="applySort('membership_plan.name')"> <img ng-src="{{getSortImage('membership_plan.name')}}" aria-hidden="true"></img></a></th>   
+                           <th>Membership End Date <a href="" class="cursor-pointer color-white" ng-click="applySort('membership_end_date')"> <img ng-src="{{getSortImage('membership_end_date')}}" aria-hidden="true"></img></a></th>
                            <th>Action</th>
                         </tr>
                      </thead>
@@ -107,8 +111,8 @@
                            </td>
                            <td>{{member.mobile}}</td>
                            <td>{{getMemberTypeName(member.memberTypeId)}}</td>
-                           <td>{{getGroupNameById(member.groupId)}}</td>
-                           <td>{{getMembershipPlanName(member.planId)}}</td>
+                           <td>{{(member.groupName)}}</td>
+                           <td>{{(member.membershipPlanName)}}</td>
                            <td>{{getDateString(member.membershipEndDate)}}</td>
                             <td>
                                 <md-button class="md-icon-button md-primary" aria-label="Options" ng-click="toggleEditOption(member.id)">
@@ -170,9 +174,10 @@
                                         <div class="col-sm-6 text-center" ng-if="showUpload">
                                             <upload callback="updateUploadedFile(response)" showclosebutton="true" closebtnaction="showUploadBox()" url="/service/upload" file-types="{{fileTypes}}"></upload>
                                         </div>
-                                        <div class="col-sm-6 text-center barCodeBox">
+                                        <div class="col-sm-6 text-center barCodeBox" style="padding-top: 10px;">
                                             <!-- <p>Member Code : {{member.memberCode}}</p> -->
-                                            <angular-barcode ng-model="member.memberCode" bc-options="bc" bc-class="barcode" bc-type="img"></angular-barcode>
+                                            <qr type-number="8" correction-level="'M'" size="120" class="barcode" input-mode="'ALPHA_NUM'" text="member.memberCode" image="true"></qr>
+                                            <!-- <angular-barcode ng-model="member.memberCode" bc-options="bc" bc-class="barcode" bc-type="img"></angular-barcode> -->
                                             <!-- <qr type-number="8" correction-level="'M'" size="100" input-mode="'ALPHA'" text="'https://google.com'" image="true"></qr> -->
                                             
                                         </div>    
@@ -524,6 +529,79 @@
             <md-dialog-actions layout="row">
                 <span flex></span>
                 <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="memberCard.html">
+    <md-dialog aria-label="" id="idCardBox">
+        <div class="col-sm-12 text-center p20" ng-if="loading">
+            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+        </div>
+        <form ng-cloak ng-if="!loading">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>ID Card</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div class="md-dialog-content p5 IDCardBoxFlow">
+                    <div flex="100">
+                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                        </div>
+                        <div flex-xs flex-gt-xs="100" layout="column" id="rowBox">
+                            <md-card md-theme="dark-grey" md-theme-watch>
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <div class="col-sm-12 IDCardHeader">
+                                            <span class="fs22 strong">Tonic GYM</span>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <hr></hr>
+                                        </div>    
+                                    </div>    
+                                    <div class="col-sm-3 IDCardImage">
+                                        <div class="md-media-lg card-media">
+                                            <div class="addMemberAvatarIDCard">
+                                                <img ng-src="{{member.profile_pic}}" ng-if="member.profile_pic != null" alt=""></img>
+                                                <img src="/app/assets/angular/images/avatars/avatar4.png" ng-if="member.gender == 'Male' && member.profile_pic == null" alt=""></img>
+                                                <img src="/app/assets/angular/images/avatars/avatar3.png" ng-if="member.gender == 'Female' && member.profile_pic == null" alt=""></img>
+                                            </div>
+                                        </div>
+                                    </div>    
+                                    <div class="col-sm-6">
+                                        <div class="pull-left">
+                                            <span class="fs12">Name:</span>
+                                            <h5>{{member.firstName}} {{member.lastName}}</h5>
+                                            <span class="fs12">Gender:</span>
+                                            <h6> {{member.gender}}</h6>
+                                            <span class="fs12">Address:</span>
+                                            <h6> {{member.address}}</h6>
+                                            <span class="fs12">Mobile:</span>
+                                            <h6> {{member.mobile}}</h6>
+                                            <span class="fs12">Joining Date:</span>
+                                            <h6> {{member.joiningDate.substring(0, member.joiningDate.indexOf(' '))}}</h6>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 pt10">
+                                        <qr type-number="8" correction-level="'M'" size="120" class="barcode" input-mode="'ALPHA_NUM'" text="member.memberCode" image="true"></qr>
+                                    </div>        
+                                </div>
+                            </md-card>
+                        </div>    
+                    </div>    
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Cancel</md-button>
+                <a class="md-button md-raised md-primary" id="btn-Convert-Html2Image" href="#" ng-click="downloadCard()">Download</a>
             </md-dialog-actions>
         </form>
     </md-dialog>
