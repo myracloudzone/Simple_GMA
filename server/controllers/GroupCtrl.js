@@ -8,11 +8,29 @@ module.exports = function(app) {
     var controller = {};
 
     controller.getGroups = function(req, res, next) {
-        groupDAO.findAll(req.headers.accountId, req, res, function(data, error, req, res) {
+        var filter = {};
+        filter.accountId = req.headers.accountId;
+        filter.sortField = req.query.sortField == null ? 'name' : req.query.sortField;
+        filter.sortOrder = req.query.sortOrder == null ? 'ASC' : req.query.sortOrder;
+        filter.search = req.query.search;
+        filter.pageOffset = req.query.pageOffset;
+        filter.pageLimit = req.query.pageLimit;
+        groupDAO.findAll(filter, req, res, function(data, error, req, res) {
             if(error) {
                 return logger.logResponse(500, error, error, res, req);
             }
-            return logger.logResponse(200, data, null, res, req);
+            var response = data;
+            groupDAO.countAll(filter, req, res, function(data, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, error, error, res, req);
+                }
+                var rowCount = data;
+                var responseData = {};
+                var rowCount = data;
+                responseData.pagination = {page : filter.pageOffset, 'rowCount' : data, pageCount : rowCount%filter.pageLimit == 0 ? parseInt(rowCount/filter.pageLimit) : (parseInt(rowCount/filter.pageLimit))+1};
+                responseData.data = response;
+                return logger.logResponse(200, responseData, null, res, req);
+            })
         })
     }
 
