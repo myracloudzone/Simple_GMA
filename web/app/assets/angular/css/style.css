@@ -4,6 +4,9 @@
 .p0 {
   padding: 0px !important;
 }
+.p5 {
+  padding: 5px !important;
+}
 .p20 {
   padding: 20px !important;
 }
@@ -13,8 +16,23 @@
 .pt10 {
   padding-top: 10px;
 }
+.pt20 {
+  padding-top: 20px;
+}
+.fs10 {
+  font-size: 10px !important;
+}
+.fs12 {
+  font-size: 12px !important;
+}
 .fs14 {
   font-size: 14px !important;
+}
+.fs22 {
+  font-size: 22px !important;
+}
+.fs24 {
+  font-size: 24px !important;
 }
 .fs28 {
   font-size: 28px !important;
@@ -180,6 +198,9 @@
 .color-red {
   color: red;
 }
+.color-white {
+  color: #fff;
+}
 .md-dialog-container {
   z-index: 1500 !important;
 }
@@ -239,10 +260,31 @@ form .md-datepicker-input-container{
   vertical-align: top;
   border-top: 1px solid #e9ecef;
 } */
+#rowBox{
+  border: 3px solid #000;
+}    
 .addMemberAvatar {
   position: relative;
   margin-top: 5px;
   z-index: 100;
+}
+.IDCardHeader {
+  background: #ddd;
+}
+.addMemberAvatarIDCard {
+  position: relative;
+  margin-top: 5px;
+  z-index: 100;
+}
+.addMemberAvatarIDCard img {
+  width: 135px;
+  height: 135px;
+  border: 1px solid #ededed;
+}
+.IDCardBoxFlow {
+  min-width: 720px;
+  max-width: 720px;
+  overflow: scroll;
 }
 .addMemberAvatar img {
   width: 100px;
@@ -766,6 +808,16 @@ tr { outline: none; }
 #payemntAddBox {
   width: 60%;
 }
+#idCardBox {
+  width: 50%;
+}
+.IDCardImage {
+  padding-left: 30px !important;
+  border-right: 2px dashed #ddd;
+  margin-top: 20px;
+  padding-top: 0px;
+  margin-bottom: 10px;
+}
 .md-dialog-container {
   height: 100% !important;
 }
@@ -939,6 +991,7 @@ button.chipClose:focus {
 		display: none !important;
   } 
   .barCodeBox {
+    padding-top: 10px;  
     margin-left: -10px !important;
   }
   #communicationDetail .popover {
@@ -952,6 +1005,9 @@ button.chipClose:focus {
 }
 @media (max-width: 600px) {
 	#payemntAddBox {
+    width: 80%;
+  }
+  #idCardBox {
     width: 80%;
   }
   #messageDialogBox {
