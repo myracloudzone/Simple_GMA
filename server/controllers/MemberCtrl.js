@@ -234,9 +234,10 @@ module.exports = function (app) {
     controller.getDocumentByMemberId = function(req, res, next) {
         memberDAO.getDocumentByMemberId(req.headers.accountId, req.query.memberId, req, res, function(data,error,req, res) {
             if(error) {
-                return logger.logResponse(500, "Error Occured.", error, res, req);
+                // return logger.logResponse(500, "Error Occured.", error, res, req);
+            } else {
+                return logger.logResponse(200, data, null, res, req);
             }
-            return logger.logResponse(200, data, null, res, req);
         })
     }
 

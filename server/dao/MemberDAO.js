@@ -150,25 +150,32 @@ module.exports = {
     },
 
     getDocumentByMemberId : function(accountId, memberId, req, res, callback) {
-        readDirFiles.list(config.outputFolder + '/' + accountId + '/documents/' + memberId, function (err, filenames) {
-            if (err)  {
-                callback(null, err, req, res);
-            }
-            var results = [];
-            async.mapSeries(filenames, function(v, cb) {
-                if(!v.endsWith('/')) {
-                    var obj = {};
-                    obj.fileName = commonUtils.getDocumentName(v);
-                    obj.filePath = commonUtils.getDocumentRenderPath(v);
-                    obj.actualPath = v;
-                    results.push(obj);
-                    cb();
-                } else {
-                    cb();
+        try {
+            readDirFiles.list(config.outputFolder + '/' + accountId + '/documents/' + memberId, function (err, filenames) {
+                console.log("----------------------")
+                if (err)  {
+                    callback(null, err, req, res);
                 }
-            })
-            return callback(results, null, req, res);
-          });
+                var results = [];
+                async.mapSeries(filenames, function(v, cb) {
+                    if(!v.endsWith('/')) {
+                        var obj = {};
+                        obj.fileName = commonUtils.getDocumentName(v);
+                        obj.filePath = commonUtils.getDocumentRenderPath(v);
+                        obj.actualPath = v;
+                        results.push(obj);
+                        cb();
+                    } else {
+                        cb();
+                    }
+                })
+                return callback(results, null, req, res);
+              });
+        } catch(ex) {
+            console.log("-----------------_____-----")
+            callback(null, err, req, res);
+        }
+        
     },
 
     getMembershipDueMembers : function(searchFilter, req, res, callback) {
@@ -239,13 +246,17 @@ module.exports = {
                     this.on('membership_plan_to_member.member_id', '=', 'member.id')
                 }).leftJoin('membership_rate_to_member', function() {
                     this.on('membership_rate_to_member.member_id', '=', 'member.id').on('membership_rate_to_member.membership_plan_to_member_id', '=', 'membership_plan_to_member.id')
+                }).leftJoin('membership_plan', function() {
+                    this.on('membership_plan.id', '=', 'membership_rate_to_member.membership_plan_id')
+                }).leftJoin('group', function() {
+                    this.on('group.id', '=', 'member.group')
                 })
                 .column('member.*', 'membership_rate_to_member.id as membershipRateToMemberId', 'membership_rate_to_member.membership_plan_id as membershipPlanId', 'membership_rate_to_member.rate_to_membership_plan_id as membershipRatePlanId', 'membership_rate_to_member.amount as amount',  'membership_rate_to_member.signup_fee_applied as isSignUpFeeApplied', 'membership_rate_to_member.sign_up_fee as signUpFee', 'membership_rate_to_member.due_amount as dueAmount',
-                'membership_plan_to_member.id as membershipPlanToMemberId','membership_plan_to_member.membership_start_date as membershipStartDate','membership_plan_to_member.membership_end_date as membershipEndDate','membership_plan_to_member.is_current as isCurrent')
+                'membership_plan_to_member.id as membershipPlanToMemberId','membership_plan_to_member.membership_start_date as membershipStartDate','membership_plan_to_member.membership_end_date as membershipEndDate','membership_plan_to_member.is_current as isCurrent', 'membership_plan.name as membershipPlanName', 'group.name as groupName')
                 .where('member.accountId', searchFilter.accountId)
                 .andWhere('member.active', searchFilter.active)
                 .andWhere('membership_plan_to_member.is_current', true)
-                .orderBy('member.'+ (searchFilter.sortField != null ? searchFilter.sortField : 'first_name'), (searchFilter.sortOrder != null) ? searchFilter.sortOrder : 'asc')
+                .orderBy((searchFilter.sortField != null ? searchFilter.sortField : 'first_name'), (searchFilter.sortOrder != null) ? searchFilter.sortOrder : 'asc')
                 .debug(true);
             }).fetchPage(commonUtils.getQueryObject(req)).then(function (membersData) {
                 if(membersData == null) {
@@ -262,6 +273,7 @@ module.exports = {
                     obj.birthday = member.birthday;
                     obj.birthdayString = moment(parseFloat(member.birthday)).format('DD/MM/YYYY HH:mm:ss');
                     obj.bloodgroup = member.blood_group;
+                    obj.memberCode = member.member_code;
                     obj.city = member.city;
                     obj.dateCreated = member.date_created;
                     obj.joiningDate = moment(parseFloat(member.date_of_joining)).format('DD/MM/YYYY HH:mm:ss');
@@ -272,6 +284,7 @@ module.exports = {
                     obj.firstName = member.first_name;
                     obj.gender = member.gender;
                     obj.groupId = member.group;
+                    obj.groupName = member.groupName;
                     obj.lastName = member.last_name;
                     obj.memberTypeId = member.member_type;
                     obj.mobile = member.mobile;
@@ -286,6 +299,7 @@ module.exports = {
                     obj.membershipEndDate = member.membershipEndDate;
                     obj.ratePlanId = member.membershipRatePlanId;
                     obj.planId = member.membershipPlanId;
+                    obj.membershipPlanName = member.membershipPlanName;
                     results.push(obj);
                     cb();
                 });
