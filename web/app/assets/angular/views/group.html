@@ -22,15 +22,24 @@
             <div class="col-sm-12 text-center p20" ng-if="listLoading">
                 <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
             </div>
+            <div class="col-sm-12 mt5 p0 memberSearchBox">
+                <div class="input-group col-sm-12">
+                    <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="init()"/>
+                    <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="init()"><i class="fa fa-search"></i>
+                    </button>
+                    </span>
+                </div>
+            </div>
             <div class="col-sm-12 groupTableDiv mt10" ng-if="!listLoading" id="listTable">
-                <table class="table table-hover table-responsive ">
+                <table class="table table-hover table-responsive table-sm">
                     <thead class="thead-inverse">
                         <tr>
                             <th>#</th>
                             <th>Icon</th>
-                            <th>Group Name</th>
-                            <th>Description</th>
-                            <th>Total Group Members</th>
+                            <th>Group Name  <a href="" class="cursor-pointer color-white" ng-click="applySort('name')">  <img ng-src="{{getSortImage('name')}}" aria-hidden="true"></img></a></th>
+                            <th>Description  <a href="" class="cursor-pointer color-white" ng-click="applySort('description')">  <img ng-src="{{getSortImage('description')}}" aria-hidden="true"></img></a></th>
+                            <th>Total Group Members  <a href="" class="cursor-pointer color-white" ng-click="applySort('memberCount')">  <img ng-src="{{getSortImage('memberCount')}}" aria-hidden="true"></img></a></th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -44,7 +53,7 @@
                             </td>
                             <td>{{group.name}}</td>
                             <td>{{group.description}}</td>
-                            <td>{{group.accountId * $index}}</td>
+                            <td>{{group.memberCount}}</td>
                             <td>
                                 <a href="" ng-click="editItem($event, group.id)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Edit</md-tooltip></a>
                                 <a href="" ng-click="viewMembers($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View Members</md-tooltip></a>
@@ -53,6 +62,12 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="col-sm-12 p0">
+                <div class="col-sm-6 pull-left paginator">
+                    <ul class="pull-left" uib-pagination total-items="pagination.rowCount" max-size="pageSize" class="pagination-sm" boundary-links="true" rotate="true" ng-model="pagination.page" ng-change="fetchData()"></ul>
+                </div>
+                <div class="clearfix"></div>
             </div>
         </div>
     </div>

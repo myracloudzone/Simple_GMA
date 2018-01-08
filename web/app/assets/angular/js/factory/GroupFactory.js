@@ -3,7 +3,7 @@ GMApp.factory('GroupService',['$resource',function($resource) {
             path: '@path',
             }, {
               addEditGroup: { method: 'POST', params: {path: 'add'}, isArray: false },
-              list: { method: 'GET', params: { accountId : '@accountId' , path: 'list'}, isArray: true },
+              list: { method: 'GET', params: { accountId : '@accountId' , path: 'list'}, isArray: false },
               getById: { method: 'GET', params: { id : '@id' , path: 'getById'}, isArray: false },
               deleteGroupById: { method: 'POST', params: { accountId : '@accountId', id : '@id' , path: 'deleteGroupById'}, isArray: false }
     });
