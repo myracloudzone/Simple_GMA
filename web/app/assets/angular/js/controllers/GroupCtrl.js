@@ -36,7 +36,7 @@ var GroupCtrl = GMApp.controller('GroupCtrl', ['$scope', '$rootScope', '$mdDialo
       	GroupService.list({accountId : 1,sortOrder : $scope.sortOrder, sortField : $scope.sortField, search : $scope.initVariables.search, pageOffset : $scope.pageOffset, pageLimit : $scope.pageLimit}, function (data) {
         	if(data != null) {
 				$scope.groups = data.data;
-				$scope.pagination.page = data.pagination.page;
+				// $scope.pagination.page = data.pagination.page;
 				$scope.pageCount = data.pagination.pageCount;
 				$scope.pagination.rowCount = data.pagination.rowCount;
 			}

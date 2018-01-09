@@ -45,7 +45,7 @@
                     </thead>
                     <tbody>
                         <tr class="" ng-repeat="group in groups">
-                            <th scope="row">{{$index + 1}}</th>
+                            <th scope="row">{{((pagination.page - 1) * pageLimit) + $index + 1}}</th>
                             <td>
                               <div class="avatar">
                                   <img ng-src="{{group.icon_url}}" alt=""></img>
