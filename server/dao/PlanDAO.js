@@ -98,21 +98,27 @@ module.exports = {
             callback(null, err, req, res);
 		});
     },
-    findAllByAccountId : function(accountId, req, res, callback) {
+    findAllByAccountId : function(filter, req, res, callback) {
+        if(filter.search == null) {
+            filter.search = '';
+        }
         schema.model('MembershipPlan').forge().query( function(qb) {
             qb.leftJoin('rates_to_membership_plan', function() {
                 this.on('rates_to_membership_plan.membership_plan_id', '=', 'membership_plan.id')
             })
-            .where('membership_plan.accountId', accountId)
-            .andWhere('membership_plan.active', 1)
+            .where('membership_plan.accountId', filter.accountId)
+            .andWhere('membership_plan.active', filter.active)
+            .andWhere('membership_plan.name', 'like', '%'+filter.search+'%')
             .column('membership_plan.id as id', 'membership_plan.name','membership_plan.typeId', 'membership_plan.description', 'membership_plan.active', `membership_plan.date_created`, 'membership_plan.accountId',
             'rates_to_membership_plan.id as ratePlanId', `membership_plan.accountId`, 'rates_to_membership_plan.amount', 'rates_to_membership_plan.signup_fee')
-            .orderBy('membership_plan.name', 'asc')
+            .orderBy(filter.sortField, filter.sortOrder)
             .debug(true);
 		}).fetchPage(commonUtils.getQueryObject(req)).then(function (plan) {
             var results = plan.toJSON();
             var uniqIds = [];
             var plans = [];
+            var index = 0;
+            console.log("Results.len  "+results.length)
             async.mapSeries(results, function (result, cb) {
                 if(uniqIds.indexOf(result.id) < 0) {
                     uniqIds.push(result.id);
