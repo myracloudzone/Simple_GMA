@@ -69,7 +69,6 @@ module.exports = {
         } else {
             query = 'SELECT count(*) as total from half_dome_gym_app.`group` g where g.accountId = '+filter.accountId+' and name like \'%'+filter.search+'%\';';
         }
-        console.log(query)
         commonUtils.makeDBRequest(query, function(error, data) {
             if(error) {
                 callback(null, error, req, res);

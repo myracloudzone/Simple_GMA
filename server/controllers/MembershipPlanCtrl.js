@@ -28,7 +28,25 @@ module.exports = function(app) {
     }
 
     controller.getPlans = function(req, res, next) {
-        planDAO.findAllByAccountId(req.headers.accountId, req, res, function(data, error, req, res) {
+        var filter = {};
+        filter.accountId = req.headers.accountId;
+        if(req.query.sortField == null || req.query.sortField == '') {
+            filter.sortField = "membership_plan.name";
+            filter.sortOrder = 'ASC';
+        } else {
+            filter.sortField = req.query.sortField;
+            filter.sortOrder = req.query.sortOrder;
+        }
+        if(req.query.search != null) {
+            filter.search = req.query.search;
+        }
+        if(req.query.active == null) {
+            filter.active = true;
+        } else {
+            filter.active = req.query.active;
+        }
+        console.log(filter)
+        planDAO.findAllByAccountId(filter, req, res, function(data, error, req, res) {
             if(error) {
                 return logger.logResponse(500, "Error Occured.", error, res, req);
             }
@@ -64,6 +82,7 @@ module.exports = function(app) {
                             obj.amount = req.body.amount;
                             obj.accountId = req.headers.accountId;
                             obj.signup_fee = req.body.signup_fee != null && req.body.signup_fee != '' ? req.body.signup_fee : 0;
+                            obj.dateCreated = moment().valueOf();
                             planDAO.saveRateToPlan(obj, req, res, function(rateData, error, req, res) {
                                 if(error) {
                                     return logger.logResponse(500, "Error Occured.", error, res, req);
@@ -102,6 +121,7 @@ module.exports = function(app) {
                 obj.amount = req.body.amount;
                 obj.accountId = req.headers.accountId; // Need to be updated.
                 obj.signup_fee = req.body.signup_fee != null && req.body.signup_fee != '' ? req.body.signup_fee : 0;
+                obj.dateCreated = moment().valueOf();
                 planDAO.saveRateToPlan(obj, req, res, function(data2, error, req, res) {
                     if(error) {
                         return logger.logResponse(500, "Error Occured.", error, res, req);
