@@ -32,6 +32,18 @@ module.exports = function(app) {
                 return logger.logResponse(200, responseData, null, res, req);
             })
         })
+    };
+
+    controller.assignGroupToMember = function(req, res, next) {
+        var data = {};
+        data.groupId = req.body.groupId;
+        data.memberIds = req.body.memberIds;
+        groupDAO.assignGroupToMember(data, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, error, error, res, req);
+            }
+            return logger.logResponse(200, data, null, res, req);
+        })
     }
 
     controller.getGroupById = function(req, res, next) {

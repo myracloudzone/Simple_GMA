@@ -63,6 +63,7 @@ module.exports = {
 		});
     },
     findAll : function(condition, req, res, callback) {
+        condition = JSON.parse(condition);
         schema.model('Member').forge().where(condition)
         .orderBy('id', 'ASC').fetchAll().then(function (result) {
             if(result == null) {

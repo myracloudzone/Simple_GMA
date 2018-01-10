@@ -86,6 +86,28 @@ module.exports = {
             callback(count, null, req, res);
         })
         
+    },
+    assignGroupToMember : function(filter, req, res, callback) {
+        var query = "update member m set m.group = null where m.group = "+filter.groupId+";";
+        commonUtils.makeDBRequest(query, function(error, data) {
+            if(error) {
+                callback(null, error, req, res);
+            }
+            var memberIds = filter.memberIds;
+            if(memberIds == null || memberIds.length == 0) {
+                callback("Successfully Updated.", null, req, res);
+            } else {
+                query = "update member m set m.group = "+filter.groupId+" where m.id in ("+memberIds+");";
+                commonUtils.makeDBRequest(query, function(error, data) {
+                    if(error) {
+                        callback(null, error, req, res);
+                    }
+                    callback("Successfully Updated.", null, req, res);
+                })
+            }
+            
+            
+        })
     },    
     findAll : function(filter, req, res, callback) {
         if(filter.sortField == null) {

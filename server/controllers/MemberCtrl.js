@@ -50,6 +50,15 @@ module.exports = function (app) {
         })
     };
 
+    controller.findByFilter = function(req, res, next) {
+        memberDAO.findAll(req.query.filter, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, "Error Occured.", error, res, req);
+            }
+            return logger.logResponse(200, data, null, res, req);
+        })
+    };
+
     controller.updateMember = function(req, res, next) {
         var now = moment().unix();
         var obj = {

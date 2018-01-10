@@ -7,4 +7,5 @@ module.exports = function (app) {
     app.post('/member/delete', memberCtrl.deleteMemberById);
     app.get('/member/documents', memberCtrl.getDocumentByMemberId);
     app.get('/member/count', memberCtrl.getActiveMemberCount);
+    app.get('/member/findByFilter', memberCtrl.findByFilter);
   };
