@@ -2,15 +2,48 @@ var PlanCtrl = GMApp.controller('PlanCtrl', ['$scope', '$rootScope','$mdDialog',
     console.log($stateParams)
 	$scope.customFullscreen = false;
     $scope.plans = [];
-	$scope.planTypes = [{id: null, name: 'None'},{id: 1, name: 'Daily'},{id: 2, name: 'Weekly'},{id: 3, name: 'Monthly'},{id: 4, name: 'Quarterly'},{id: 5, name: 'Half-Yearly'},{id: 6, name: 'Yearly'}];
+	$scope.planTypes = [{id: null, name: 'None'},{id: 1, name: 'Daily'},{id: 2, name: 'Weekly'},{id: 3, name: 'Monthly'},{id: 4, name: 'Quarterly'},{id: 2, name: 'Half-Yearly'},{id: 6, name: 'Yearly'}];
     $scope.page = 1;
 	$scope.pageSize = 10;
 	$scope.pageCount = 0;
 	$scope.rowCount = 0;
 	$scope.pagination = {page : 1};
+
+	$scope.sortOrder = 'ASC';
+	$scope.sortField = 'name';
+	$scope.descendingOffImagePath = "/app/assets/angular/images/sort_descending_off.png";
+	$scope.descendingOnImagePath = "/app/assets/angular/images/sort_descending_on.png";
+	$scope.ascendingOnImagePath = "/app/assets/angular/images/sort_ascending_on.png";
+
+	$scope.initVariables = { search : ''};
+
+	$scope.getSortImage = function(fieldName) {
+        if($scope.sortField.indexOf(fieldName) < 0) {
+            return $scope.descendingOffImagePath;
+        } else {
+            if($scope.sortOrder == "ASC") {
+                return $scope.descendingOnImagePath;
+            } else if($scope.sortOrder == "DESC") {
+                return $scope.ascendingOnImagePath;
+            } else {
+                return $scope.descendingOffImagePath;
+            }
+        }
+    }
+
+	$scope.applySort = function(fieldName) {
+		if($scope.sortOrder.indexOf('ASC') < 0) {
+			$scope.sortOrder = 'ASC';
+		} else {
+			$scope.sortOrder = 'DESC';
+		}
+		$scope.sortField = fieldName;
+		$scope.getList(); 
+	}
+
 	$scope.getList = function() {
       	$scope.listLoading = true;
-     	PlanService.list({'accountId' : 1, page : $scope.pagination.page, pageSize : $scope.pageSize}, function (data) {
+     	PlanService.list({'accountId' : 1, page : $scope.pagination.page, pageSize : $scope.pageSize, sortOrder : $scope.sortOrder, sortField : $scope.sortField , search : $scope.initVariables.search}, function (data) {
         	if(data != null) {
 				$scope.plans = data.data;
 				$scope.pagination.page = data.pagination.page;

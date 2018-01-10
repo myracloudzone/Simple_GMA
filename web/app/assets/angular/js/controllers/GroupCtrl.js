@@ -68,7 +68,7 @@ var GroupCtrl = GMApp.controller('GroupCtrl', ['$scope', '$rootScope', '$mdDialo
     }
 
     $scope.editItem = function(ev, id) {
-		$mdDialog.show({
+		var dialog = $mdDialog.show({
         	controller : function($scope, $mdDialog, GroupService, GlobalMethodService) {
 				$scope.icons = ["/media/1/icons/dumbell.png","/media/1/icons/heart.png",
                           "/media/1/icons/running1.png","/media/1/icons/yoga.png",
@@ -135,11 +135,12 @@ var GroupCtrl = GMApp.controller('GroupCtrl', ['$scope', '$rootScope', '$mdDialo
       	.then(function(answer) {
         	$scope.refresh();
       	}, function() {
-      	});
+		});
+		$rootScope.dialogList.push(dialog);
 	};
 
 	$scope.viewMembers = function(ev, id) {
-		$mdDialog.show({
+		var dialog = $mdDialog.show({
         	controller : function($scope, $rootScope, $mdDialog, GroupService, MemberService, GlobalMethodService, notificationService) {
 				$scope.selectedIds = {};
 				$scope.selectedMemberIds = [];
@@ -220,7 +221,8 @@ var GroupCtrl = GMApp.controller('GroupCtrl', ['$scope', '$rootScope', '$mdDialo
       	.then(function(answer) {
         	$scope.refresh();
       	}, function() {
-      	});
+		});
+		$rootScope.dialogList.push(dialog);  
 	}
 
 

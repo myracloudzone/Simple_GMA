@@ -19,6 +19,16 @@
                     </div>
                 </md-toolbar>
             </div>
+            <div class="col-sm-12 mt5 p0 memberSearchBox" ng-if="!listLoading">
+                <div class="input-group col-sm-12">
+                    <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="getList()"/>
+                    <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="getList()"><i class="fa fa-search"></i>
+                    </button>
+                    </span>
+                   
+                </div>
+            </div>
 			      <div class="col-sm-12 text-center p20" ng-if="listLoading">
                 <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
             </div>
@@ -26,16 +36,16 @@
               	<table class="table table-hover table-responsive ">
                   	<thead class="thead-inverse">
                       	<tr>
-							<th>#</th>
-							<th>Name</th>
-							<th>Type</th>
-							<th>SignUp Fee</th>
-							<th>Fee</th>
-							<th>Created</th>
-							<th>Action</th>
+                          <th>#</th>
+                          <th>Name <a href="" class="cursor-pointer color-white" ng-click="applySort('name')">  <img ng-src="{{getSortImage('name')}}" aria-hidden="true"></img></a></th>
+                          <th>Type <a href="" class="cursor-pointer color-white" ng-click="applySort('typeId')">  <img ng-src="{{getSortImage('typeId')}}" aria-hidden="true"></img></a></th>
+                          <th>SignUp Fee <a href="" class="cursor-pointer color-white" ng-click="applySort('signup_fee')">  <img ng-src="{{getSortImage('signup_fee')}}" aria-hidden="true"></img></a></th>
+                          <th>Fee </th>
+                          <th>Created <a href="" class="cursor-pointer color-white" ng-click="applySort('date_created')">  <img ng-src="{{getSortImage('date_created')}}" aria-hidden="true"></img></a></th>
+                          <th>Action</th>
                     	</tr>
                   	</thead>
-                  	<tbody>
+                  <tbody>
 						<tr class="" ng-repeat="plan in plans">
 							<th scope="row">{{$index+1}}</th>
 							<td>{{plan.name}}<md-tooltip md-direction="bottom">{{plan.name}}</md-tooltip></td>
