@@ -13,12 +13,15 @@
                             <i class="fa fa-fw fa-refresh"></i>
                         </md-button>
                         <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="editItem($event)">
-                            <md-tooltip md-direction="top">Add New</md-tooltip>
-                            <i class="fa fa-fw fa-plus"></i>
+                                <md-tooltip md-direction="top">Add New</md-tooltip>
+                                <i class="fa fa-fw fa-plus"></i>
                         </md-button>
                     </div>
                 </md-toolbar>
             </div>
+
+            
+            
             <div class="col-sm-12 mt5 p0 memberSearchBox">
                 <div class="input-group col-sm-12">
                     <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="init()"/>
@@ -26,6 +29,7 @@
                     <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="init()"><i class="fa fa-search"></i>
                     </button>
                     </span>
+                   
                 </div>
             </div>
             <div class="col-sm-12 text-center p20" ng-if="listLoading">
@@ -56,7 +60,7 @@
                             <td>{{group.memberCount}}</td>
                             <td>
                                 <a href="" ng-click="editItem($event, group.id)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Edit</md-tooltip></a>
-                                <a href="" ng-click="viewMembers($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View Members</md-tooltip></a>
+                                <a href="" ng-click="viewMembers($event, group.id)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View Members</md-tooltip></a>
                                 <a href="" ng-click="delete(group.id)"><i class="fa fa-fw fa-trash  color-red"></i><md-tooltip md-direction="top">Delete</md-tooltip></a>
                             </td>
                         </tr>
@@ -126,6 +130,61 @@
                 <span flex></span>
                 <md-button class="md-raised" ng-click="close()">Cancel</md-button>
                 <md-button class="md-raised md-primary" ng-click="addGroup()">Save</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="groupMemberView.html">
+    <md-dialog aria-label="" id="addGroupBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>View Group Member</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content>
+                <div class="md-dialog-content">
+                    <div class="col-sm-12 text-center" ng-if="loading">
+                        <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                    </div>    
+                    <div layout="row p0" layout-wrap ng-if="!loading" id="assignGroupToMember">
+                        <div class="col-sm-12 p0">
+                            <button class="btn btn-secondary col-sm-12" type="button" ng-click="toggleMemberList()">
+                                Select Members
+                            </button>
+                            <div class="col-sm-12 p0" ng-show="showMembers">
+                                <div class="col-sm-12 p0 groupMemberListDiv">
+                                    <md-checkbox ng-model="member.selected" class="col-sm-12" ng-repeat="member in allMember | orderBy : 'first_name'" ng-if="selectedMemberIds.indexOf(member.id) < 0">
+                                        {{member.first_name}} {{member.last_name}}
+                                    </md-checkbox>
+                                </div> 
+                                <div class="col-sm-12 p0 text-right" style="background: #cdcdcd;">   
+                                    <md-button class="md-raised" ng-click="toggleMemberList()">Close</md-button>
+                                    <md-button class="md-raised md-primary" ng-click="addMemberToGroup()">Add</md-button>
+                                </div>
+                            </div>
+                        </div>    
+                        <div class="input-group col-sm-12 p0 mb10 mt10">
+                            <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search"/>
+                                
+                        </div>
+                        <div flex="100" ng-repeat="member in selectedMember | filter : {first_name : initVariables.search} | orderBy : 'first_name'" class="groupMemberList">
+                            <h6>{{member.first_name}} {{member.last_name}}<i class="fa fa-fw fa-remove pull-right cursor-pointer" ng-click="removeMemberFromGroup(member.id)"></i></h6>
+                        </div>
+                    </div>
+                </div>
+            </md-dialog-content>
+
+            <md-dialog-actions layout="row" ng-if="!loading">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()">Cancel</md-button>
+                <md-button class="md-raised md-primary" ng-click="assignGroups()">Save</md-button>
             </md-dialog-actions>
         </form>
     </md-dialog>

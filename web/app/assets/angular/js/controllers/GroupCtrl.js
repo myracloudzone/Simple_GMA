@@ -136,7 +136,96 @@ var GroupCtrl = GMApp.controller('GroupCtrl', ['$scope', '$rootScope', '$mdDialo
         	$scope.refresh();
       	}, function() {
       	});
+	};
+
+	$scope.viewMembers = function(ev, id) {
+		$mdDialog.show({
+        	controller : function($scope, $rootScope, $mdDialog, GroupService, MemberService, GlobalMethodService, notificationService) {
+				$scope.selectedIds = {};
+				$scope.selectedMemberIds = [];
+				$scope.initVariables = {};
+				$scope.showMembers = false;
+				$scope.close = function(result) {
+					if(result != null) {
+						$mdDialog.hide(result);
+					} else {
+						$mdDialog.cancel();
+					}
+				}
+				$scope.addMemberToGroup = function() {
+					angular.forEach($scope.allMember, function(v,k) {
+						if(v.selected == true) {
+							$scope.selectedIds[v.id] = true;
+							$scope.selectedMemberIds.push(v.id);
+							$scope.selectedMember.push(v);
+						}
+					})
+					$scope.allMember = angular.copy($scope.copyAllMember);
+					$scope.showMembers = false;
+				}
+
+				$scope.assignGroups = function() {
+					var data = {};
+					data.groupId = id;
+					data.memberIds = $scope.selectedMemberIds;
+					GroupService.assignGroupToMember(data, function(data) {
+						notificationService.success("Saved Successfully.");
+						$scope.close(data);
+					}, function(error) {
+						notificationService.error("Error Occurred.");
+					})
+				}
+				$scope.removeMemberFromGroup = function(id) {
+					$scope.selectedIds[id] = false;
+					$scope.selectedMemberIds.splice($scope.selectedMemberIds.indexOf(id), 1);
+					var members = [];
+					angular.forEach($scope.selectedMember, function(v,k) {
+						if(v.id != id) {
+							members.push(v);
+						}
+					})
+					$scope.selectedMember = angular.copy(members);
+				}
+				$scope.toggleMemberList = function() {
+					$scope.allMember = angular.copy($scope.copyAllMember);
+					$scope.showMembers = !$scope.showMembers;
+				}
+				$scope.getAllMembers = function() {
+					var filter = {filter : {'active' : 1, accountId : $rootScope.accountId}};
+					MemberService.findByFilter(filter, function(data) {
+						$scope.allMember = data;
+						$scope.copyAllMember = angular.copy(data);
+					})
+				}
+				$scope.getMembersOfGroup = function() {
+					var filter = {filter : {'active' : 1, group : id}};
+					MemberService.findByFilter(filter, function(data) {
+						$scope.selectedMember = data;
+						angular.forEach($scope.selectedMember, function(v, k) {
+							$scope.selectedIds[v.id] = true;
+							$scope.selectedMemberIds.push(v.id);
+						})
+						$scope.getAllMembers();
+					})
+				}
+				$scope.getMembersOfGroup();
+				
+        	},
+        	templateUrl: 'groupMemberView.html',
+        	parent: angular.element(document.body),
+        	targetEvent: ev,
+        	clickOutsideToClose:true,
+        	fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+      	})
+      	.then(function(answer) {
+        	$scope.refresh();
+      	}, function() {
+      	});
 	}
+
+
+
+	
 	
 	$scope.init();
 }])

@@ -982,6 +982,19 @@ button.chipClose:focus {
 #forgotPasswordBox {
   width: 500px;
 }
+.groupMemberList {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom: 1px dashed #ddd;
+  background: #eeeeee;
+}
+.groupMemberListDiv {
+  max-height: 200px;
+  background: #eeeeee;
+  overflow: scroll;
+}
 /* --------------------------- */
 @media (max-width: 420px) {
 	.paginator {
