@@ -132,9 +132,6 @@ module.exports = {
                 cb();
             });
             callback({data : plans, pagination : plan.pagination}, null, req, res);
-            
-		}).catch(function (err) {
-            callback(null, err, req, res);
 		});
     },
     saveRateToPlan : function(obj, req, res, callback) {
