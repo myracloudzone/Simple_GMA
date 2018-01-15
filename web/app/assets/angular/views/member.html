@@ -60,6 +60,10 @@
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
+                <md-button md-no-ink class="md-primary optionSectionButton" ng-click="sellProduct($event)">
+                    <md-icon md-font-icon="fa-product-hunt" class="fa fa-lg md-primary md-hue-2"></md-icon>
+                    Product
+                </md-button>
                 <md-button md-no-ink class="md-primary" ng-click="deleteMember($event, selectedmember.id)">
                     <md-icon md-font-icon="fa-remove" class="fa fa-lg md-primary md-hue-2"></md-icon>
                     Delete
@@ -558,50 +562,173 @@
                         <div flex-xs flex-gt-xs="100" layout="column" id="rowBox">
                             <md-card md-theme="dark-grey" md-theme-watch>
                                 <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <div class="col-sm-12 IDCardHeader">
-                                            <span class="fs22 strong">Tonic GYM</span>
-                                        </div>
+                                    <div class="col-sm-12 p0">
                                         <div class="col-sm-12">
-                                            <hr></hr>
-                                        </div>    
-                                    </div>    
-                                    <div class="col-sm-3 IDCardImage">
-                                        <div class="md-media-lg card-media">
-                                            <div class="addMemberAvatarIDCard">
+                                            <div class="col-sm-12 IDCardHeader text-center">
+                                                <span class="fs22 strong">Tonic GYM</span>
+                                            </div>
+                                        </div> 
+                                        <div class="col-sm-12 text-center">
+                                            <div class="addMemberAvatar">
                                                 <img ng-src="{{member.profile_pic}}" ng-if="member.profile_pic != null" alt=""></img>
                                                 <img src="/app/assets/angular/images/avatars/avatar4.png" ng-if="member.gender == 'Male' && member.profile_pic == null" alt=""></img>
                                                 <img src="/app/assets/angular/images/avatars/avatar3.png" ng-if="member.gender == 'Female' && member.profile_pic == null" alt=""></img>
                                             </div>
                                         </div>
-                                    </div>    
-                                    <div class="col-sm-6">
-                                        <div class="pull-left">
-                                            <span class="fs12">Name:</span>
-                                            <h5>{{member.firstName}} {{member.lastName}}</h5>
-                                            <span class="fs12">Gender:</span>
-                                            <h6> {{member.gender}}</h6>
-                                            <span class="fs12">Address:</span>
-                                            <h6> {{member.address}}</h6>
-                                            <span class="fs12">Mobile:</span>
-                                            <h6> {{member.mobile}}</h6>
-                                            <span class="fs12">Joining Date:</span>
-                                            <h6> {{member.joiningDate.substring(0, member.joiningDate.indexOf(' '))}}</h6>
+                                        <div class="col-sm-12">
+                                            <p class="text-center strong">{{member.firstName}}&nbsp;{{member.lastName}}</p>
+                                            <p class="text-center strong">{{member.address}}</p>
+                                            <p class="text-center strong">{{member.mobile}}</p>
+                                            <p class="text-center strong" ng-if="member.address != null && member.address != ''">{{member.address}}</p>
+                                            <p class="text-center strong">Joining&nbsp;Date&nbsp;:&nbsp;{{member.joiningDate.substring(0, member.joiningDate.indexOf(' '))}}</p>
+                                            <hr></hr>
+                                            <p class="text-center strong">Emergency&nbsp;Contact&nbsp;Detail</p>
+                                            <p class="text-center strong">{{member.emergencyContactName}}</p>
+                                            <p class="text-center strong">{{member.emergencyContactNumber}}</p>
+                                            <hr></hr>
                                         </div>
-                                    </div>
-                                    <div class="col-sm-3 pt10">
-                                        <qr type-number="8" correction-level="'M'" size="120" class="barcode" input-mode="'ALPHA_NUM'" text="member.memberCode" image="true"></qr>
-                                    </div>        
+                                        <div class="col-sm-12 text-center mb10">
+                                            <qr type-number="8" correction-level="'M'" size="120" class="barcode" input-mode="'ALPHA_NUM'" text="member.memberCode" image="true"></qr>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            <div class="text-center">
+                                                <small>Copyright © <b>Myra Solutions</b> 2017</small>
+                                            </div>
+                                        </div>            
+                                    </div>    
                                 </div>
                             </md-card>
-                        </div>    
+                         </div>  
                     </div>    
                 </div>
             </md-dialog-content>
             <md-dialog-actions layout="row">
                 <span flex></span>
-                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Cancel</md-button>
+                <md-button class="md-raised" ng-click="download()" ng-disabled="loading">Cancel</md-button>
                 <a class="md-button md-raised md-primary" id="btn-Convert-Html2Image" href="#" ng-click="downloadCard()">Download</a>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+
+<script type="text/ng-template" id="sellProduct.html">
+    <md-dialog aria-label="" id="productAddBox">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Product</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div ng-cloak>
+                    <md-content>
+                        <div class="col-sm-12">
+                            <md-tabs md-dynamic-height md-border-bottom>
+                                <md-tab label="Buy" style="background : #ddd;" md-on-select="getProducts()">
+                                    <md-content class="md-padding">
+                                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                        <div class="col-sm-12 p0 bg-gray mb10"  ng-if="!loading">
+                                            <div class="col-sm-12 mt10 pt10">
+                                                <md-select ng-model="selectedProduct.item" placeholder="Select Product">
+                                                    <md-option value="null"><em>Select Product</em></md-option>
+                                                    <md-option ng-repeat="product in products" ng-value="product">
+                                                        {{product.name}}
+                                                    </md-option>
+                                                </md-select>
+                                            </div>
+                                            <div class="col-sm-12 pb10" ng-if="selectedProduct.item == null || selectedProduct.item == {} || selectedProduct.item == 'null'" style="margin-top: -15px;">
+                                                Please select a product to continue.
+                                            </div>
+                                            <div class="col-sm-12 p0" style="margin-top: -10px;" ng-if="selectedProduct.item != null && selectedProduct.item != {} && selectedProduct.item != 'null'">
+                                                <div class="col-sm-12">
+                                                    <p class="fs22 text-center m0">Product Details</p>
+                                                    <hr class="m0"></hr>
+                                                    <table class="table table-inverse">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="strong">Product Name</td>
+                                                                <td>{{selectedProduct.item.name}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="strong">Description</td>
+                                                                <td>{{selectedProduct.item.description}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="strong">Price</td>
+                                                                <td>{{selectedProduct.item.selling_price}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="strong">Quantity In Stock</td>
+                                                                <td>{{selectedProduct.item.quantity_left}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>    
+                                                </div> 
+                                                <div class="col-sm-12">
+                                                    <md-input-container class="md-block" flex-gt-xs>
+                                                        <label>Quantity</label>
+                                                        <input ng-model="quantityToBuy.value" required positive-number maxlength="10">
+                                                    </md-input-container>
+                                                </div>   
+                                            </div>
+                                        </div>        
+                                    </md-content>
+                                </md-tab>
+                                <md-tab label="History"  md-on-select="getProductsToMember()">
+                                    <md-content class="md-padding">
+                                        <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                        <div class="col-sm-12 p0 bg-gray mb10" ng-if="!listLoading">
+                                            <div class="col-sm-12 mt10" ng-if="memberProducts.length == 0">
+                                                <label><b>No Data Available.</b></label>
+                                            </div>
+                                            <table class="table table-hover" ng-if="memberProducts.length > 0">
+                                                <thead class="thead-inverse">
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Name  <a href="" class="cursor-pointer color-white" ng-click="applySort('name')">  <img ng-src="{{getSortImage('name')}}" aria-hidden="true"></img></a></th>
+                                                        <th>Quantity Sold/Cancelled <a href="" class="cursor-pointer color-white" ng-click="applySort('soldQuantity')"> <img ng-src="{{getSortImage('soldQuantity')}}" aria-hidden="true"></img></a></th>
+                                                        <th>Price <a href="" class="cursor-pointer color-white" ng-click="applySort('soldRate')"> <img ng-src="{{getSortImage('soldRate')}}" aria-hidden="true"></img></a></th>
+                                                        <th>Type <a href="" class="cursor-pointer color-white" ng-click="applySort('transactionType')"> <img ng-src="{{getSortImage('transactionType')}}" aria-hidden="true"></img></a></th>
+                                                        <th>Date Created<a href="" class="cursor-pointer color-white" ng-click="applySort('dateCreated')"> <img ng-src="{{getSortImage('dateCreated')}}" aria-hidden="true"></img></a></th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="product in memberProducts">
+                                                        <th scope="row">
+                                                            {{$index + 1}}
+                                                        </th>
+                                                        <td>{{product.name}}</td>
+                                                        <td>{{product.soldQuantity}}</td>
+                                                        <td>{{(product.soldRate)}}</td>
+                                                        <td>{{(product.transactionType == 1 ? 'Sold' : 'Cancelled')}}</td>
+                                                        <td>{{getDateString(product.dateCreated)}}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-link" ng-disabled="product.transactionType != 1" ng-click="product.transactionType == 1 && returnOrder(product.id)"><md-tooltip md-direction="top">Cancel Order</md-tooltip><i class="fa fa-mail-reply fa-lg"></i></button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div> 
+                                    </md-content>
+                                </md-tab>
+                            </md-tabs>
+                        </div>    
+                    </md-content>
+                </div>
+            </md-dialog-content>
+            <md-dialog-actions layout="row">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Cancel</md-button>
+                <md-button class="md-raised md-primary" ng-click="sellProduct()" ng-disabled="loading">Save</md-button>
             </md-dialog-actions>
         </form>
     </md-dialog>

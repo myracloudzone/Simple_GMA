@@ -42,7 +42,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			}
 		}
 	}
-	
+
 	$scope.setPageLayoutHeight = function() {
 		setTimeout(function() {
 			var remainingHeight = null;
@@ -76,7 +76,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 	$scope.initGroups = function() {
 		GroupService.list({accountId : 1}, function (data) {
         	if(data != null) {
-		  		$scope.groups = data;
+		  		$scope.groups = data.data;
 			}
       	});
     }
@@ -645,14 +645,17 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 					var element = $("#rowBox");
 					var getCanvas;
 					html2canvas(element, {
+						width: element[0].offsetWidth * 1,
+						height: element[0].offsetHeight * 1,
+						background :'#FFFFFF',
 						onrendered: function (canvas) {
 						   getCanvas = canvas;
 						   var imgageData = getCanvas.toDataURL("image/png");
 						   var newData = imgageData.replace(/^data:image\/png/, "data:application/octet-stream");
-						   $("#btn-Convert-Html2Image").attr("download", $scope.member.firstName+"_"+$scope.member.lastName).attr("href", newData);
+						   $("#btn-Convert-Html2Image").attr("download", $scope.member.firstName+"_"+$scope.member.lastName).attr("href", imgageData);
 						}
 				  	});
-				}, 1000)
+				}, 500)
 				$(document).ready(function() {
 					
 				});
@@ -667,7 +670,158 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 		   	fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
 		})
 		.then(function(answer) {
+		}, function() {
+
+		});
+	  	$rootScope.dialogList.push(dialog);
+	}
+	$scope.sellProduct = function(ev) {
+		if($scope.selectedmember.id == null) {
+			return;
+		}
+		var dialog = $mdDialog.show({
+		  controller : function($scope, $rootScope, $mdDialog, $filter, GroupService, notificationService, GlobalMethodService, GlobalVariableService, MemberService, ProductService, member){
+			$scope.member = member;
+			$scope.products = [];
+			$scope.selectedProduct = {item : null};
+			$scope.quantityToBuy = { value : null};
+
+			$scope.getProducts = function() {
+				$scope.loading = true;
+				$scope.selectedProduct = {item : null};
+				$scope.quantityToBuy = { value : null};
+				ProductService.list({accountId : $rootScope.accountId}, function(data) {
+					$scope.products = data;
+					$scope.loading = false;
+				}, function(error) {
+					$scope.loading = false;
+				})
+			}
+			$scope.getProducts();
+
+			$scope.validateData = function() {
+				if(GlobalMethodService.isEmptyString($scope.selectedProduct.item.id)) {
+					notificationService.error("Please select a product to continue.");
+					return false;
+				} else if(GlobalMethodService.isEmptyString($scope.quantityToBuy.value)) {
+					notificationService.error("Please enter a quantity to continue.");
+					return false;
+				} else if(parseFloat($scope.quantityToBuy.value) > $scope.selectedProduct.item.quantity_left) {
+					notificationService.error("Please eneter a quantity less than available stock to continue.");
+					return false;
+				}
+				return true; 
+			}
+
+			$scope.getDateString = function(date) {
+				if(date == null || date == '') {
+					return '';
+				}
+				date = new Date(parseInt(date));
+				return $filter('date')(date, 'dd/MM/yyyy HH:mm:ss');
+			}
+
+			// ----------Apply Sort--------------------- //
+			$scope.sortOrder = 'DESC';
+			$scope.sortField = 'dateCreated';
+			$scope.descendingOffImagePath = "/app/assets/angular/images/sort_descending_off.png";
+			$scope.descendingOnImagePath = "/app/assets/angular/images/sort_descending_on.png";
+			$scope.ascendingOnImagePath = "/app/assets/angular/images/sort_ascending_on.png";
 			
+		
+			$scope.applySort = function(fieldName) {
+				if($scope.sortOrder.indexOf('ASC') < 0) {
+					$scope.sortOrder = 'ASC';
+				} else {
+					$scope.sortOrder = 'DESC';
+				}
+				$scope.sortField = fieldName;
+				$scope.getProductsToMember();
+			}
+		
+			$scope.getSortImage = function(fieldName) {
+				if($scope.sortField.indexOf(fieldName) < 0) {
+					return $scope.descendingOffImagePath;
+				} else {
+					if($scope.sortOrder == "ASC") {
+						return $scope.descendingOnImagePath;
+					} else if($scope.sortOrder == "DESC") {
+						return $scope.ascendingOnImagePath;
+					} else {
+						return $scope.descendingOffImagePath;
+					}
+				}
+			}
+			// ------------------------------------------//
+
+			$scope.getProductsToMember = function() {
+				var obj = {};
+				obj.accountId = $rootScope.accountId;
+				obj.memberId = $scope.member.id;
+				obj.sortField = $scope.sortField;
+				obj.sortOrder = $scope.sortOrder;
+				$scope.listLoading = true;
+				$scope.memberProducts = [];
+				ProductService.getProductsToMember(obj, function(data) {
+					$scope.listLoading = false;
+					$scope.memberProducts = data;
+				}, function(error) {
+					$scope.listLoading = false;
+				})
+			}
+
+			$scope.returnOrder = function(id) {
+				var obj = {};
+				obj.id = id;
+				$scope.listLoading = true;
+				ProductService.returnOrder(obj, function(data) {
+					notificationService.success("Successfully Cancelled.");
+					$scope.getProductsToMember();
+				}, function(error) {
+					notificationService.error(error.data);
+					$scope.listLoading = false;
+				})
+			}
+
+			$scope.sellProduct = function() {
+				if(!$scope.validateData()) {
+					return;
+				}
+				var obj = {};
+				obj.productId = $scope.selectedProduct.item.id;
+				obj.memberId = $scope.member.id;
+				obj.memberType = 1;
+				obj.quantity = $scope.quantityToBuy.value;
+				$scope.loading = true;
+				ProductService.assignProductToUser(obj, function(data) {
+					notificationService.success("Successfully Created.");
+					$scope.loading = false;
+					$scope.getProducts();
+				}, function(error) {
+					notificationService.error(error.data);
+					$scope.loading = false;
+				})
+			}
+
+			$scope.close = function(result) {
+				if(result != null) {
+					$mdDialog.hide(result);
+				} else {
+					$mdDialog.cancel();
+				}
+			};
+		  },
+		  templateUrl: 'sellProduct.html',
+		  parent: angular.element(document.body),
+		  targetEvent: ev,
+		  locals: {
+			member : $scope.selectedmember
+		   },
+		  clickOutsideToClose:true,
+		  fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+		})
+		.then(function(answer) {
+		  $scope.getMembers();
 		}, function() {
 		  
 		});

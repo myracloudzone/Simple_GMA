@@ -40,6 +40,9 @@
 .pb5 {
 	padding-bottom: 5px !important;
 }
+.pb10 {
+	padding-bottom: 10px !important;
+}
 .pr0 {
   padding-right: 0px !important;
 }
@@ -168,9 +171,12 @@
 }
 .subscriptionTableDiv {
   /* max-height: 540px; */
-	height: calc(100vh - 230px);
+	height: calc(100vh - 272px);
   	overflow: auto;
 	border-bottom: 1px solid #cdcdcd;
+}
+.borderless td, .borderless th {
+  border: none;
 }
 .activityDiv {
   height: calc(100vh - 180px);
@@ -261,6 +267,8 @@ form .md-datepicker-input-container{
   border-top: 1px solid #e9ecef;
 } */
 #rowBox{
+  max-width: 400px;
+  padding-left: 6px;
   border: 3px solid #000;
 }    
 .addMemberAvatar {
@@ -282,9 +290,17 @@ form .md-datepicker-input-container{
   border: 1px solid #ededed;
 }
 .IDCardBoxFlow {
-  min-width: 720px;
-  max-width: 720px;
-  overflow: scroll;
+  text-align: -webkit-center;
+  /* overflow: scroll; */
+}
+.IDCardBoxFlow p {
+  margin-bottom: 0px; 
+}
+*.html2canvasreset {
+  overflow: visible !important;
+  width: auto !important;
+  height: auto !important;
+  max-height: auto !important;
 }
 .addMemberAvatar img {
   width: 100px;
@@ -808,8 +824,11 @@ tr { outline: none; }
 #payemntAddBox {
   width: 60%;
 }
+#productAddBox {
+  width: 80%;
+}
 #idCardBox {
-  width: 50%;
+  width: 30%;
 }
 .IDCardImage {
   padding-left: 30px !important;
