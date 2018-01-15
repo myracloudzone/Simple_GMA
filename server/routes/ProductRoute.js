@@ -5,4 +5,7 @@ module.exports = function (app) {
     app.get('/product/getProductById', productCtrl.getProductById);
     app.get('/product/list', productCtrl.getProducts);
     app.post('/product/updateProduct', productCtrl.updateProduct);
+    app.post('/product/assignProductToUser', productCtrl.assignProductToUser);
+    app.get('/product/getProductsToMember', productCtrl.getProductTransactionToMember); 
+    app.post('/product/returnOrder', productCtrl.returnOrder);
 }; 

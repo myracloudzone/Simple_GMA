@@ -2,6 +2,7 @@ var config = require('../scripts/config.json');
 var logger = require('../scripts/logger.js');
 var commonUtils = require("./CommonCtrl.js");
 var productDAO = require('../dao/ProductDAO.js');
+var moment = require('moment');
 
 module.exports = function(app) {
     var controller = {};
@@ -96,6 +97,118 @@ module.exports = function(app) {
             }
             return logger.logResponse(200, "Successfully Deleted.", null, res, req);
         })
-    }
+    };
+
+    controller.getProductTransactionToMember = function(req, res, next) {
+        var filter = {};
+        if(req.query.sortField == null || req.query.sortField == '') {
+            filter.sortField = 'name';
+            filter.sortOrder = 'asc';
+        } else {
+            filter.sortField = req.query.sortField;
+            filter.sortOrder = req.query.sortOrder;
+        }
+        filter.condition = {};
+        filter.condition.accountId = req.headers.accountId;
+        filter.condition.memberId = req.query.memberId;
+        filter.condition.memberType = 1;
+        productDAO.getProductTransactionToMember(filter, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, "Error Occurred.", error, res, req);
+            }
+            return logger.logResponse(200, data, null, res, req);
+        });
+    };
+
+    controller.returnOrder = function(req, res, next) {
+        console.log("---------------------------1111------------------------------");
+        productDAO.getProductTransactionById(req.body.id, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, "Error Occurred.", error, res, req);
+            }
+            if(data == null) {
+                return logger.logResponse(404, "No Record Found.", "No Record Found.", res, req);
+            }
+            // check whether order is cancelled or not
+            var productTransaction = data;
+            productDAO.checkForTransactionCancellation(req.body.id, req, res, function(dataResponse, error, req, res) {
+                if(error) {
+                    return logger.logResponse(500, "Error Occurred.", error, res, req);
+                }
+                if(dataResponse != null && dataResponse.id != null) {
+                    return logger.logResponse(404, "Order has been already cancelled.", "Order has been already cancelled.", res, req);
+                } else {
+                    productTransaction.transactionType = 2;
+                    productDAO.updateProductTransaction(req.body.id, req.headers.accountId, productTransaction, req, res, function(updatedProductTransaction, error, req, res) {
+                        if(error) {
+                            return logger.logResponse(500, "Error Occurred.", error, res, req);
+                        }
+                        if(updatedProductTransaction == null) {
+                            return logger.logResponse(404, "No Record Updated.", "No Record Updated.", res, req);
+                        }
+                        var productId = updatedProductTransaction.productId;
+                        productDAO.find(productId, req, res, function(productDetails, error, req, res) {
+                            if(error) {
+                                return logger.logResponse(500, "Error Occurred.", error, res, req);
+                            }
+                            if(productDetails == null) {
+                                return logger.logResponse(404, "No Record Found.", "No Record Found.", res, req);
+                            }
+                            var quantityLeft = parseFloat(productDetails.quantity_left);
+                            var obj = {};
+                            obj.quantity_left = quantityLeft + updatedProductTransaction.soldQuantity;
+                            productDAO.update(productId, req.headers.accountId, obj, req, res, function(data, error, req, res) {
+                                if(error) {
+                                    return logger.logResponse(500, "Error Occurred.", error, res, req);
+                                }
+                                return logger.logResponse(200, "Successfully Created.", null, res, req);
+                            });
+                        });
+                    })
+                }
+            });        
+        });
+    };
+
+    controller.assignProductToUser = function(req, res, next) {
+        var productId = req.body.productId;
+        productDAO.find(productId, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, "Error Occurred.", error, res, req);
+            }
+            if(data == null) {
+                return logger.logResponse(404, "No Record Found.", "No Record Found.", res, req);
+            }
+            var quantityLeft = parseFloat(data.quantity_left);
+            var quantityAsked = parseFloat(req.body.quantity);
+            if(quantityAsked <= quantityLeft) {
+                var obj = {};
+                obj.productId = productId;
+                obj.memberId = req.body.memberId;
+                obj.memberType = req.body.memberType;
+                obj.soldRate = data.selling_price;
+                obj.dateCreated = moment().valueOf();
+                obj.soldQuantity = quantityAsked;
+                obj.accountId = req.headers.accountId;
+                obj.transactionType = 1; // For sold 1 , for return 0
+                productDAO.assignProductToUser(obj, req, res, function(data, error, req, res) {
+                    if(error) {
+                        return logger.logResponse(500, "Error Occurred.", error, res, req);
+                    }
+                    var obj = {};
+                    obj.quantity_left = quantityLeft - quantityAsked;
+                    productDAO.update(req.body.productId, req.headers.accountId, obj, req, res, function(data, error, req, res) {
+                        if(error) {
+                            return logger.logResponse(500, "Error Occurred.", error, res, req);
+                        }
+                        return logger.logResponse(200, "Successfully Created.", null, res, req);
+                    });
+
+                })
+            } else {
+                return logger.logResponse(404, "This item is out of stock.", "No Record Found.", res, req);
+            }
+        });
+    };
     return controller;
 };

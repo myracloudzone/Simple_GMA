@@ -83,6 +83,7 @@ module.exports = function(app) {
                             obj.accountId = req.headers.accountId;
                             obj.signup_fee = req.body.signup_fee != null && req.body.signup_fee != '' ? req.body.signup_fee : 0;
                             obj.dateCreated = moment().valueOf();
+                            obj.isCurrent = 1;
                             planDAO.saveRateToPlan(obj, req, res, function(rateData, error, req, res) {
                                 if(error) {
                                     return logger.logResponse(500, "Error Occured.", error, res, req);
@@ -116,19 +117,25 @@ module.exports = function(app) {
                     return logger.logResponse(200, plan_data, null, res, req);
                 });
             } else {
-                var obj = {};
-                obj.membership_plan_id = req.body.id;
-                obj.amount = req.body.amount;
-                obj.accountId = req.headers.accountId; // Need to be updated.
-                obj.signup_fee = req.body.signup_fee != null && req.body.signup_fee != '' ? req.body.signup_fee : 0;
-                obj.dateCreated = moment().valueOf();
-                planDAO.saveRateToPlan(obj, req, res, function(data2, error, req, res) {
+                planDAO.cancelAllCurrentFees(req.body.id, req, res, function(data, error, req, res) {
                     if(error) {
                         return logger.logResponse(500, "Error Occured.", error, res, req);
                     }
-                    var plan_data = {'plan' : data, 'rate_plan' : data2};
-                    return logger.logResponse(200, plan_data, null, res, req);
-                });
+                    var obj = {};
+                    obj.membership_plan_id = req.body.id;
+                    obj.amount = req.body.amount;
+                    obj.accountId = req.headers.accountId; // Need to be updated.
+                    obj.signup_fee = req.body.signup_fee != null && req.body.signup_fee != '' ? req.body.signup_fee : 0;
+                    obj.dateCreated = moment().valueOf();
+                    obj.isCurrent = true;
+                    planDAO.saveRateToPlan(obj, req, res, function(data2, error, req, res) {
+                        if(error) {
+                            return logger.logResponse(500, "Error Occured.", error, res, req);
+                        }
+                        var plan_data = {'plan' : data, 'rate_plan' : data2};
+                        return logger.logResponse(200, plan_data, null, res, req);
+                    });
+                }) 
             }
         })
     }

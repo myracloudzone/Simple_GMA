@@ -109,6 +109,7 @@ module.exports = {
             .where('membership_plan.accountId', filter.accountId)
             .andWhere('membership_plan.active', filter.active)
             .andWhere('membership_plan.name', 'like', '%'+filter.search+'%')
+            .andWhere('isCurrent', 1)
             .column('membership_plan.id as id', 'membership_plan.name','membership_plan.typeId', 'membership_plan.description', 'membership_plan.active', `membership_plan.date_created`, 'membership_plan.accountId',
             'rates_to_membership_plan.id as ratePlanId', `membership_plan.accountId`, 'rates_to_membership_plan.amount', 'rates_to_membership_plan.signup_fee')
             .orderBy(filter.sortField, filter.sortOrder)
@@ -173,6 +174,15 @@ module.exports = {
         }).catch(function (err) {
             callback(null, err, req, res);
         });
+    },
+    cancelAllCurrentFees : function(planId, req, res, callback) {
+        var query = "update rates_to_membership_plan set isCurrent = 0 where membership_plan_id = "+planId+";"
+        commonUtils.makeDBRequest(query, function(error, data) {
+            if(error) {
+                callback(null, error, req, res);
+            }
+            callback("Successfully Done.", null, req, res);
+        })
     }
 
 }
