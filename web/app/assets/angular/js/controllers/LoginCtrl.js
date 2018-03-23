@@ -20,6 +20,8 @@ var LoginCtrl = GMApp.controller('LoginCtrl', ['$scope', '$rootScope','$location
 				if(data) {
 					ipCookie('uuid', data.uuid, { expires: 2 });
 					ipCookie('account', data.accountId, { expires: 2 });
+					var loggedInUser = {id : data.id, roleId : data.roleId};
+					ipCookie('loggedUser', JSON.stringify(loggedInUser), { expires: 2 });
 					$state.go('home', {id : data.accountId});
 					$scope.invalidCredential = false;
 				} else {

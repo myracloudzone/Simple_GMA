@@ -685,8 +685,8 @@
                                         <div class="col-sm-12 text-center p20" ng-if="listLoading">
                                             <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
                                         </div>
-                                        <div class="col-sm-12 p0 bg-gray mb10" ng-if="!listLoading">
-                                            <div class="col-sm-12 mt10" ng-if="memberProducts.length == 0">
+                                        <div class="col-sm-12 p0 mb10" ng-if="!listLoading">
+                                            <div class="col-sm-12 bg-gray mt10" ng-if="memberProducts.length == 0">
                                                 <label><b>No Data Available.</b></label>
                                             </div>
                                             <table class="table table-hover" ng-if="memberProducts.length > 0">
@@ -728,7 +728,7 @@
             <md-dialog-actions layout="row">
                 <span flex></span>
                 <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Cancel</md-button>
-                <md-button class="md-raised md-primary" ng-click="sellProduct()" ng-disabled="loading">Save</md-button>
+                <md-button class="md-raised md-primary" ng-click="sellProduct()" ng-if="isSaveAllowed" ng-disabled="loading">Save</md-button>
             </md-dialog-actions>
         </form>
     </md-dialog>

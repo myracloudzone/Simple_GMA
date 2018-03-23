@@ -58,6 +58,9 @@
 .mt50{
   margin-top: 50px;
 }
+.mt60{
+  margin-top: 60px;
+}
 .mr5 {
   margin-right: 5px;
 }
@@ -172,8 +175,19 @@
 .subscriptionTableDiv {
   /* max-height: 540px; */
 	height: calc(100vh - 272px);
-  	overflow: auto;
+  overflow: auto;
 	border-bottom: 1px solid #cdcdcd;
+}
+.messageTableDiv {
+  height: calc(100vh - 272px);
+  overflow: auto;
+  border-bottom: 1px solid #cdcdcd;
+}
+.messageTableDiv .nav .active {
+  background: #eee;
+}
+.messageTableDiv .nav {
+  background: #ddd;
 }
 .borderless td, .borderless th {
   border: none;

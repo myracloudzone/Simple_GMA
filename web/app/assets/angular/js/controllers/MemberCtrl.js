@@ -687,6 +687,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			$scope.quantityToBuy = { value : null};
 
 			$scope.getProducts = function() {
+				$scope.isSaveAllowed = true;
 				$scope.loading = true;
 				$scope.selectedProduct = {item : null};
 				$scope.quantityToBuy = { value : null};
@@ -755,6 +756,7 @@ var MemberCtrl = GMApp.controller('MemberCtrl', ['$scope', '$rootScope', '$mdDia
 			// ------------------------------------------//
 
 			$scope.getProductsToMember = function() {
+				$scope.isSaveAllowed = false;
 				var obj = {};
 				obj.accountId = $rootScope.accountId;
 				obj.memberId = $scope.member.id;

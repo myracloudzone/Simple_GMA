@@ -1,7 +1,8 @@
 <!-- Navigation-->
+<!-- Navigation-->
 <div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
-<div class="content-wrapper mt50 mb40">
-    <div class="container-fluid">
+<div class="content-wrapper mb40">
+    <div class="container-fluid mt60">
         <div class="col-sm-12 borderAll p0">
             <div class="col-sm-12 p0">
                 <md-toolbar>
@@ -19,7 +20,7 @@
                     </div>
                 </md-toolbar>
             </div>
-            <div class="col-sm-12 subscriptionTableDiv mt10">
+            <div class="col-sm-12 messageTableDiv mt10">
               <uib-tabset active="active">
                 <uib-tab index="0" heading="Inbox">
                   <table class="table table-hover table-responsive ">
@@ -35,85 +36,53 @@
                       <tbody>
                           <tr class="">
                               <th scope="row">1</th>
-                              <td>28/Sep/2017 12:34:22</td>
-                              <td>Rahul</td>
-                              <td>Hi Rahul</td>
-                              <td class="">
-                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
-                                <a href="" ng-click="reply($event)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Reply</md-tooltip></a>
-                              </td>
-                          </tr>
-                          <tr class="">
-                              <th scope="row">2</th>
-                              <td>28/Sep/2017 12:34:22</td>
-                              <td>Rahul</td>
-                              <td>Hi Rahul</td>
-                              <td class="">
-                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
-                                <a href="" ng-click="reply($event)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Reply</md-tooltip></a>
-                              </td>
-                          </tr>
-                          <tr class="">
-                              <th scope="row">3</th>
-                              <td>28/Sep/2017 12:34:22</td>
-                              <td>Rahul</td>
-                              <td>Hi Rahul</td>
-                              <td class="">
-                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
-                                <a href="" ng-click="reply($event)"><i class="fa fa-fw  fa-mail-reply color-black"></i><md-tooltip md-direction="top">Reply</md-tooltip></a>
-                              </td>
                           </tr>
                       </tbody>
                   </table>
                 </uib-tab>
                 <uib-tab index="1" select="alertMe()">
-                  <uib-tab-heading>
-                    <i class="glyphicon glyphicon-bell"></i>Sent
-                  </uib-tab-heading>
-                  <table class="table table-hover table-responsive ">
-                      <thead class="thead-inverse">
-                          <tr>
-                              <th>#</th>
-                              <th class="wp15">To</th>
-                              <th class="wp40">Message</th>
-                              <th>Sender</th>
-                              <th>Sent Date</th>
-                              <th>Action</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr class="">
-                              <th scope="row">1</th>
-                              <td>Rahul</td>
-                              <td>Hi Rahul</td>
-                              <td>Akshay</td>
-                              <td>28/Sep/2017 12:34:22</td>
-                              <td class="">
-                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
-                              </td>
-                          </tr>
-                          <tr class="">
-                              <th scope="row">2</th>
-                              <td>Vineet</td>
-                              <td>Hi Vineet</td>
-                              <td>Akshay</td>
-                              <td>28/Sep/2017 12:34:22</td>
-                              <td class="">
-                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
-                              </td>
-                          </tr>
-                          <tr class="">
-                              <th scope="row">3</th>
-                              <td>Vineet</td>
-                              <td>Hi Vineet</td>
-                              <td>Akshay</td>
-                              <td>28/Sep/2017 12:34:22</td>
-                              <td class="">
-                                <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
-                              </td>
-                          </tr>
-                      </tbody>
-                  </table>
+                    <uib-tab-heading>
+                        <i class="glyphicon glyphicon-bell"></i>Sent
+                    </uib-tab-heading>
+                    <div flex="100" class="pb10 pt10">
+                        <md-radio-group layout="row" ng-model="history.type"  layout-align="center" class="text-center">
+                            <md-radio-button value="1"> SMS History </md-radio-button>
+                            <md-radio-button value="2"  class="md-primary">    Email History</md-radio-button>
+                        </md-radio-group>
+                    </div>
+                    <div flex="100" ng-if="loading">
+                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                        </div>
+                    </div> 
+                    <div flex="100" ng-if="!loading">
+                        <table class="table table-hover table-responsive ">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>#</th>
+                                    <th class="wp15">To</th>
+                                    <th class="wp40">Mobile</th>
+                                    <th>Message</th>
+                                    <th>Sender</th>
+                                    <th>Sent Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="" ng-repeat="message in sentMessages">
+                                    <th scope="row">1</th>
+                                    <td>{{message.firstName}} {{message.lastName}}</td>
+                                    <td>{{message.mobile}}</td>
+                                    <td>{{message.message}}</td>
+                                    <td>{{message.senderName}}</td>
+                                    <td>{{getDateString(message.dateCreated)}}</td>
+                                    <td class="">
+                                        <a href="" ng-click="viewItem($event)"><i class="fa fa-fw fa-eye color-black"></i><md-tooltip md-direction="top">View</md-tooltip></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </uib-tab>
               </uib-tabset>
             </div>
@@ -123,41 +92,90 @@
 <div ng-include="'/app/assets/angular/views/footer.html'"></div>
 
 <script type="text/ng-template" id="messageAdd.html">
-    <md-dialog aria-label="" id="addMsgBox">
+    <md-dialog aria-label="" id="messageDialogBox">
         <form ng-cloak>
             <md-toolbar>
                 <div class="md-toolbar-tools">
-                    <h2>	New Message</h2>
+                    <h2>Message</h2>
                     <span flex></span>
                     <md-button class="md-icon-button" ng-click="close()">
                         <i class="fa fa-fw fa-remove color-black"></i>
                     </md-button>
                 </div>
             </md-toolbar>
-
             <md-dialog-content>
-                <div class="md-dialog-content">
-                    <div layout="row" layout-wrap>
-                        <div flex="100">
-                            <md-input-container class="md-block">
-                                <label>To:</label>
-                                <input ng-model="member.name">
-                            </md-input-container>
-                        </div>
-                        <div flex="100">
-                            <md-input-container class="md-block">
-                                <label>Message: </label>
-                                <textarea ng-model="plan.description" type="textarea" rows="5"/>
-                            </md-input-container>
-                        </div>
-                    </div>
+                <div class="md-dialog-content dialogContentBox">
+                    <div flex="100">
+                        <md-tabs md-dynamic-height md-border-bottom>
+                            <md-tab label="SMS" md-on-select="isSmsMode = true">
+                                <md-content class="mt15">
+                                    <div flex="100" ng-if="loading">
+                                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                    </div> 
+                                    <div flex="100" class="plr15" ng-if="!loading">
+                                        <md-input-container class="md-block md-icon-float">
+                                            <label>Select Members</label>
+                                            <md-icon md-font-icon="fa-users" class="fa fa-lg"></md-icon>
+                                            <select ui-select2="{minimumResultsForSearch: -1,  placeholder: 'Select Members'}" ng-model="message.selectedMember" multiple data-placeholder="Search" style="width:100%;" class="input-xxlarge form-control mt10" >
+                                                <option value=""></option>
+                                                <option ng-repeat="member in members" value="{{member}}">{{member.firstName}} {{member.lastName}}</option>
+                                            </select>
+                                        </md-input-container>
+                                        <md-input-container md-no-float class="md-block">
+                                            <md-icon md-font-icon="fa-phone" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.memberMobile" disable-key type="text" placeholder="Phone Number"/>
+                                        </md-input-container>
+                                    
+                                        <md-input-container class="md-block">
+                                            <md-icon md-font-icon="fa-envelope" class="fa fa-lg"></md-icon>
+                                            <textarea ng-model="message.smsContent" placeholder="Message" md-maxlength="160" max-length="160"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                            <md-tab label="EMAIL" md-on-select="isSmsMode = false">
+                                <md-content class="mt15">
+                                    <div flex="100" ng-if="loading">
+                                        <div class="col-sm-12 text-center p20" ng-if="loading">
+                                            <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                                        </div>
+                                    </div> 
+                                    <div flex="100" class="plr15" ng-if="!loading">
+                                        <md-input-container class="md-block md-icon-float">
+                                            <label>Select Members</label>
+                                            <md-icon md-font-icon="fa-users" class="fa fa-lg"></md-icon>
+                                            <select ui-select2="{minimumResultsForSearch: -1,  placeholder: 'Select Members'}" ng-model="message.selectedMember" multiple data-placeholder="Search" style="width:100%;" class="input-xxlarge form-control mt10" >
+                                                <option value=""></option>
+                                                <option ng-repeat="member in members" value="{{member}}">{{member.firstName}} {{member.lastName}}</option>
+                                            </select>
+                                        </md-input-container>
+                                        <md-input-container md-no-float class="md-block">
+                                            <md-icon md-font-icon="fa-address-card" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.memberEmail" disable-key type="text" placeholder="Email"/>
+                                        </md-input-container>
+                                        <md-input-container md-no-float class="md-block">
+                                            <md-icon md-font-icon="fa-bandcamp" class="fa fa-lg"></md-icon>
+                                            <input ng-model="message.emailContent.subject" type="text" placeholder="Subject" max-length="50"/>
+                                        </md-input-container>
+                                    
+                                        <md-input-container class="md-block">
+                                            <md-icon md-font-icon="fa-envelope" class="fa fa-lg"></md-icon>
+                                            <textarea ui-tinymce="tinymceOptions" ng-model="message.emailContent.msg"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                        </md-tabs>
+                    </div>    
                 </div>
             </md-dialog-content>
-        </form>
-        <md-dialog-actions layout="row">
+            <md-dialog-actions layout="row">
                 <span flex></span>
-                <md-button class="md-raised" ng-click="close()">Cancel</md-button>
-                <md-button class="md-raised md-primary">Save</md-button>
+                <md-button class="md-raised" ng-click="close()" ng-disabled="loading">Close</md-button>
+                <md-button class="md-raised md-primary" ng-click="sendMessage()" ng-disabled="loading">Send</md-button>
             </md-dialog-actions>
+        </form>
     </md-dialog>
-</script>
+</script>        

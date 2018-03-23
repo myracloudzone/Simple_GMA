@@ -1,0 +1,158 @@
+<!-- Navigation-->
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper mb40">
+    <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">User</md-truncate>
+                        <span flex></span>
+                        <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="init($event, '')">
+                            <md-tooltip md-direction="top">Refresh</md-tooltip>
+                            <i class="fa fa-fw fa-refresh"></i>
+                        </md-button>
+                        <md-button class="md-fab md-mini btn-dark-gray" ng-if="loggedInUser.roleId == 1 || loggedInUser.roleId == 2" aria-label="Favorite" ng-click="addUser($event)">
+                                <md-tooltip md-direction="top">Add New</md-tooltip>
+                                <i class="fa fa-fw fa-plus"></i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+            </div>
+
+            
+            
+            <div class="col-sm-12 mt5 p0 memberSearchBox">
+                <div class="input-group col-sm-12">
+                    <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="init()"/>
+                    <span class="input-group-btn">
+                    <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="init()"><i class="fa fa-search"></i>
+                    </button>
+                    </span>
+                   
+                </div>
+            </div>
+            <div class="col-sm-12 text-center p20" ng-if="listLoading">
+                <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+            </div>
+            <div class="col-sm-12 groupTableDiv mt10" ng-if="!listLoading" id="listTable">
+                <table class="table table-hover table-responsive">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>#</th>
+                            <th>Name<a href="" class="cursor-pointer color-white" ng-click="applySort('name')">  <img ng-src="{{getSortImage('name')}}" aria-hidden="true"></img></a></th>
+                            <th>Username/Email<a href="" class="cursor-pointer color-white" ng-click="applySort('username')">  <img ng-src="{{getSortImage('username')}}" aria-hidden="true"></img></a></th>
+                            <th>Mobile  <a href="" class="cursor-pointer color-white" ng-click="applySort('mobile')">  <img ng-src="{{getSortImage('mobile')}}" aria-hidden="true"></img></a></th>
+                            <th>Role  <a href="" class="cursor-pointer color-white" ng-click="applySort('roleId')">  <img ng-src="{{getSortImage('roleId')}}" aria-hidden="true"></img></a></th>
+                            <th ng-if="loggedInUser.roleId == 1 || loggedInUser.roleId == 2">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="" ng-repeat="user in users">
+                            <th scope="row">{{((pagination.page - 1) * pageLimit) + $index + 1}}</th>
+                            <td>{{user.name}}</td>
+                            <td>{{user.username}}</td>
+                            <td>{{user.mobile}}</td>
+                            <td>{{user.roleId == 1 || user.roleId == 2 ? 'Admin' : 'Planner'}}</td>
+                            <td ng-if="loggedInUser.roleId == 1 || loggedInUser.roleId == 2">
+                                <a href="" ng-click="addUser($event, user.id)"><i class="fa fa-fw fa-edit color-black"></i><md-tooltip md-direction="top">Edit</md-tooltip></a>
+                                <a href="" ng-click="delete(user)"><i class="fa fa-fw fa-remove  color-red"></i><md-tooltip md-direction="top">Delete</md-tooltip></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-12 p0" ng-if="!listLoading">
+                <div class="col-sm-6 col-12 pull-left paginator">
+                    <ul class="pull-left" uib-pagination total-items="pagination.rowCount" max-size="pageSize" class="pagination-sm" boundary-links="true" rotate="true" ng-model="pagination.page" ng-change="init()"></ul>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+<script type="text/ng-template" id="addUser.html">
+  <md-dialog aria-label="" id="addUserBox">
+      <form ng-cloak>
+          <md-toolbar>
+              <div class="md-toolbar-tools">
+                  <h2 ng-if="user.id == null">Add New User</h2>
+                  <h2 ng-if="user.id != null">Edit User</h2>
+                  <span flex></span>
+                  <md-button class="md-icon-button" ng-click="close()">
+                      <i class="fa fa-fw fa-remove color-black"></i>
+                  </md-button>
+              </div>
+          </md-toolbar>
+
+          <md-dialog-content>
+              <div class="md-dialog-content">
+                  <div class="col-sm-12 text-center" ng-if="loading">
+                      <img src="/app/assets/angular/img/loading32.gif" alt=""></img>
+                  </div>    
+                  <div layout="row" layout-wrap ng-if="!loading">
+                      <div flex="100">
+                          <md-input-container class="md-block">
+                              <label>Name</label>
+                              <md-icon md-font-icon="fa-user" class="fa fa-lg"></md-icon>
+                              <input class="form-control" required ng-model="user.name" maxlength="100"/>
+                          </md-input-container>
+                      </div>
+                      <div flex="100">
+                          <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-12">
+                              <label>Email(Will be your Username)</label>
+                              <md-icon md-font-icon="fa-address-card" class="fa fa-lg"></md-icon>
+                              <input class="form-control" required ng-model="user.email" type="email" maxlength="100" ng-disabled="user.id != null"/>
+                          </md-input-container>
+                      </div>
+                      <div flex="100">
+                          <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-12">
+                              <label>Mobile</label>
+                              <md-icon md-font-icon="fa-phone" class="fa fa-lg"></md-icon>
+                              <input class="form-control" ng-model="user.mobile" positive-number required maxlength="15"/>
+                          </md-input-container>
+                      </div>
+                      <div flex="100">
+                          <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-12">
+                              <label>Address</label>
+                              <md-icon md-font-icon="fa-address-book" class="fa fa-lg"></md-icon>
+                              <input class="form-control" ng-model="user.address" maxlength="255"/>
+                          </md-input-container>
+                      </div>
+                      <div flex="100">
+                          <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-12" flex-gt-xs>
+                              <label>Birthday</label>
+                              <md-icon md-font-icon="fa-birthday-cake" class="fa fa-lg"></md-icon>
+                              <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
+                              click-outside-to-close="true" show-todays-date="true" ng-model="user.dob" class="md-input">
+                          </md-input-container>
+                      </div>
+                      <div flex="100">
+                          <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-12" flex-gt-xs>
+                              <label>Date Of Joining</label>
+                              <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
+                              <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
+                              click-outside-to-close="true" show-todays-date="true" ng-model="user.joiningDate" class="md-input">
+                          </md-input-container>
+                      </div>
+                      <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-12" flex-gt-xs ng-if="user.roleId != 1">
+                          <label>Role</label>
+                          <md-icon md-font-icon="fa-dot-circle-o" class="fa fa-lg"></md-icon>
+                          <md-select ng-model="user.roleId" required>
+                              <md-option value="2">Admin</md-option>
+                              <md-option value="3">Planner</md-option>
+                          </md-select>
+                      </md-input-container>
+                  </div>
+              </div>
+          </md-dialog-content>
+
+          <md-dialog-actions layout="row" ng-if="!loading">
+              <span flex></span>
+              <md-button class="md-raised" ng-click="close()">Cancel</md-button>
+              <md-button class="md-raised md-primary" ng-click="createUser()">Save</md-button>
+          </md-dialog-actions>
+      </form>
+  </md-dialog>
+</script>

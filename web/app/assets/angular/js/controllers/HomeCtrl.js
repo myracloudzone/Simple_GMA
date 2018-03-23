@@ -12,7 +12,6 @@ var HomeCtrl = GMApp.controller('HomeCtrl', ['$scope', '$rootScope', '$statePara
         var endTimeStamp = new Date(parseFloat(timestamp)).getTime();
         var timeDiff = Math.abs(endTimeStamp - currentTimeStamp);
         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
-        console.log(diffDays);
         return currentTimeStamp >= endTimeStamp ? diffDays : (-1) * diffDays;
     }
     
@@ -105,6 +104,10 @@ var HomeCtrl = GMApp.controller('HomeCtrl', ['$scope', '$rootScope', '$statePara
                 {
                     key: "Plan Credits",
                     y: $scope.accountDetails.plan_credit
+                },
+                {
+                    key : 'User Credits',
+                    y : $scope.accountDetails.userCredit
                 }
             ];
             $scope.creditLoading = false;

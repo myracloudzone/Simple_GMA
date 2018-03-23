@@ -3,9 +3,10 @@ var LogoutCtrl = GMApp.controller('LogoutCtrl', ['$scope', '$rootScope','$locati
     	$state.go('login');
     } else {
     	 AuthService.logout({}, function(data){
-    		ipCookie.remove('uuid');
-            ipCookie.remove('account');
-	        swal({  title:"",
+			ipCookie('uuid', null, { expires: -1 });
+			ipCookie.remove('account');
+			ipCookie.remove('loggedUser');
+			swal({  title:"",
 	           text: "You have been successfully logout.",
 	           type : "success",    
 	           confirmButtonText: "Login",
