@@ -20,6 +20,9 @@ module.exports = function (app) {
     controller.getActiveMemberCount = function(req, res, next) {
         var request = {active : true, accountId : req.headers.accountId};
         memberDAO.findAll(request, req, res, function(data, error, req, res) {
+            if(error) {
+                return logger.logResponse(500, "Error Occured.", error, res, req);
+            }
             var response = {};
             response.count = data.length;
             return logger.logResponse(200, response, null, res, req);
@@ -51,7 +54,8 @@ module.exports = function (app) {
     };
 
     controller.findByFilter = function(req, res, next) {
-        memberDAO.findAll(req.query.filter, req, res, function(data, error, req, res) {
+        var condition = JSON.parse(req.query.filter);
+        memberDAO.findAll(condition, req, res, function(data, error, req, res) {
             if(error) {
                 return logger.logResponse(500, "Error Occured.", error, res, req);
             }

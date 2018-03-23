@@ -48,9 +48,10 @@ module.exports = function (app) {
 		sessionObj.lasthit = moment().unix();
 		sessionObj.active = true;
 		sessionObj.uuid = uuidv1();
+		sessionObj.userId = user.id;
 		sessionObj.accountId = user.accountId;
 		schema.model('UserSession').forge().save(sessionObj).then(function (result) {
-            return logger.logResponse(200, {accountId : sessionObj.accountId, uuid : sessionObj.uuid}, null, res, req);
+            return logger.logResponse(200, {accountId : sessionObj.accountId, uuid : sessionObj.uuid, id : user.id, roleId : user.roleId}, null, res, req);
         }).catch(function (err) {
             return logger.logResponse(500, "Error Occured.", err, res, req);
         })
