@@ -59,6 +59,16 @@ GMApp.config(['$routeProvider', '$stateProvider', '$locationProvider','notificat
             templateUrl: '/app/assets/angular/views/activity.html',
             controller: 'ActivityCtrl'
         })
+        .state('user', {
+            url: prefix+'/user/:id',
+            templateUrl: '/app/assets/angular/views/user.html',
+            controller: 'UsersCtrl'
+        })
+        .state('message', {
+            url: prefix+'/message/:id',
+            templateUrl: '/app/assets/angular/views/message.html',
+            controller: 'MessageCtrl'
+        })
         $urlRouterProvider.otherwise(function($injector, $location){
             var state = $injector.get('$state');
             var path = $location.path();
