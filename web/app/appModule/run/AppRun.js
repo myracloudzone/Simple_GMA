@@ -17,6 +17,10 @@ GMApp.run(['$rootScope', '$http', '$window', '$filter', 'ipCookie', '$mdDialog',
 		$rootScope.dialogList = [];
 		$rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
 			$rootScope.accountId = ipCookie('account');
+			console.log(ipCookie('loggedUser'));
+			if(ipCookie('loggedUser') != null && ipCookie('loggedUser') != '') {
+				$rootScope.loggedUser = ipCookie('loggedUser'); 
+			}
 			angular.forEach($rootScope.dialogList, function(v,k) {
 				$mdDialog.hide(v);
 			})
