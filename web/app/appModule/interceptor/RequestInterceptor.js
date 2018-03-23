@@ -17,6 +17,7 @@ GMApp.factory('requestInterceptor', function($q, $injector, $rootScope, $timeout
         	    $rootScope.isSessionLogout = true;
         	    ipCookie.remove('uuid');
 				ipCookie.remove('account');
+				ipCookie.remove('loggedUser');
 				swal({
                    title:"",
                    text: "Your Session has been expired. Please login again to continue.",
@@ -35,7 +36,7 @@ GMApp.factory('requestInterceptor', function($q, $injector, $rootScope, $timeout
 				return $q.reject(rejectReason);
 			}
 			else {
-					return $q.reject(rejectReason);
+				return $q.reject(rejectReason);
 		    }
 		}
 	};
