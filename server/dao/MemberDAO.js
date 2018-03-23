@@ -63,13 +63,13 @@ module.exports = {
 		});
     },
     findAll : function(condition, req, res, callback) {
-        condition = JSON.parse(condition);
         schema.model('Member').forge().where(condition)
         .orderBy('id', 'ASC').fetchAll().then(function (result) {
             if(result == null) {
                 callback([], null, req, res);
+            } else {
+                callback(result.toJSON(), null, req, res);
             }
-            callback(result.toJSON(), null, req, res);
 		}).catch(function (err) {
 			callback(null, err, req, res);
 		});
