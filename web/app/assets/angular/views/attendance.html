@@ -1,0 +1,177 @@
+<div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
+<div class="content-wrapper  mb40">
+    <div class="container-fluid mt50">
+        <div class="col-sm-12 borderAll p0">
+            <div class="col-sm-12 p0">
+                <md-toolbar>
+                    <div class="md-toolbar-tools">
+                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Attendance</md-truncate>
+                        <span flex></span>
+                        <span class="pull-right"><i class="fa fa-fw fa-chevron-up" ng-if="cameraRequested" ng-click="toggleCameraSection()"></i></span>
+                        <span class="pull-right"><i class="fa fa-fw fa-chevron-down" ng-if="!cameraRequested" ng-click="toggleCameraSection()"></i></span>
+                    </div>
+                </md-toolbar>
+            </div>
+            <div class="col-sm-12 pt5 pb5" ng-if="cameraRequested">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <h6>Scanner</h6>
+                        <bc-qr-reader active="showCamera" on-result="processURLfromQR" on-error="onError" camera-status="cameraIsOn"  width="250px" height="600px"></bc-qr-reader>
+                        <div class="webcam-live" ng-if="cameraProcessing" style="margin : 0px auto; background : #000"></div>
+                    </div>
+                    
+                    <div class="col-sm-12">
+                        <h6>Last CheckedIn Details</h6>
+                        <table class="table table-striped table-dark">
+                            <tbody>
+                                <tr>
+                                    <td>Name</td>
+                                    <td><b>{{checkInMember.name}}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Type</td>
+                                    <td><b>{{checkInMember.type.name}}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>Status</td>
+                                    <td><b>{{checkInMember.status}}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>CheckIn Time</td>
+                                    <td><b>{{checkInMember.checkedInTime}}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="col-sm-12 pt5 pb5">
+                <h6>Attendance Report </h6>
+                <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+                    <md-button class="md-raised md-primary" ng-click="startScanner()">Calendar</md-button>
+                </section>
+            </div> -->
+        </div>
+        <div class="col-sm-12 borderAll p0 mt10 mb10">
+                <div class="col-sm-12 p0">
+                    <md-toolbar>
+                        <div class="md-toolbar-tools">
+                            <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Report</md-truncate>
+                            <span flex></span>
+                            <span class="pull-right"><i class="fa fa-fw fa-chevron-up" ng-if="showReportSection" ng-click="toggleReportSection()"></i></span>
+                            <span class="pull-right"><i class="fa fa-fw fa-chevron-down" ng-if="!showReportSection" ng-click="toggleReportSection()"></i></span>
+                            
+                        </div>
+                    </md-toolbar>
+                </div>
+                <div class="col-sm-12 pt5 pb5" ng-if="showReportSection">
+                    <div class="row plr15">
+                        <md-input-container class="md-block md-icon-float attendanceDateBox col-12 col-sm-12 col-md-6" flex-gt-xs>
+                            <label>Choose Date</label>
+                            <md-icon md-font-icon="fa-calendar" class="fa fa-lg"></md-icon>
+                            <input time="false" date="true" mdc-datetime-picker="" type="text" id="date"
+                            click-outside-to-close="true" show-todays-date="true" ng-model="activity.endDate" min-date="calendar.minDate"
+                            max-date="calendar.maxDate" class=" md-input">
+                        </md-input-container>
+                        <md-input-container class="md-block md-icon-float col-12 col-sm-12 col-md-6" flex-gt-xs>
+                            <label>Select Type</label>
+                            <md-icon md-font-icon="fa-odnoklassniki" class="fa fa-lg"></md-icon>
+                            <md-select ng-model="activity.repeatMode">
+                                <md-option value="MEMBER">Member</md-option>
+                                <md-option value="USER">User</md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+                    <div class="col-sm-12 p0 attendanceSearchBox">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-form" placeholder="Search" ng-model="initVariables.search" ng-enter="init()"/>
+                            <span class="input-group-btn">
+                            <button type="submit" class="btn btn-primary search-btn" name="q" ng-click="init()"><i class="fa fa-search"></i>
+                            </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 p0 mt5">
+                        <table class="table table-hover table-responsive">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status<a href="" class="cursor-pointer color-white" ng-click="applySort('description')">  <img ng-src="{{getSortImage('description')}}" aria-hidden="true"></img></a></th>
+                                    <th>Checked-In Time<a href="" class="cursor-pointer color-white" ng-click="applySort('memberCount')">  <img ng-src="{{getSortImage('memberCount')}}" aria-hidden="true"></img></a></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="" ng-repeat="row in attendanceData">
+                                    <th scope="row">1</th>
+                                    <td>
+                                        {{row.firstName}}  {{row.lastName}}
+                                    </td>
+                                    <td>Member</td>
+                                    <td>{{row.attendanceRecord.length > 0 ? 'Checked-In' : 'Not Checked-In'}}</td>
+                                    <td>{{row.attendanceRecord.length > 0 ? row.attendanceRecord[0].checkInTime : ''}}  <span class="cursor-pointer checkInCount" ng-click="row.attendanceRecord.length > 1 && showDetails($event, row)">{{row.attendanceRecord.length > 1 ? ('(Checked-In '+row.attendanceRecord.length+' times today)') : ''}}</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>    
+    </div>  
+</div>
+<div ng-include="'/app/assets/angular/views/footer.html'"></div>
+<script type="text/ng-template" id="attendanceDetail.html">
+    <md-dialog aria-label="" style="width: 80%">
+        <form ng-cloak>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Check-In Details</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="close()">
+                        <i class="fa fa-fw fa-remove color-black"></i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+
+            <md-dialog-content>
+                <div class="md-dialog-content" style="padding: 15px;">
+                    <div layout="row p0" layout-wrap>
+                        <div class="col-sm-12 p0">
+                            <p class="strong">Name   :   {{record.firstName}} {{record.lastName}}</p>
+                            <table class="table table-hover table-responsive table-sm">
+                                <thead class="thead-inverse">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Check-In Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="" ng-repeat="data in record.attendanceRecord">
+                                        <th scope="row">{{$index + 1}}</th>
+                                        <td>{{data.checkInTime}}</td>
+                                    </tr>
+                                </tbody>
+                            </table> 
+                        </div>    
+                    </div>
+                </div>
+            </md-dialog-content>
+
+            <md-dialog-actions layout="row" ng-if="!loading">
+                <span flex></span>
+                <md-button class="md-raised" ng-click="close()">Close</md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog>
+</script>
+<style>
+    md-input-container .md-errors-spacer {
+        float: right;
+        min-height: 6px;
+        min-width: 1px;
+    }
+    .checkInCount:hover {
+        color: rgb(49, 49, 136);
+        font-weight: 500;
+    }
+</style>

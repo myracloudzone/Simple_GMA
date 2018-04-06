@@ -1,22 +1,28 @@
 <!-- Navigation-->
 <div ng-include="'/app/assets/angular/views/navigation.html'" ng-controller="NavigationCtrl"></div>
 <div class="content-wrapper mb40">
-    <div class="container-fluid mt50">
-        <div class="col-sm-12 borderAll p0">
-            <div class="col-sm-12 p0">
-                <md-toolbar>
-                    <div class="md-toolbar-tools">
-                        <md-truncate style="position: absolute; left: 20px; right: 170px; top: 13px; bottom: 13px;">Dashboard</md-truncate>
-                        <span flex></span>
-                        <!-- <md-button class="md-fab md-mini btn-dark-gray" aria-label="Favorite" ng-click="refresh($event, '')">
-                            <md-tooltip md-direction="top">Refresh</md-tooltip>
-                            <i class="fa fa-fw fa-refresh"></i>
-                            </md-button> -->
-                    </div>
-                </md-toolbar>
+    <div class="container-fluid mt40">
+        <!-- <div class="row">
+            <div class="col-sm-12">
+                <md-card md-theme="{{ showDarkTheme ? 'dark-grey' : 'dark-grey' }}" md-theme-watch style="margin: 0px;">
+                    <md-card-title class="card-header">
+                        <md-card-title-text>
+                            <span class="md-headline text-center strong"> Dashboard</span>
+                        </md-card-title-text>
+                    </md-card-title>
+                </md-card>
             </div>
+        </div> -->
+        <div class="row page-header">
+            <div class="col-sm-12">
+                <h5 class="md-headline strong"> Dashboard</h5>
+            </div>
+        </div>
+        
+        <div class="col-sm-12 borderAll p0 mt5 scroll-container">
             <!-- ICON BAR -->
-            <div class="col-sm-12 dashboardDiv mt10" id="listTable">
+            <!-- <div class="col-sm-12 dashboardDiv mt10" id="listTable"> -->
+            <div class="col-sm-12 mt10">
                 <div class="row">
                     <div class="col-xl-3 col-sm-6 mb-3">
                         <div class="card text-white bg-primary o-hidden h-100">

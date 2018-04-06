@@ -25,6 +25,14 @@ GMApp.factory('GlobalMethodService', function ($resource, $q, $rootScope, $filte
         return false;
     },
 
+    _showLoader = function() {
+        $('#spinnerContainer').removeClass('hidden');
+        $('#spinnerContainer').addClass('visible');
+    },
+    _hideLoader = function() {
+        $('#spinnerContainer').removeClass('visible');
+        $('#spinnerContainer').addClass('hidden');
+    },
     _validateEmail = function (email) {
         var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
         return re.test(email);
@@ -35,5 +43,7 @@ GMApp.factory('GlobalMethodService', function ($resource, $q, $rootScope, $filte
     factoryMethods.isEmptyString = _isEmptyString;
     factoryMethods.getUniqueCode = _getUniqueCode;
     factoryMethods.validateEmail = _validateEmail;
+    factoryMethods.showLoader = _showLoader;
+    factoryMethods.hideLoader = _hideLoader;
     return factoryMethods;
 });

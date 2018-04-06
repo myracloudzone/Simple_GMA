@@ -69,6 +69,11 @@ GMApp.config(['$routeProvider', '$stateProvider', '$locationProvider','notificat
             templateUrl: '/app/assets/angular/views/message.html',
             controller: 'MessageCtrl'
         })
+        .state('attendance', {
+            url: prefix+'/attendance/:id',
+            templateUrl: '/app/assets/angular/views/attendance.html',
+            controller: 'AttendanceCtrl'
+        })
         $urlRouterProvider.otherwise(function($injector, $location){
             var state = $injector.get('$state');
             var path = $location.path();

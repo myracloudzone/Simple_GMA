@@ -33,7 +33,7 @@
     };
 
     $scope.isALPHA_NUM = function(text){
-      var ALLOWEDCHARS = /^[0-9A-Z $%*+\-./:]*$/;
+      var ALLOWEDCHARS = /^[0-9A-Z_ $%*+\-./_]*$/;
       return ALLOWEDCHARS.test(text);
     };
 
@@ -117,6 +117,7 @@
         var render = function(canvas, value, typeNumber, correction, size, inputMode){
           var trim = /^\s+|\s+$/g;
           var text = value.replace(trim, '');
+          alert(text);
 
           var qr = new QRCode(typeNumber, correction, inputMode);
           qr.addData(text);

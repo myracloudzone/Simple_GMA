@@ -11,8 +11,8 @@
             </md-toolbar>
             <md-dialog-content>
                 <div class="md-dialog-content dialogContentBox">
-                    <div flex="100">
-                        <md-tabs md-dynamic-height md-border-bottom>
+                    <div class="col-sm-12">
+                        <md-tabs md-border-bottom>
                             <md-tab label="New Document" md-on-select="listView = false;">
                                 <div class="text-center mt10 pr10" flex="100">
                                     <upload callback="updateUploadedDocument(response)" closebtnaction="showUploadBox()" url="{{fileUploadUrl}}" file-types="{{fileTypesForUpload}}" params = "{'memberId' : {{member.id}} }"></upload>

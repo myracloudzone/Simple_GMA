@@ -1,3 +1,18 @@
+body {
+  font-family: "Roboto","Helvetica Neue",Arial,sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.42857 !important;
+}  
+.table {
+  display : inline-table !important; 
+}
+.container-fluid {
+  max-height : calc(100vh - 100px);
+  overflow-y: auto;
+}
+#exampleAccordion {
+  background: #272727 !important;
+}
 .mt5 {
   margin-top: 5px;
 }
@@ -270,10 +285,21 @@ form .md-datepicker-input-container{
   margin-left: auto;
   margin-right: auto;
 }
+.input-grp-btn {
+  border: 1px solid #ddd !important;
+}
 .avatar {
   position: relative;
   margin-top: 0px;
   z-index: 100;
+}
+.m5{
+  margin: 5px;
+}
+.webcam-live {
+  width: 420px;
+  height: 320px;
+  border: 10px solid #c2c2c2;
 }
 /* .table td, .table th {
   padding: 10px 5px 0px 5px !important;
@@ -284,6 +310,7 @@ form .md-datepicker-input-container{
   max-width: 400px;
   padding-left: 6px;
   border: 3px solid #000;
+  margin: 0 auto;
 }    
 .addMemberAvatar {
   position: relative;
@@ -709,7 +736,7 @@ p {
 }
 
 span {
-	font-size : 16px;
+	font-size : 14px;
 }
 .strong {
 	font-weight: bold;
@@ -884,6 +911,9 @@ tr { outline: none; }
 .ml50 {
   margin-left: 50px;
 }
+.ml5 {
+  margin-left: 5px;
+}
 .birthdayTableColumn {
   padding-top: 10px;
   padding-left: 25px !important;
@@ -1028,8 +1058,20 @@ button.chipClose:focus {
   background: #eeeeee;
   overflow: scroll;
 }
+.page-header {
+    background: #cdcdcd;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    font-size: 14px;
+}
+.attendanceSearchBox {
+  margin-top: -39px;
+}
 /* --------------------------- */
 @media (max-width: 420px) {
+  .attendanceSearchBox {
+    margin-top: -25px;
+  }
 	.paginator {
     	padding-left: 0px !important;
 	}
@@ -1048,8 +1090,16 @@ button.chipClose:focus {
   #messageDialogBox {
     width: 80%;
   }
+  .webcam-live {
+    width: 320px;
+    height: 240px;
+    border: 10px solid #c2c2c2;
+  }
 }
 @media (max-width: 600px) {
+  .attendanceSearchBox {
+    margin-top: -25px;
+  }
 	#payemntAddBox {
     width: 80%;
   }
@@ -1085,6 +1135,13 @@ button.chipClose:focus {
   }
 }
 @media (max-width: 992px) {
+  .attendanceSearchBox {
+    margin-top: -25px;
+  }
+  .attendanceDateBox {
+    margin-bottom: -10px;
+    padding-bottom: 0px;
+  }
 	#messageDialogBox {
     width: 80%;
   }

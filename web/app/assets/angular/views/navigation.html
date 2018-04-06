@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-  <a class="navbar-brand" href=""><img src="/app/assets/angular/images/running1.png" alt="" class="gymIcon"></img>   GYM PRO Master</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav" style="background: #272727 !important;">
+  <a class="navbar-brand" href=""><img src="/app/assets/angular/images/running1.png" alt="" class="gymIcon"></img>   Certain</a>
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -13,67 +13,67 @@
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref='home({ id: accountId })'>
           <i class="fa fa-fw fa-home"></i>
-          <span class="nav-link-text">Dashboard</span>
+          <span class="nav-link-text ml5">Dashboard</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Member" ng-click="handleMouseLeave()">
         <a class="nav-link" ui-sref="member({id : accountId })">
           <i class="fa fa-fw fa-user-plus"></i>
-          <span class="nav-link-text">Member</span>
+          <span class="nav-link-text ml5">Member</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Membership Plan" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref="plan({id : accountId })">
           <i class="fa fa-fw fa-handshake-o"></i>
-          <span class="nav-link-text">Membership Plan</span>
+          <span class="nav-link-text ml5">Membership Plan</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Group" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref="group({id : accountId })">
           <i class="fa fa-fw fa-object-group"></i>
-          <span class="nav-link-text">Group</span>
+          <span class="nav-link-text ml5">Group</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables" ng-click="handleMouseLeave()">
         <a class="nav-link"  ui-sref="activity({id : accountId })">
           <i class="fa fa-fw fa-edit"></i>
-          <span class="nav-link-text">Activity</span>
+          <span class="nav-link-text ml5">Activity</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Attendance" ng-click="handleMouseLeave()">
-        <a class="nav-link" href="#/users">
+        <a class="nav-link" ui-sref="attendance({id : accountId })">
           <i class="fa fa-fw fa-signal"></i>
-          <span class="nav-link-text">Attendance</span>
+          <span class="nav-link-text ml5">Attendance</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables" ng-click="handleMouseLeave()">
         <a class="nav-link" ui-sref="user({id : accountId })">
           <i class="fa fa-fw fa-users"></i>
-          <span class="nav-link-text">Staff Member</span>
+          <span class="nav-link-text ml5">Staff Member</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Accountant" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/accountant">
           <i class="fa fa-fw  fa-pie-chart"></i>
-          <span class="nav-link-text">Accountant</span>
+          <span class="nav-link-text ml5">Accountant</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="payment" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/payment">
           <i class="fa fa-fw fa-money"></i>
-          <span class="nav-link-text">Payment</span>
+          <span class="nav-link-text ml5">Payment</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Payment" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/nutritionSchedule">
           <i class="fa fa-fw fa-heartbeat"></i>
-          <span class="nav-link-text">Nutrition Schedule</span>
+          <span class="nav-link-text ml5">Nutrition Schedule</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Product" ng-click="handleMouseLeave()">
           <a class="nav-link"  ui-sref="product({id : accountId })">
             <i class="fa fa-fw fa-product-hunt"></i>
-            <span class="nav-link-text">Product</span>
+            <span class="nav-link-text ml5">Product</span>
           </a>
       </li>
       <!-- <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Product & Store" ng-click="handleMouseLeave()">
@@ -93,19 +93,19 @@
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Message" ng-click="handleMouseLeave()">
         <a class="nav-link" ui-sref="message({id : accountId })">
           <i class="fa fa-fw fa-commenting"></i>
-          <span class="nav-link-text">Message</span>
+          <span class="nav-link-text ml5">Message</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Report" ng-click="handleMouseLeave()">
         <a class="nav-link" href="#/report">
           <i class="fa fa-fw fa-wpforms"></i>
-          <span class="nav-link-text">Report</span>
+          <span class="nav-link-text ml5">Report</span>
         </a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Setting" ng-click="handleMouseLeave()">
         <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#settingComponents" data-parent="#exampleAccordion">
           <i class="fa fa-fw fa-wrench"></i>
-          <span class="nav-link-text">Setting</span>
+          <span class="nav-link-text ml5">Setting</span>
         </a>
         <ul class="sidenav-second-level collapse settingBar" id="settingComponents">
           <li>
