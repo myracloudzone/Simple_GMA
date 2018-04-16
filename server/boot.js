@@ -62,7 +62,7 @@ module.exports = function (app, cb) {
 
     app.use('/services', express);
     app.use(function (req, res, next) {
-        if (req.url.indexOf('/auth/login') < 0  && req.url.indexOf('/auth/logout') < 0  && req.url.indexOf('updateUserPassword') < 0 && req.url.indexOf('generateLoginOTP') < 0) {
+        if (req.url.indexOf('/auth/login') < 0  && req.url.indexOf('/auth/logout') < 0  && req.url.indexOf('updateUserPassword') < 0 && req.url.indexOf('generateLoginOTP') < 0 && req.url.indexOf('/sendEmailToServer') < 0 ) {
             authenticatUserSession(req, res, next);
         } else {
             handleRequest(req, res, next);
@@ -216,6 +216,7 @@ module.exports = function (app, cb) {
             if (data) {
                 var userSession = data.toJSON();
                 req.headers.accountId = userSession.accountId;
+                req.headers.userId = userSession.userId;
                 req.headers.username = userSession.username;
                 var dumpUserSession = _.clone(userSession);
                 currentTime = moment().unix();
