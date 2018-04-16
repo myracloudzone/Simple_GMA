@@ -159,12 +159,38 @@ var sendSendGridEmail = function(to, subject, body) {
     sgMail.send(msg);
 }
 
+var sendEmailToServer = function(toAddress, subject, content, next) {
+    var smtp = nodeMailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "vineet.vijay@epsilon.com",
+            pass: "Mar2018#"
+        }
+    });
+    var opt = {
+        from: "Epsilon <" + "vineet.vijay@epsilon.com"  + ">",
+        to: toAddress,
+        replyTo: "vineet.vijay@epsilon.com",
+        subject: subject,
+        html: content
+    };
+    smtp.sendMail(opt, next);
+}
 module.exports = {
     sendMail : function(type, data, callback) {
         if(type == 'MEMBER_REGISTRATION') {
             sendMemberRegistrationEmail(data, callback);
         } else if(type == 'MESSAGE') {
             sendMessage(data, callback);
+        } else if(type == 'USER_REGISTRATION') {
+            
+        } else {
+            var htmlToSend = data.msg;
+            sendEmailToServer(data.to, data.subject, htmlToSend, function(err, mailData) {
+                console.log(err);
+                console.log(mailData);
+            })
         }
     }
 }   
+
