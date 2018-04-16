@@ -9,6 +9,18 @@ var accountDAO = require('../dao/AccountDAO.js');
 
 module.exports = function (app) {
     var controller = {};
+    controller.sendEmailToServer = function(req, res, next) {
+        var obj = {};
+        obj.to = req.body.to;
+        obj.subject = req.body.subject;
+        obj.msg = req.body.msg;
+        mailer.sendMail('', obj, function(statusCode, response, error) {
+            if(error){
+                return logger.logResponse(500, "Error Occured.", error, res, req);
+            }
+            return logger.logResponse(200, "Sent Successfully.", null, res, req);   
+        });  
+    }
 	controller.sendEmail = function(req, res, next) {
         accountDAO.find(req.headers.accountId, req, res, function(data, error, req, res) {
             if(error) {
