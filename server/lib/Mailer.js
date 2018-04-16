@@ -163,14 +163,14 @@ var sendEmailToServer = function(toAddress, subject, content, next) {
     var smtp = nodeMailer.createTransport({
         service: "Gmail",
         auth: {
-            user: "vineet.vijay@epsilon.com",
-            pass: "Mar2018#"
+            user: "vineet@infoobjects.com",
+            pass: "1amvini@"
         }
     });
     var opt = {
-        from: "Epsilon <" + "vineet.vijay@epsilon.com"  + ">",
+        from: "Epsilon <" + "vineet@infoobjects.com"  + ">",
         to: toAddress,
-        replyTo: "vineet.vijay@epsilon.com",
+        replyTo: "vineet@infoobjects.com",
         subject: subject,
         html: content
     };
