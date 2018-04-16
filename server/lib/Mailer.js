@@ -189,6 +189,10 @@ module.exports = {
             sendEmailToServer(data.to, data.subject, htmlToSend, function(err, mailData) {
                 console.log(err);
                 console.log(mailData);
+                if(err) {
+                    callback("404", null, err);
+                }
+                callback("200",mailData, err);
             })
         }
     }
