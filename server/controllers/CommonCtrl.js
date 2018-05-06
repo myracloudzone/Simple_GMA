@@ -27,7 +27,7 @@ module.exports = {
         return text;
     },
 
-    getYouTubeVideoDetails : function(id, req, success) {
+    getYouTubeVideoDetails : function(req, id, success) {
         var headers = req.headers;
         console.log(headers)
         var options = {
