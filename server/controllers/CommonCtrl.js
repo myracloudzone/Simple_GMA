@@ -1,6 +1,7 @@
 var connection = require('../scripts/db.js');
 var moment = require('moment');
 var config = require('../scripts/config.json');
+var https = require('https');
 module.exports = {
     makeDBRequest : function(queryObject, success) {
         connection.query('use half_dome_gym_app;');
@@ -24,6 +25,25 @@ module.exports = {
             text += combination.charAt(Math.floor(Math.random() * combination.length));
         }
         return text;
+    },
+
+    getYouTubeVideoDetails : function(id, success) {
+        var options = {
+			host : 'www.youtube.com',
+			path : '/get_video_info?video_id='+id,
+			method : "GET",
+		};
+		var req = https.request(options, function(res) {
+			var responseString = '';
+			res.setEncoding('utf8');
+			res.on('data', function(data) {
+				responseString += data;
+			});
+			res.on('end', function() {
+				success(responseString, res.statusCode)
+			});
+		});
+		req.end();
     },
     getMembershipEndDate : function(typeId, dateString) {
         // var startDate = new Date(moment(dateString, "DD/MM/YYYY HH:mm:ss").valueOf());
