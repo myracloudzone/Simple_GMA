@@ -43,7 +43,7 @@ module.exports = {
 			res.on('end', function() {
                 console.log(reqHeaders);
                 if(responseString != null) {
-                    responseString = responseString.split("34.237.107.18").join(reqHeaders["X-Requested-With"]);
+                    responseString = responseString.split("34.237.107.18").join(reqHeaders["x-real-ip"]);
                 }
 				success(responseString, res.statusCode)
 			});
