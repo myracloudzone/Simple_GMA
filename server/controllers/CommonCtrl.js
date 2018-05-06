@@ -43,7 +43,7 @@ module.exports = {
 			res.on('end', function() {
                 console.log(request.headers["X-Requested-With"]);
                 if(responseString != null) {
-                    responseString.replace(/34.237.107.18/g, request.headers["X-Requested-With"]);
+                    responseString = responseString.split("34.237.107.18").join(request.headers["X-Requested-With"]);
                 }
 				success(responseString, res.statusCode)
 			});
