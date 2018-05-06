@@ -32,7 +32,6 @@ module.exports = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
             method : "GET",
-            headers : headers
         };
         
 		var req = https.request(options, function(res) {
