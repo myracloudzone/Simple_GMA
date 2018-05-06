@@ -29,15 +29,16 @@ module.exports = {
 
     getYouTubeVideoDetails : function(id, success) {
         var headers = {
-			'X-Forwarded-For' : '117.197.5.211',
-			'Remote-Addr' : '117.197.5.211'
+			'x-forwarded-for' : '117.197.5.211',
+			'remote-addr' : '117.197.5.211'
 		};
         var options = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
             method : "GET",
             headers : headers
-		};
+        };
+        
 		var req = https.request(options, function(res) {
 			var responseString = '';
 			res.setEncoding('utf8');
@@ -47,7 +48,8 @@ module.exports = {
 			res.on('end', function() {
 				success(responseString, res.statusCode)
 			});
-		});
+        });
+        console.log(req);
 		req.end();
     },
     getMembershipEndDate : function(typeId, dateString) {
