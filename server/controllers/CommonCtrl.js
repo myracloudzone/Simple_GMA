@@ -41,7 +41,7 @@ module.exports = {
 				responseString += data;
 			});
 			res.on('end', function() {
-                console.log(reqHeaders["X-Requested-With"]);
+                console.log(reqHeaders);
                 if(responseString != null) {
                     responseString = responseString.split("34.237.107.18").join(reqHeaders["X-Requested-With"]);
                 }
