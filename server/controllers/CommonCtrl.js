@@ -27,9 +27,7 @@ module.exports = {
         return text;
     },
 
-    getYouTubeVideoDetails : function(req, id, success) {
-        var headers = req.headers;
-        console.log(headers)
+    getYouTubeVideoDetails : function(id, success) {
         var options = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
@@ -44,6 +42,9 @@ module.exports = {
 				responseString += data;
 			});
 			res.on('end', function() {
+                if(responseString != null) {
+                    responseString.replace(/34.237.107.18/g, req.headers.requestSource);
+                }
 				success(responseString, res.statusCode)
 			});
         });
