@@ -28,10 +28,15 @@ module.exports = {
     },
 
     getYouTubeVideoDetails : function(id, success) {
+        var headers = {
+			'X-Forwarded-For' : '117.197.5.211',
+			'Remote-Addr' : '117.197.5.211'
+		};
         var options = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
-			method : "GET",
+            method : "GET",
+            headers : headers
 		};
 		var req = https.request(options, function(res) {
 			var responseString = '';
