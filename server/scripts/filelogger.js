@@ -6,6 +6,6 @@ module.exports = {
         log.error(msg);
     },
     info : function(msg, typeId) {
-        log.info(msg);
+        // log.info(msg);
     }
 }
