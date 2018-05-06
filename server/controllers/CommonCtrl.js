@@ -27,7 +27,7 @@ module.exports = {
         return text;
     },
 
-    getYouTubeVideoDetails : function(request, id, success) {
+    getYouTubeVideoDetails : function(request, id, reqHeaders, success) {
         var options = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
@@ -41,15 +41,14 @@ module.exports = {
 				responseString += data;
 			});
 			res.on('end', function() {
-                console.log(request.headers["X-Requested-With"]);
+                console.log(reqHeaders["X-Requested-With"]);
                 if(responseString != null) {
-                    responseString = responseString.split("34.237.107.18").join(request.headers["X-Requested-With"]);
+                    responseString = responseString.split("34.237.107.18").join(reqHeaders["X-Requested-With"]);
                 }
 				success(responseString, res.statusCode)
 			});
         });
-        console.log(req);
-		req.end();
+        req.end();
     },
     getMembershipEndDate : function(typeId, dateString) {
         // var startDate = new Date(moment(dateString, "DD/MM/YYYY HH:mm:ss").valueOf());
