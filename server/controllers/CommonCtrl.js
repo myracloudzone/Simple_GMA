@@ -29,6 +29,7 @@ module.exports = {
 
     getYouTubeVideoDetails : function(id, req, success) {
         var headers = req.headers;
+        console.log(headers)
         var options = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
