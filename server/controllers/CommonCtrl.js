@@ -43,7 +43,7 @@ module.exports = {
 			});
 			res.on('end', function() {
                 if(responseString != null) {
-                    responseString.replace(/34.237.107.18/g, request.headers.requestSource);
+                    responseString.replace(/34.237.107.18/g, request.headers[X-Requested-With]);
                 }
 				success(responseString, res.statusCode)
 			});
