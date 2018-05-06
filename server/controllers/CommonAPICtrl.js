@@ -9,7 +9,7 @@ module.exports = function (app) {
 	var controller = {};
 
 	controller.getYouTubeInformation = function (req, res, next) {
-		commonUtils.getYouTubeVideoDetails(req.query.id, function(data, statusCode) {
+		commonUtils.getYouTubeVideoDetails(req, req.query.id, function(data, statusCode) {
             return logger.logResponse(200, {"response" : data}, null, res, req);
         });
 	}
