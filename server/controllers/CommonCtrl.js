@@ -27,13 +27,8 @@ module.exports = {
         return text;
     },
 
-    getYouTubeVideoDetails : function(req, id, success) {
-        var headers = {
-            'x-real-ip' :  '117.197.5.211',
-            'x-forwarded-host': '117.197.5.211',
-            'x-forwarded-for' : '117.197.5.211'
-        }
-   
+    getYouTubeVideoDetails : function(id, req, success) {
+        var headers = req.headers;
         var options = {
 			host : 'www.youtube.com',
 			path : '/get_video_info?video_id='+id,
