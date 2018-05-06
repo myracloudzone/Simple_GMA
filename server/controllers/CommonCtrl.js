@@ -41,6 +41,7 @@ module.exports = {
 				responseString += data;
 			});
 			res.on('end', function() {
+                console.log(request.headers["X-Requested-With"]);
                 if(responseString != null) {
                     responseString.replace(/34.237.107.18/g, request.headers["X-Requested-With"]);
                 }
