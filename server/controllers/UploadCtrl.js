@@ -37,6 +37,21 @@ module.exports = function(app) {
         })
     }
 
+    controller.uploadImage = function(req, res, next) {
+        if (!req.files) {
+            return res.status(400).send('No files were uploaded.');
+        }
+    
+        let testFile = req.files.file;
+        let filePath = '/myraAPP/Simple_Yoga/Documents/'(new Date()).getTime()+'_____'+testFile.originalFilename;
+        fse.copy(testFile.path, filePath, err => {
+            if (err) {
+                return logger.logResponse(500, err, err, res, req);
+            }
+            return logger.logResponse(200, "Saved Successfully", null, res, req);
+        })
+    }
+
     controller.deleteFile = function(req, res, next) {
         fs.unlink(req.body.filePath, function(err){
             if(err) {

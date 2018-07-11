@@ -62,6 +62,19 @@ module.exports = {
 			callback(null, err, req, res);
 		});
     },
+    findByCode : function(code, req, res, callback) {
+        schema.model('Member').forge().where({
+            member_code: code
+		}).fetch().then(function (result) {
+            if(result == null) {
+                callback(null, "No Record Found.", req, res);
+            } else {
+                callback(result.toJSON(), null, req, res);
+            }
+		}).catch(function (err) {
+			callback(null, err, req, res);
+		});
+    },
     findAll : function(condition, req, res, callback) {
         schema.model('Member').forge().where(condition)
         .orderBy('id', 'ASC').fetchAll().then(function (result) {

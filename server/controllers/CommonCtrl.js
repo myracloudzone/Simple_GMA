@@ -50,6 +50,16 @@ module.exports = {
         });
         req.end();
     },
+    getYouTubeAudio : function(id, req, res, success) {
+        var requestUrl = 'https://youtube.com/watch?v=' + req.query.videoId
+        try {
+          youtubeStream(requestUrl).pipe(res)
+        } catch (exception) {
+          res.status(500).send(exception);
+        }
+    },
+
+
     getMembershipEndDate : function(typeId, dateString) {
         // var startDate = new Date(moment(dateString, "DD/MM/YYYY HH:mm:ss").valueOf());
         var startDate = moment(dateString, "DD/MM/YYYY HH:mm:ss");

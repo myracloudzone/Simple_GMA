@@ -25,6 +25,8 @@ module.exports = function (app) {
             })
 	}
 
+	
+
 	controller.logout = function (req, res, next) {
 		schema.model('UserSession').forge().query(function(qb) {
 			qb.where({
